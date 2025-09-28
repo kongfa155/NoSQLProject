@@ -1,0 +1,28 @@
+.modalBody {
+    padding: 20px;
+}
+
+.formGroup {
+    margin-bottom: 16px;
+}
+
+.optionGroup {
+    display: flex;
+    align-items: center;
+}
+
+.optionRow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    /* khoảng cách giữa input và radio */
+}
+
+.optionInput {
+    flex: 1;
+}
+
+.radioBtn {
+    transform: scale(1.2);
+    cursor: pointer;
+}   

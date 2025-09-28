@@ -1,0 +1,40 @@
+Các hàm mà mongoose có sẵn để tương tác với db
+.find(): tìm tất cả các document
+.find(filter): Tìm có điều kiện
+vd: find({_id: "123"});
+.findOne(filter): Tìm 1 document đầu tiên thỏa điều kiện
+.findById(id): Tìm theo id
+.countDocuments(filter): Đếm số lượng documents thỏa điều kiện
+
+.create(data): Thêm dữ liệu vào db
+vd: Question.create({ question: "1+1?", options: ["1", "2"], answer: "2" });
+
+.save(): Cũng là thêm dữ liệu nhưng mà thay vì truyền dữ liệu thì save từ biến đã lưu dữ liệu
+vd: const q = new Question({ question: "3+3?", options: ["5", "6"], answer: "6" });
+ q.save();
+
+
+.updateOne(filter, update): Cập nhật dữ liệu đầu tiên thỏa điều kiện
+vd: Question.updateOne({ question: "1+1?" }, { answer: "2" });
+.updateMany(filter, update): Cập nhật nhiều dữ liệu thỏa điều kiện
+
+.findByIdAndUpdate(id, update, { new: true }): Tìm theo id, cập nhật và tạo mới dữ liệu với một id khác
+vd: Question.findByIdAndUpdate("65123abc...", { answer: "2" }, { new: true });
+
+.deleteOne(filter): Xóa một dữ liệu đầu tiên thỏa điều kiện
+.deleteMany(filter): Xóa nhiều dữ liệu thỏa điều kiện
+.findByIdAndDelete(id): Xóa theo id
+
+
+Các hàm ít xài (kiểu xài giống quan hệ):
+.sort({ field: 1 }): Sắp xếp (1 = tăng dần, -1 = giảm dần).
+.limit(n): Giới hạn số lượng document trả về.
+.select("field1 field2"): Chỉ lấy một số field nhất định.
+.populate("field"): dùng khi có quan hệ giữa các bảng (reference).
+
+vd: 
+// Lấy 5 câu hỏi mới nhất có đáp án là "A"
+const questions = await Question.find({ answer: "A" })
+  .sort({ createdAt: -1 })
+  .limit(5)
+  .select("question options answer");
