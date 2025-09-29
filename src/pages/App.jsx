@@ -3,6 +3,7 @@ import { Button } from "react-bootstrap";
 import QuestionModal from "../components/QuestionModal/QuestionModal";
 import QuestionList from "../components/QuestionList/QuestionList";
 import { getQuestions, deleteQuestion } from "../api/questionApi";
+import logo from "../assets/bonong.png";
 
 function App() {
     //ShowModal là hiển thị cái bảng nhập câu hỏi
@@ -40,10 +41,26 @@ function App() {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <Button onClick={() => setShowModal(true)}>Tạo câu hỏi mới</Button>
+    
+  
+       <div style={{ padding: "20px", position: "relative" }}>
+      {/*  bồ nông */}
+      <img
+        src={logo}
+        alt="Logo"
+        style={{
+          position: "absolute",
+          top: "20px",
+          right: "20px",
+          width: "60px",
+          height: "60px",
+          borderRadius: "50%",
+          objectFit: "cover",
+          boxShadow: "0 0 10px rgba(105, 60, 60, 0.2)",
+        }} />
+        <Button onClick={() => setShowModal(true)}>Tạo câu hỏi mới</Button>
       {/* Nút tạo câu hỏi, ấn vào hiển thị bảng thêm câu hỏi */}
-
+  
       <QuestionModal
         show={showModal}
         handleClose={() => setShowModal(false)}
