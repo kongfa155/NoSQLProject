@@ -9,9 +9,11 @@ html,
 body,
 #root {
     height: 100%;
-    width: 100%;
-    font-family: Arial, sans-serif;
-    color: #333;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #ecf0f1;
+
 }
 
 .appContainer {

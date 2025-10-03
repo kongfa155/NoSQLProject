@@ -1,5 +1,6 @@
 import { Sidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
 import { FaTachometerAlt, FaGem, FaGithub } from 'react-icons/fa';
+import { Button } from "react-bootstrap";
 import { Link } from 'react-router-dom';
 import { DiReact } from 'react-icons/di';
 import styles from './SideBar.module.css'; // CSS Module
@@ -36,9 +37,8 @@ const SideBar = (props) => {
 
       {/* Content */}
       <Menu iconShape="circle">
-        <MenuItem icon={<FaTachometerAlt />}>
+        <MenuItem icon={<FaTachometerAlt />} component={<Link to="/admins" />}>
           Trang chủ
-          <Link to="/admins" />
         </MenuItem>
         <SubMenu icon={<FaGem />} label="Chức năng">
           <MenuItem>Chức năng 1</MenuItem>
@@ -59,6 +59,13 @@ const SideBar = (props) => {
           <span>page</span>
         </a>
       </div>
+      <Button
+          variant="secondary"
+          onClick={() => setCollapsed((prev) => !prev)}
+          style={{ marginBottom: 20 }}
+        >
+          {collapsed ? "Mở Sidebar" : "Thu gọn Sidebar"}
+        </Button>
     </Sidebar>
   );
 };
