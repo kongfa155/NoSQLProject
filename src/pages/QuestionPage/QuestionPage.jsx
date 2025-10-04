@@ -112,6 +112,10 @@ function QuizHeader({props}){
             ()=>{
                 if(quizStart){
                     setQuizTime((prev)=>{
+                        if(prev==1){
+                            addSubmission();
+                            
+                        }
                         if(prev-1<0){
                             return 0;
                         }
