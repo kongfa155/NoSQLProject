@@ -1,4 +1,4 @@
-const Question = require("../models/Question");
+const Question = require("../models/questionText");
 
 // Lấy tất cả câu hỏi
 const getQuestions = async (req, res) => {
@@ -6,12 +6,18 @@ const getQuestions = async (req, res) => {
   res.json(questions);
 };
 
+const getQuestionsById = async (req, res) => {
+  const questions = await Question.find({quizId: req.params.id});
+  res.json(questions);
+};
+
+
 // Thêm câu hỏi
 const addQuestion = async (req, res) => {
     //Nhận dữ liệu được truyền
-  const { question, options, answer } = req.body;
+  const { quizId, question, options, answer } = req.body;
   //Tạo mới biến để lưu dữ liệu
-  const newQuestion = new Question({ question, options, answer });
+  const newQuestion = new Question({ quizId, question, options, answer });
   await newQuestion.save(); //Tải dữ liệu lên
   res.json(newQuestion); //Backend gửi lại dữ liệu cho front end dưới dạng JSON cái này chưa cần xài
 };
@@ -31,4 +37,5 @@ module.exports = {
   getQuestions,
   addQuestion,
   deleteQuestion,
+  getQuestionsById,
 };
