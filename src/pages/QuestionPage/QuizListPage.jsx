@@ -30,7 +30,7 @@ export default function QuizListPage(){
                 </div>
                     {quizzes.map((quiz, i)=>(
                     <div key={`quiz_${i}`} 
-                    className="bg-white mx-2 px-8 my-2 text-[1.5rem] shadow-sm shadow-black rounded-[8px] h-auto min-h-[4rem] grid grid-cols-5 place-items-center"
+                    className="bg-white mx-2 px-8 my-2 text-[1.2rem] shadow-sm shadow-black rounded-[8px] h-auto min-h-[4rem] grid grid-cols-5 place-items-center"
                     >
                         <p>{quiz.name}</p>
                         <p>{`${quiz.questionNum} câu`}</p>

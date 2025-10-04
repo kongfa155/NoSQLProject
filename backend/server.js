@@ -11,7 +11,7 @@ app.use(express.json());
 //Hiện tại chỉ có làm việc trên route question
 app.use("/api/questions", require("./routes/questionRoutes"));
 app.use("/api/quizzes", require("./routes/quizRoutes.js"));
-    
+app.use("/api/submissions", require("./routes/submissionRoutes.js"));   
 
 //Lắng nghe port backend, mặc định là 5000
 const PORT = process.env.PORT || 5000;
