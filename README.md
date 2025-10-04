@@ -7,6 +7,6 @@
 + Huanz: Quản lý bộ đề, thực hiện làm bài.
 + Pha: Thống kê bài làm của người dùng.
 
-**Thông tin chung: **
+**Thông tin chung:**
 + Ngày bắt đầu: 02/10/2005
 + Tiến độ: ....
