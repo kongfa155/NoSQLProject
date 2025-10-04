@@ -12,7 +12,11 @@ const getQuiz = async(req,res)=>{
     const quizzes = await Quiz.find();
     res.json(quizzes);
 };
+const getQuizById = async(req,res)=>{
+    const quiz = await Quiz.find({_id: req.params.id});
+    res.json(quiz);
+}
 
 module.exports = {
-    getQuiz, addQuiz
+    getQuiz, addQuiz, getQuizById
 }

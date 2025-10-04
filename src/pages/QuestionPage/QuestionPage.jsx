@@ -1,6 +1,6 @@
 import './QuestionPage.css';
 import {useState, useEffect, useContext, createContext, useRef} from 'react';
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from 'axios';
 
 const QuizContext = createContext();
@@ -15,6 +15,7 @@ const answerMap = {
 
 }
 export default function QuestionPage(){
+    const navigate = useNavigate();
     const {id} = useParams();
     const [answer, setAnswer] = useState({});
     const [quizName, setQuizName] = useState("Bo de 1");
@@ -24,10 +25,24 @@ export default function QuestionPage(){
     const [correct, setCorrect] = useState(0); // số câu đúng
 
 
+    async function addSubmission(){
+        try{
+            const data ={
+                quizId: id,
+                answers: answer,
+                score: correct
+            };
+            const res = await axios.post("/api/submissions", data);
+            console.log("Submission created: ", res.data);
+        }catch(err){
+            console.error("error submissions: ",err);
+        }
+    
+    }
+
     useEffect(()=>{
         axios.get(`/api/questions/${id}`)
         .then(res=>{
-            console.log("Data res: ", res);
             setQuestions(res.data);
         })
         .catch(err=>{
@@ -35,13 +50,26 @@ export default function QuestionPage(){
         })
 
     },[]);
+    useEffect(()=>{
+        axios.get(`/api/quizzes/${id}`)
+        .then(res=>{
+            console.log(res);
+            setQuizName(res.data[0].name);
+            setQuizTime(res.data[0].timeLimit);
+            setQuizStart(true);
+
+        })
+        .catch(err=>{
+            console.error(err);
+        })
+    },[])
 
 
 
     return (
         <QuizContext.Provider value={"none"}>
-        <div className="mt-2 mx-4 h-full w-[95%] bg-[#f5f7f7] rounded-2xl shadow-sm shadow-black">
-            <div id="qh-container" className="m-4 p-2 w-full h-[4rem]">
+        <div className="relative scroll-smooth overflow-x-hidden mt-2 pb-20 mx-4 w-[90%] bg-gray-100 rounded-2xl shadow-sm shadow-black overflow-y-auto">
+            <div id="qh-container" className="m-4 p-2 w-full min-h-[4rem]">
                 <QuizHeader props={{quizName,quizTime,setQuizTime, quizStart}}></QuizHeader>
             </div>
             
@@ -56,8 +84,12 @@ export default function QuestionPage(){
                 ))
                 
             }
-            <p>{correct}</p>
-      
+            <div className="absolute right-8 grid grid-cols-2 gap-4 select-none">
+                
+                <div onClick={()=>{navigate("/quiz")}} className=" cursor-pointer rounded-[8px] p-4 w-[128px] text-center bg-[#EF4444] text-white font-bold">Hủy bài</div>
+                <div onClick={()=>{addSubmission()}} className=" cursor-pointer rounded-[8px] p-4 w-[128px] text-center bg-[#10B981] text-white font-bold">Nộp bài</div>
+            </div>
+            
 
         </div>
 
@@ -76,23 +108,28 @@ function QuizHeader({props}){
     const {quizStart} = props;
     useEffect(()=>{
 
-        setInterval(
+        const timer = setInterval(
             ()=>{
                 if(quizStart){
-                    setQuizTime((prev)=>prev-1);
+                    setQuizTime((prev)=>{
+                        if(prev-1<0){
+                            return 0;
+                        }
+                        return prev-1;
+                    });
                 }
                 
-            }, 1000
+            }, 60000
         );
+        return () => clearInterval(timer);
 
-    },[]);
+    },[quizStart]);
     return (
         <div className="flex flex-col gap-1 h-full w-full "> 
             <div>
-                Bộ đề: {quizName}
-            </div>
-            <div>
-                Thời gian làm bài: {quizTime} phút
+                <p className="text-[1.5rem]"><span className="font-bold">Bộ đề: </span>{quizName}</p>
+            
+                <p className="text-[1.3rem]"><span className="font-bold">Thời gian làm bài: </span>{quizTime} phút</p>
             </div>
             
         </div>
@@ -100,30 +137,30 @@ function QuizHeader({props}){
 }
 
 function Question({ques, index, answer, setAnswer, setCorrect}){
-    const removedScore = useRef(true);
+
     return (
-        <div className="my-4 mx-4 rounded-[8px] overflow-hidden shadow-sm shadow-black select-none cursor-pointer">
-            <div className="bg-[#4a5c97]">
-                
-                <p className="text-[1.2rem] text-white py-1 px-2"><span className="font-bold">Câu {index+1}:</span> {ques.question}</p>
+        <div className="bg-white w-[95%] mx-auto my-4 py-2 rounded-[8px] overflow-hidden shadow-sm shadow-black select-none cursor-pointer">
+            <div >
+                <h3 className="px-4 py-2">Trạng thái: {(answer[index]!=null)?<span className="text-[#6b7280]">Đã chọn đáp án</span>:<span className="text-[#EF4444]">Chưa chọn đáp án</span>}</h3>
+                <p className="text-[1.2rem] py-1 px-4"><span className="font-bold">Câu {index+1}:</span> {ques.question}</p>
                 
             </div>
-            <div className="bg-[#e5e8f1]">
+            <div className="w-[98%] mx-auto ">
                 {ques.options.map((option, j)=>(
-                <div key={j} className={`px-4 py-1 bg-gradient-to-r from-white via-blue-200 to-blue-300 bg-[length:200%_100%] bg-left ${(answer[index]==option)?"bg-right":"hover:bg-right"} transition-all ease-in duration-700`}
+                <div key={j} className={`min-h-[3rem] flex items-center shadow-md rounded-[8px] px-4 py-2 my-2 ${(answer[index]==option)?"bg-[#2563EB] text-white font-bold":"text-gray-900 bg-gray-100 hover:bg-gray-300"} transition-colors ease-in duration-200`}
                     onClick={()=>{
                         
-                         setAnswer((prev)=>{return {...prev, [index]:option}});
-                         
+                        setAnswer(prev=>{
+                            const newAnswer = { ...prev, [index]: option };
 
-                         if(ques.answer==option && answer[index]!=option){
-                            removedScore.current=false;
-                            setCorrect((prev)=>prev+1);
-                         }
-                         if(ques.answer!=option && !removedScore.current){
-                            removedScore.current=true;
-                            setCorrect((prev)=>prev-1);
-                         }
+                            if (ques.answer === option && prev[index] !== option) {
+                                setCorrect(prevScore => prevScore + 1);
+                            } else if (ques.answer !== option && prev[index] === ques.answer) {
+                                setCorrect(prevScore => prevScore - 1);
+                            }
+
+                            return newAnswer;
+                      });
                     }}
                     
                 
