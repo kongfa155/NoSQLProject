@@ -38,7 +38,7 @@ export default function QuizListPage(){
                         <p>NaN</p>
                         <div
                         
-                        className="h-[80%] w-[50%] bg-[#6366F1] text-center flex items-center justify-center rounded-[8px] text-white select-none cursor-pointer"
+                        className="h-[80%] w-[50%] bg-[#6366F1]  hover:bg-[#4749d3]  transition-colors  duration-500 text-center flex items-center justify-center rounded-[8px] text-white select-none cursor-pointer"
                         onClick={()=>{
                             navigate(`/quiz/${quiz._id}`)
                         }}

@@ -2,8 +2,9 @@ import './QuestionPage.css';
 import {useState, useEffect, useContext, createContext, useRef} from 'react';
 import { useNavigate, useParams } from "react-router-dom";
 import axios from 'axios';
+import DefaultAlert from '../../components/AlertBoxes/DefaultAlert';
 
-const QuizContext = createContext();
+
 const answerMap = {
     0: 'A',
     1: 'B',
@@ -23,9 +24,10 @@ export default function QuestionPage(){
     const [quizStart, setQuizStart] = useState(false);
     const [questions, setQuestions] = useState([]);
     const [correct, setCorrect] = useState(0); // số câu đúng
+    const [submissionAlert, setSubmissionAlert] = useState(0);
 
 
-    async function addSubmission(){
+    async function addSubmission(type=1){
         try{
             const data ={
                 quizId: id,
@@ -34,6 +36,7 @@ export default function QuestionPage(){
             };
             const res = await axios.post("/api/submissions", data);
             console.log("Submission created: ", res.data);
+            setSubmissionAlert(type);
         }catch(err){
             console.error("error submissions: ",err);
         }
@@ -46,6 +49,10 @@ export default function QuestionPage(){
             setQuestions(res.data);
         })
         .catch(err=>{
+            setSubmissionAlert(3);
+            setTimeout(()=>{
+                navigate("/quiz");
+            },15000);
             console.error("Loi khi goi api: ", err);
         })
 
@@ -67,10 +74,39 @@ export default function QuestionPage(){
 
 
     return (
-        <QuizContext.Provider value={"none"}>
-        <div className="relative scroll-smooth overflow-x-hidden mt-2 pb-20 mx-4 w-[90%] bg-gray-100 rounded-2xl shadow-sm shadow-black overflow-y-auto">
+
+        <div className="relative overflow-x-hidden mt-2 pb-20 mx-4 w-[90%] bg-gray-100 rounded-2xl shadow-sm shadow-black overflow-y-auto">
+
+            {(submissionAlert==1)&&
+            <DefaultAlert 
+                title="Nộp bài" 
+                information="Đã nộp bài thành công, bạn sẽ được chuyển về trang chọn bộ đề sau khi đóng thông báo này."
+                closeButton={()=>{navigate("/quiz")}}
+            ></DefaultAlert>
+            
+            }
+            {(submissionAlert==2)&&
+            <DefaultAlert 
+                title="Nộp bài" 
+                information="Đã hết giờ làm bài, hệ thống đã tự động nộp bài cho bạn. Bạn sẽ được chuyển về trang chọn bộ đề sau khi đóng thông báo này."
+                closeButton={()=>{navigate("/quiz")}}
+            ></DefaultAlert>
+            
+            }
+            {(submissionAlert==3)&&
+            <DefaultAlert 
+                title="Bộ đề không tồn tại" 
+                information="Bộ đề bạn đang truy cập không tôn tài, nhấn đóng để về trang chọn bồ đề hoặc hệ thống sẽ tự động chuyển bạn đi sau 15 giây..."
+                closeButton={()=>{navigate("/quiz")}}
+            ></DefaultAlert>
+            
+            }
+
+
+
             <div id="qh-container" className="m-4 p-2 w-full min-h-[4rem]">
-                <QuizHeader props={{quizName,quizTime,setQuizTime, quizStart}}></QuizHeader>
+
+                <QuizHeader props={{quizName,quizTime,setQuizTime, quizStart, addSubmission}}></QuizHeader>
             </div>
             
             <div className="mx-auto w-[98%] rounded-4xl">
@@ -87,13 +123,13 @@ export default function QuestionPage(){
             <div className="absolute right-8 grid grid-cols-2 gap-4 select-none">
                 
                 <div onClick={()=>{navigate("/quiz")}} className=" cursor-pointer rounded-[8px] p-4 w-[128px] text-center bg-[#EF4444] text-white font-bold">Hủy bài</div>
-                <div onClick={()=>{addSubmission()}} className=" cursor-pointer rounded-[8px] p-4 w-[128px] text-center bg-[#10B981] text-white font-bold">Nộp bài</div>
+                <div onClick={()=>{addSubmission(1)}} className=" cursor-pointer rounded-[8px] p-4 w-[128px] text-center bg-[#10B981] text-white font-bold">Nộp bài</div>
             </div>
             
 
         </div>
 
-        </QuizContext.Provider>
+
         
 
     );
@@ -106,6 +142,7 @@ function QuizHeader({props}){
     const {quizName} = props;
     const {quizTime, setQuizTime} = props;
     const {quizStart} = props;
+    const {addSubmission} = props;
     useEffect(()=>{
 
         const timer = setInterval(
@@ -113,7 +150,7 @@ function QuizHeader({props}){
                 if(quizStart){
                     setQuizTime((prev)=>{
                         if(prev==1){
-                            addSubmission();
+                            addSubmission(2);
                             
                         }
                         if(prev-1<0){
@@ -123,7 +160,7 @@ function QuizHeader({props}){
                     });
                 }
                 
-            }, 60000
+            }, 5000
         );
         return () => clearInterval(timer);
 
