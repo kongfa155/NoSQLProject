@@ -14,6 +14,7 @@ function App() {
         <div className="flex flex-row h-screen w-screen ">
             <div className="h-full w-[15%] shadow-md shadow-black my-4"></div>
             <Routes>
+                <Route path="/" element={<QuizListPage></QuizListPage>}/>
                 <Route path="/quiz" element={<QuizListPage></QuizListPage>} />
                 <Route path="/quiz/:id" element={<QuestionPage></QuestionPage>}></Route>
                 
