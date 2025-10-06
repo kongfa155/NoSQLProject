@@ -70,9 +70,9 @@ function SubjectBox({subject, navigate}){
             </div>
             <div 
             onClick={()=>{
-                navigate(`/quiz/${subject._id}`)
+                navigate(`/subject/${subject._id}`)
             }}
-            className="absolute w-[50%] h-[2rem] bg-[#6ea269] bottom-2 left-1/2 -translate-x-1/2 rounded-xl flex justify-center items-center text-white cursor-pointer">
+            className=" transition-colors duration-500 absolute w-[50%] h-[2rem] bg-[#6ea269] hover:bg-[#568651] bottom-2 left-1/2 -translate-x-1/2 rounded-xl flex justify-center items-center text-white cursor-pointer">
                 Vào học → 
             </div>
                 
