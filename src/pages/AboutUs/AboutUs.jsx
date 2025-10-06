@@ -53,7 +53,7 @@ export default function AboutUs(){
                 hover:bg-[#4d7c48] hover:scale-105 transition-all duration-500
                 cursor-pointer select-none
                 "
-                onClick={()=>{navigate("/account")}}
+                onClick={()=>{navigate("/login")}}
                 >
                 
                 
