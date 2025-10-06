@@ -47,6 +47,9 @@ export default function QuestionPage(){
         axios.get(`/api/questions/${id}`)
         .then(res=>{
             setQuestions(res.data);
+            if(res.data.length<=0){
+                setSubmissionAlert(3);
+            }
         })
         .catch(err=>{
             setSubmissionAlert(3);
@@ -143,6 +146,7 @@ function QuizHeader({props}){
     const {quizTime, setQuizTime} = props;
     const {quizStart} = props;
     const {addSubmission} = props;
+    
     useEffect(()=>{
 
         const timer = setInterval(

@@ -1,3 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=K2D:wght@300;400;500;700&display=swap');
+
+html, body {
+  font-family: 'K2D', sans-serif;
+}
+
 /* Reset cơ bản để tránh lệch */
 * {
     margin: 0;
