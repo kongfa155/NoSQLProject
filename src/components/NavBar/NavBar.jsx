@@ -1,6 +1,6 @@
 import './NavBar.css';
 import { useNavigate } from 'react-router-dom';
-import webLogo from '../../quizLogo.svg';
+import webLogo from '../../quizLogo_green.svg';
 
 
 export default function NavBar({selected="trangchu", setSelected}){
@@ -29,7 +29,7 @@ export default function NavBar({selected="trangchu", setSelected}){
             </div>
             <div className={`${(selected=="monhoc")&&"text-[#6ea269]"} cursor-pointer transition-colors duration-500`} onClick={()=>{handleItemOnClick("monhoc")}}>
                 <p>MÔN HỌC</p>
-            </div>
+            </div>  
             <div className={`${(selected=="donggopde")&&"text-[#6ea269]"} cursor-pointer transition-colors duration-500`} onClick={()=>{handleItemOnClick("donggopde")}}>
                 <p>ĐÓNG GÓP ĐỀ</p>
             </div>

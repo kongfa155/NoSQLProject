@@ -1,7 +1,7 @@
 // src/pages/App.jsx
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import {useState, useEffect} from "react";
-
+import AboutUs from "./AboutUs/AboutUs";
 import QuizListPage from "./QuestionPage/QuizListPage";
 import QuestionPage from './QuestionPage/QuestionPage';
 import './App.css';
@@ -21,9 +21,9 @@ function App() {
 
             <div className="flex-1 overflow-y-auto">
             <Routes>
-                <Route path="/" element={<QuizListPage></QuizListPage>}/>
+                <Route path="/" element={<AboutUs></AboutUs>}></Route>
                 <Route path="/subject" element={<SubjectPage></SubjectPage>}></Route>
-                <Route path="/quiz" element={<QuizListPage></QuizListPage>} />
+                <Route path="/subject/:id" element={<QuizListPage></QuizListPage>} />
                 <Route path="/quiz/:id" element={<QuestionPage></QuestionPage>}></Route>
                 
             </Routes>
