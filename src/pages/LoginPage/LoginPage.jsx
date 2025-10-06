@@ -17,11 +17,11 @@ export default function LoginPage(){
                 Đăng nhập
             </div>
 
-            <div className="flex justify-center items-center mt-8" >
+            <div className="mx-auto flex justify-center items-center mt-8 rounded-[8px] border-1 w-[85%] h-[3rem] " >
                 <input onChange={(e)=>{
                     setUsername(e.target.value)
                 }} value={username} type="text" placeholder="Nhập email hoặc tên đăng nhập" 
-                className="px-[12px] w-[85%] h-[3rem] rounded-[8px]"></input>
+                className="px-[12px] w-full h-full  rounded-[8px] border-0 focus:outline-none"></input>
             </div>
             <div className="flex flex-row items-center justify-center mt-4  mx-auto w-[85%] h-[3rem] border-1 rounded-[8px]" >
                 <input onChange={(e)=>{
