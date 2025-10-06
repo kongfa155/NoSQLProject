@@ -160,7 +160,7 @@ function QuizHeader({props}){
                     });
                 }
                 
-            }, 5000
+            }, 60000
         );
         return () => clearInterval(timer);
 
