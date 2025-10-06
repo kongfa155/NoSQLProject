@@ -8,7 +8,7 @@ export default function NavBar({selected="trangchu", setSelected}){
         "trangchu":"",
         "monhoc":"subject",
         "donggopde":"",
-        "canhan":"",
+        "canhan":"login",
     }
     
     const navigate = useNavigate();
@@ -34,8 +34,8 @@ export default function NavBar({selected="trangchu", setSelected}){
                 <p>ĐÓNG GÓP ĐỀ</p>
             </div>
             <div className="col-span-3"></div>
-            <div className={`${(selected=="canhan")&&"text-[#6ea269]"} cursor-pointer transition-colors duration-500`} onClick={()=>{handleItemOnClick("canhan")}}>
-                <p>CÁ NHÂN</p>
+            <div className={`${(selected=="dangnhap")&&"text-[#6ea269]"} cursor-pointer transition-colors duration-500`} onClick={()=>{handleItemOnClick("canhan")}}>
+                <p>ĐĂNG NHẬP</p>
             </div>
         </div>
 

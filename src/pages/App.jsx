@@ -7,6 +7,7 @@ import QuestionPage from './QuestionPage/QuestionPage';
 import './App.css';
 import SubjectPage from "./SubjectPage/SubjectPage";
 import NavBar from "../components/NavBar/NavBar";
+import LoginPage from "./LoginPage/LoginPage";
 
 function App() {
     const [selected, setSelected] = useState("trangchu");
@@ -25,6 +26,7 @@ function App() {
                 <Route path="/subject" element={<SubjectPage></SubjectPage>}></Route>
                 <Route path="/subject/:id" element={<QuizListPage></QuizListPage>} />
                 <Route path="/quiz/:id" element={<QuestionPage></QuestionPage>}></Route>
+                <Route path="/login" element={<LoginPage></LoginPage>}></Route>
                 
             </Routes>
             </div>
