@@ -1,69 +1,114 @@
-const mongoose = require("mongoose");
-const Question = require("./models/questionText.js");
-const { resolveConfig } = require("vite");
-require("dotenv").config();
-mongoose.connect(process.env.MONGO_URI)
+// seed.js
+const axios = require("axios");
 
-const quizIds = [
-  "68e09d521032407fcc2b7564", // Bí kíp cua gái nhà họ Nguyễn
-  "68e0bd09d4d61556ac458027", // Cách chiến thắng Godzilla với tay không
-  "68e0bd9cd4d61556ac458028", // Làm thế nào để thoát khỏi ách thống trị của bồ nông
-  "68e0be6ad4d61556ac458029", // Ngươi mở miệng ra là nhắc đến hai chữ công bằng...
-];
-
-// Helper để sinh options và answer
-function generateQuestionText(index, quizName) {
-  return `Câu hỏi ${index + 1} thuộc bộ đề "${quizName}" là gì?`;
-}
+const API_BASE = "http://localhost:5000/api";
 
 async function seed() {
   try {
-    await Question.deleteMany({}); // Xóa dữ liệu cũ cho sạch
+    console.log("=== Bắt đầu seed dữ liệu ===");
 
-    const allQuestions = [];
+    // 1️⃣ Tạo Subject
+    const subjectsData = [
+      {
+        name: "Cơ sở lập trình",
+        image: "https://example.com/cslp.png",
+        description: "Nhập môn lập trình căn bản cho sinh viên CNTT",
+      },
+      {
+        name: "Cấu trúc dữ liệu",
+        image: "https://example.com/ctdl.png",
+        description: "Môn học về danh sách, cây, đồ thị, và giải thuật cơ bản",
+      },
+    ];
 
-    quizIds.forEach((id, quizIndex) => {
-      for (let i = 0; i < 10; i++) {
-        const options = [
-          `Đáp án A của câu ${i + 1}`,
-          `Đáp án B của câu ${i + 1}`,
-          `Đáp án C của câu ${i + 1}`,
-          `Đáp án D của câu ${i + 1}`,
-        ];
+    const subjects = [];
+    for (const s of subjectsData) {
+      const res = await axios.post(`${API_BASE}/subjects`, s);
+      subjects.push(res.data);
+    }
+    console.log(
+      "✅ Đã tạo Subjects:",
+      subjects.map((s) => s.name)
+    );
 
-        const answer = options[Math.floor(Math.random() * options.length)];
+    // 2️⃣ Tạo Quiz (mỗi quiz thuộc 1 subject)
+    const quizzesData = [
+      {
+        name: "Quiz 1: Biến và kiểu dữ liệu",
+        subjectId: subjects[0]._id,
+        questionNum: 3,
+        availability: true,
+      },
+      {
+        name: "Quiz 2: Danh sách liên kết",
+        subjectId: subjects[1]._id,
+        questionNum: 2,
+        availability: true,
+      },
+    ];
 
-        allQuestions.push({
-          quizId: new mongoose.Types.ObjectId(id),
-          question: generateQuestionText(i, `Quiz ${quizIndex + 1}`),
-          options,
-          answer,
-        });
-      }
-    });
+    const quizzes = [];
+    for (const q of quizzesData) {
+      const res = await axios.post(`${API_BASE}/quizzes`, q);
+      quizzes.push(res.data);
+    }
+    console.log(
+      "✅ Đã tạo Quizzes:",
+      quizzes.map((q) => q.name)
+    );
 
-    await Question.insertMany(allQuestions);
-    console.log("✅ Seed 10 câu hỏi/quiz xong!");
+    // 3️⃣ Tạo QuestionText (cho quiz 1)
+    const questionsTextData = [
+      {
+        quizId: quizzes[0]._id,
+        question: "Kiểu dữ liệu nào dùng để lưu chuỗi ký tự?",
+        options: ["int", "string", "float", "boolean"],
+        answer: "string",
+      },
+      {
+        quizId: quizzes[0]._id,
+        question: "Phép gán hợp lệ trong C là?",
+        options: ["x == 5;", "x = 5;", "x := 5;", "5 = x;"],
+        answer: "x = 5;",
+      },
+    ];
+
+    for (const qt of questionsTextData) {
+      await axios.post(`${API_BASE}/questions`, qt);
+    }
+    console.log("✅ Đã tạo QuestionText");
+
+    // 4️⃣ Tạo QuestionImage (cho quiz 2)
+    const questionsImageData = [
+      {
+        quizId: quizzes[1]._id,
+        question: "Hình dưới minh họa cho cấu trúc gì?",
+        image: "https://example.com/linkedlist.png",
+        options: ["Stack", "Queue", "Linked List", "Tree"],
+        answer: "Linked List",
+        explain: "Các node nối với nhau bằng con trỏ next.",
+      },
+    ];
+
+    for (const qi of questionsImageData) {
+      await axios.post(`${API_BASE}/questionImages`, qi);
+    }
+    console.log("✅ Đã tạo QuestionImage");
+
+    // 5️⃣ (Tùy chọn) Tạo Submission demo
+    const submission = {
+      userId: null,
+      quizId: quizzes[0]._id,
+      answers: ["string", "x = 5;"],
+      score: 2,
+    };
+    await axios.post(`${API_BASE}/submissions`, submission);
+    console.log("✅ Đã tạo Submission");
+
+    console.log("🎉 Seed hoàn tất!");
   } catch (err) {
-    console.error("❌ Lỗi seed:", err);
-  } finally {
-    await mongoose.disconnect();
+    console.error("❌ Lỗi khi seed dữ liệu:", err.message);
   }
 }
 
 seed();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
