@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Question = require("./models/questionText.js");
+const { resolveConfig } = require("vite");
 require("dotenv").config();
 mongoose.connect(process.env.MONGO_URI)
 
@@ -51,3 +52,18 @@ async function seed() {
 }
 
 seed();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
