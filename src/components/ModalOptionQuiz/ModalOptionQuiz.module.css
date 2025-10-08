@@ -1,0 +1,101 @@
+/* ==== Custom modal border & body ==== */
+:global(.modal-content) {
+    border: 2px solid #D1D5DB;
+    box-shadow:  0px 0px 2px 2px #00620B;
+    border-radius: 0 !important;
+}
+
+.modalBody {
+    padding: 1.5rem;
+}
+
+/* Header */
+.modalHeader {
+    padding: 0.5rem 1rem;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+/* Bài học và thời gian */
+.lessonHeaderWrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.sectionTitleLabel {
+    font-size: 0.85rem;
+    color: #6B7280;
+    margin-bottom: 0.2rem;
+    font-weight: 500;
+}
+
+.lessonName {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2F834D;
+    margin: 0;
+}
+
+.timeValue {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #53986A;
+}
+
+/* Divider */
+.sectionDivider {
+    border: 0;
+    height: 1px;
+    background-color: #CBD5E1;
+    margin: 1.5rem 0;
+}
+
+/* Tùy chỉnh luyện tập */
+.quizPracticeOptions {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem 1rem;
+}
+
+.optionRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 500;
+}
+
+/* Toggle custom */
+.customToggle .form-check-input {
+    width: 2rem;
+    height: 1.2rem;
+    margin-left: 0;
+    background-color: #E5E7EB;
+    border: none;
+}
+
+.customToggle .form-check-input:checked {
+    background-color: #2F834D;
+}
+
+/* Footer */
+.modalFooter {
+    display: flex;
+    justify-content: center;
+    padding-top: 1rem;
+}
+
+.startButton {
+    background-color: #2F834D !important;
+    border: none !important;
+    padding: 0.6rem 2rem !important;
+    border-radius: 8px !important;
+    font-weight: 600;
+    color: #fff;
+}
+
+.startButton:hover {
+    background-color: #246B40 !important;
+}
