@@ -8,7 +8,8 @@ import './App.css';
 import SubjectPage from "./SubjectPage/SubjectPage";
 import NavBar from "../components/NavBar/NavBar";
 import LoginPage from "./LoginPage/LoginPage";
-
+import AdminPage from "./AdminPage/AdminPage"
+import SettingPage from "./SettingPage/Setting";
 function App() {
     const [selected, setSelected] = useState("trangchu");
 
@@ -27,7 +28,8 @@ function App() {
                 <Route path="/subject/:id" element={<QuizListPage></QuizListPage>} />
                 <Route path="/quiz/:id" element={<QuestionPage></QuestionPage>}></Route>
                 <Route path="/login" element={<LoginPage></LoginPage>}></Route>
-                
+                <Route path="/admin" element={<AdminPage></AdminPage>}></Route>
+                <Route path="/admin/settings" element={<SettingPage></SettingPage>}></Route>
             </Routes>
             </div>
             
