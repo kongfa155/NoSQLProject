@@ -1,4 +1,5 @@
 const Quiz = require('../models/quiz');
+const { getChaptersFromSubject } = require('./chapterController');
 
 const addQuiz= async (req,res)=>{
      console.log("Request body:", req.body);
@@ -14,11 +15,11 @@ const getQuiz = async(req,res)=>{
 };
 
 
-const getQuizFromSubject = async(req,res)=>{
-    const quiz = await Quiz.find({subjectId: req.params.id});
+const getQuizFromChapter = async(req,res)=>{
+    const quiz = await Quiz.find({chapterId: req.params.id});
     res.json(quiz);
 }
 
 module.exports = {
-    getQuiz, addQuiz, getQuizFromSubject
+    getQuiz, addQuiz, getQuizFromChapter
 }

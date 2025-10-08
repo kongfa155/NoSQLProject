@@ -15,6 +15,7 @@ app.use("/api/questionImages", require('./routes/questionImageRoutes.js'));
 app.use("/api/quizzes", require("./routes/quizRoutes.js"));
 app.use("/api/submissions", require("./routes/submissionRoutes.js"));   
 app.use("/api/subjects", require("./routes/subjectRoutes.js"));
+app.use("/api/chapters", require("./routes/chapterRoutes.js"));
 
 
 
