@@ -12,6 +12,11 @@ const addSubject = async (req,res)=>{
     res.json(newSubject);
 };
 
+const getSubjectById = async(req,res)=>{
+    const subject = await Subject.find({_id: req.params.id});
+    res.json(subject);
+
+}
 module.exports={
-    getSubjects, addSubject
+    getSubjects, addSubject, getSubjectById
 }

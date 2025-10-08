@@ -4,12 +4,13 @@ const router = express.Router();
 
 //Nhận các hàm từ controller
 const {
-  getSubjects, addSubject
+  getSubjects, addSubject, getSubjectById
 } = require("../controllers/subjectController");
 
 
 //Gọi các hàm theo nhánh ví dụ question/ mà phương thức get sẽ gọi hàm 1,...
 router.get("/", getSubjects);
+router.get("/:id", getSubjectById);
 router.post("/", addSubject);
 
 module.exports = router;

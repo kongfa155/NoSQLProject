@@ -3,12 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import webLogo from '../../quizLogo_green.svg';
 
 
-export default function NavBar({selected="trangchu", setSelected}){
+export default function NavBar({selected="trangchu", setSelected, isAdmin}){
     const map = {
         "trangchu":"",
-        "monhoc":"subject",
+        "monhoc":"subject/view",
         "donggopde":"",
         "canhan":"login",
+        "chinhsuamonhoc":"subject/edit"
     }
     
     const navigate = useNavigate();
@@ -27,9 +28,15 @@ export default function NavBar({selected="trangchu", setSelected}){
             <div className={`${(selected=="trangchu")&&"text-[#6ea269]"} cursor-pointer transition-colors duration-500`} onClick={()=>{handleItemOnClick("trangchu")}}>
                 <p>TRANG CHỦ</p>
             </div>
+            {(!isAdmin)?
             <div className={`${(selected=="monhoc")&&"text-[#6ea269]"} cursor-pointer transition-colors duration-500`} onClick={()=>{handleItemOnClick("monhoc")}}>
                 <p>MÔN HỌC</p>
-            </div>  
+            </div>
+            :
+            <div className={`${(selected=="chinhsuamonhoc")&&"text-[#6ea269]"} cursor-pointer transition-colors duration-500`} onClick={()=>{handleItemOnClick("chinhsuamonhoc")}}>
+                <p>CHỈNH SỬA MÔN HỌC</p>
+            </div>    
+        }  
             <div className={`${(selected=="donggopde")&&"text-[#6ea269]"} cursor-pointer transition-colors duration-500`} onClick={()=>{handleItemOnClick("donggopde")}}>
                 <p>ĐÓNG GÓP ĐỀ</p>
             </div>
