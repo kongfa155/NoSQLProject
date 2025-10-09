@@ -10,7 +10,9 @@ import QuizPage from "./QuizPage/QuizPage"; // ✅ thêm dòng này
 import NotFoundPage from "./NotFoundPage/NotFoundPage";
 import AdminPage from "./AdminPage/AdminPage"
 import SettingPage from "./SettingPage/Setting";
-import SmokeTrail from "../components/Effect/SmokeTrail";// 
+
+import SmokeTrail from "../components/Effect/SmokeTrail";
+
 function App() {
   const [selected, setSelected] = useState("trangchu");
   const [isAdmin, setIsAdmin] = useState(false);
@@ -42,30 +44,33 @@ function App() {
   },[location]);
 
   return (
-    <div className="flex flex-col h-screen w-screen">
+    <div className="relative z-10 flex flex-col h-screen w-screen">
+      {(selected=="trangchu")&&
       <SmokeTrail />
+      }
+
       {(selected!="admin")&&
       <div className="h-[5%] w-full my-1">
         <NavBar selected={selected} isAdmin={isAdmin} />
       </div>
       }
 
-            <div className="flex-1 overflow-y-auto">
-            <Routes>
-                <Route path="/" element={<AboutUs></AboutUs>}></Route>
-                <Route path="/subject" element={<SubjectPage></SubjectPage>}></Route>
-                <Route path="/subject/:id" element={<QuizListPage></QuizListPage>} />
-                <Route path="/quiz/:id" element={<QuestionPage></QuestionPage>}></Route>
-                <Route path="/login" element={<LoginPage></LoginPage>}></Route>
-                <Route path="/admin" element={<AdminPage></AdminPage>}></Route>
-                <Route path="/admin/settings" element={<SettingPage></SettingPage>}></Route>
-            </Routes>
-            </div>
-            
-            
-        </div>
+      <div className="flex-1 overflow-y-auto">
+        <Routes>
+          <Route path="/" element={<AboutUs />} />
+          <Route path="/subject/:type" element={<SubjectPage />} />
+          <Route path="/subject/:type/:subjectid" element={<QuizListPage />} />
+          <Route path="/login" element={<LoginPage />} />
 
-    );
+          <Route path="/admin" element={<AdminPage></AdminPage>}></Route>
+          <Route path="/admin/settings" element={<SettingPage></SettingPage>}></Route>
+          <Route path="/quiz/:quizid" element={<QuizPage />} />
+          <Route path="*" element={<NotFoundPage></NotFoundPage>}></Route>
+        </Routes>
+      </div>
+      
+    </div>
+  );
 }
 
 export default App;

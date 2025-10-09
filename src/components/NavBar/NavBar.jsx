@@ -19,7 +19,7 @@ export default function NavBar({selected="trangchu", isAdmin}){
     }
     return (
 
-        <div className="w-full h-full shadow-sm bg-white shadow-gray-400 grid grid-cols-8 justify-items-center items-center font-bold select-none">
+        <div className={`w-full h-full shadow-sm  shadow-gray-400 grid grid-cols-8 justify-items-center items-center font-bold select-none ${selected!="trangchu"&&"bg-white"}`}>
             <div className="flex flex-row items-center justify-center cursor-pointer" onClick={()=>{handleItemOnClick("trangchu")}}>
                 <img className="w-[32px] h-[32px]" src={webLogo}></img>
                 <p className="my-2">PROJECT-QUIZZES</p>
