@@ -10,12 +10,16 @@ import NavBar from "../components/NavBar/NavBar";
 import LoginPage from "./LoginPage/LoginPage";
 import AdminPage from "./AdminPage/AdminPage"
 import SettingPage from "./SettingPage/Setting";
+import SmokeTrail from "../components/Effect/SmokeTrail";// thí nghiệm quá học của huynnui
 function App() {
     const [selected, setSelected] = useState("trangchu");
 
     return (
+        <div className="relative w-full h-full">
+      <SmokeTrail />
+      
 
-        <div className="flex flex-col h-screen w-screen ">
+        <div className="relative z-10 flex flex-col h-screen w-screen ">
             <div className="h-[5%] w-full my-1">
                 <NavBar selected={selected} setSelected={setSelected}></NavBar>
 
@@ -35,7 +39,7 @@ function App() {
             
             
         </div>
-
+    </div>
     );
 }
 

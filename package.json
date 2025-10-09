@@ -13,6 +13,7 @@
     "@tailwindcss/vite": "^4.1.14",
     "axios": "^1.12.2",
     "bootstrap": "^5.3.8",
+    "framer-motion": "^12.23.22",
     "lucide-react": "^0.545.0",
     "react": "^19.1.1",
     "react-bootstrap": "^2.10.10",

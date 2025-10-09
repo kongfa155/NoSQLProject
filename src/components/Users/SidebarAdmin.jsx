@@ -1,7 +1,17 @@
 import { Home, Users, Settings, LogOut } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function SidebarAdmin() {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    // 🧹 (tuỳ chọn) Xóa dữ liệu đăng nhập trong localStorage/sessionStorage nếu có
+    // localStorage.removeItem("token");
+    // localStorage.removeItem("user");
+
+    navigate("/"); // 👉 chuyển về trang chủ
+  };
+
   return (
     <aside className="w-60 bg-[#6EA269] text-white flex flex-col justify-between">
       <div>
@@ -10,8 +20,7 @@ export default function SidebarAdmin() {
         <nav className="mt-4 flex flex-col">
           <Link
             to="/"
-            className="flex items-center gap-3 p-3 hover:bg-[#41563F] rounded-md transition-colors text-white
-            hover:text-black"
+            className="flex items-center gap-3 p-3 hover:bg-[#41563F] rounded-md transition-colors text-white hover:text-black"
           >
             <Home size={18} />
             Trang chủ
@@ -19,8 +28,7 @@ export default function SidebarAdmin() {
 
           <Link
             to="/admin"
-            className="flex items-center gap-3 p-3 hover:bg-[#41563F] rounded-md transition-colors 
-            text-white hover:text-black"
+            className="flex items-center gap-3 p-3 hover:bg-[#41563F] rounded-md transition-colors text-white hover:text-black"
           >
             <Users size={18} />
             Quản lí user
@@ -28,8 +36,7 @@ export default function SidebarAdmin() {
 
           <Link
             to="/admin/settings"
-            className="flex items-center gap-3 p-3 hover:bg-[#41563F] rounded-md transition-colors
-             text-white hover:text-black"
+            className="flex items-center gap-3 p-3 hover:bg-[#41563F] rounded-md transition-colors text-white hover:text-black"
           >
             <Settings size={18} />
             Cài đặt
@@ -38,8 +45,10 @@ export default function SidebarAdmin() {
       </div>
 
       <div className="p-4 border-t border-green-700">
-        <button className="flex items-center gap-2 w-full hover:bg-[#41563F] p-2
-        transition-colors hover:text-white">
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-2 w-full hover:bg-[#41563F] p-2 transition-colors hover:text-white"
+        >
           <LogOut size={18} />
           Logout
         </button>
