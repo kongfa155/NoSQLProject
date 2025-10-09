@@ -10,11 +10,11 @@ const {
   getQuestionsById,
 } = require("../controllers/questionController.js");
 
-
 //Gọi các hàm theo nhánh ví dụ question/ mà phương thức get sẽ gọi hàm 1,...
 router.get("/", getQuestions);
 router.post("/", addQuestion);
 router.delete("/:id", deleteQuestion);
 router.get("/:id", getQuestionsById);
+router.get("/quiz/:id", getQuestionsById);
 
 module.exports = router;

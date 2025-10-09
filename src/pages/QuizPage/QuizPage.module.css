@@ -1,0 +1,109 @@
+.fullQuestionArea {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    margin-top: 8vh;
+    width: 100%;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.questionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.questionText {
+    font-size: 26px;
+    font-weight: 700;
+    color: #222;
+    flex: 1;
+    line-height: 1.4;
+}
+
+/* --- CỜ (Flag) --- */
+.flagButton {
+    background: transparent;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.flagButton:hover {
+    transform: scale(1.1);
+}
+
+.flaggedButton {
+    color: #eab308;
+    /* vàng */
+}
+
+/* --- DANH SÁCH ĐÁP ÁN --- */
+.optionList {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 24px;
+}
+
+.optionRow {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 20px;
+    border-radius: 12px;
+    background: #f9fafb;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.optionRow:hover {
+    background: #eef7ee;
+}
+
+.optionSelected {
+    background: #d1f5d3;
+    border: 1px solid #3d763a;
+}
+
+.radioInput {
+    width: 20px;
+    height: 20px;
+    accent-color: #3d763a;
+    cursor: pointer;
+}
+
+.optionText {
+    font-size: 20px;
+    color: #333;
+}
+
+/* --- GIẢI THÍCH --- */
+.explainBox {
+    margin-top: 32px;
+    padding: 20px;
+    background: #f3f4f6;
+    border-radius: 12px;
+}
+
+.explainText {
+    color: #555;
+    font-size: 18px;
+    margin-top: 8px;
+}
+
+.correctOption {
+    background-color: #d1f5d3 !important;
+    border: 1px solid #3d763a;
+}
+
+.incorrectOption {
+    background-color: #fbd5d5 !important;
+    border: 1px solid #d11a2a;
+}
+

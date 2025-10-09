@@ -32,6 +32,7 @@ const deleteQuestion = async (req, res) => {
 };
 
 
+
 //Đẩy các hàm này ra ngoài cho bên khác dùng
 module.exports = {
   getQuestions,

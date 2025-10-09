@@ -19,6 +19,20 @@ const getQuizFromSubject = async(req,res)=>{
     res.json(quiz);
 }
 
+const getQuizById = async (req, res) => {
+  try {
+    const quiz = await Quiz.findById(req.params.id);
+    if (!quiz) {
+      return res.status(404).json({ message: "Không tìm thấy quiz" });
+    }
+    res.json(quiz);
+  } catch (error) {
+    res.status(500).json({ message: "Lỗi khi lấy quiz", error });
+  }
+};
 module.exports = {
-    getQuiz, addQuiz, getQuizFromSubject
-}
+  getQuiz,
+  addQuiz,
+  getQuizFromSubject,
+  getQuizById,
+};

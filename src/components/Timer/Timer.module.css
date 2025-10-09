@@ -1,0 +1,34 @@
+.timerBox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #2f834d;
+    background-color: #ecfdf5;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-weight: 600;
+    font-size: 20px;
+    color: #2f834d;
+    min-width: 100px;
+}
+
+.timerWarning {
+    border-color: #dc2626;
+    color: #dc2626;
+    background-color: #fee2e2;
+    animation: pulse 1s infinite ease-in-out;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.6;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}

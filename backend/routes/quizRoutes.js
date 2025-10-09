@@ -4,7 +4,10 @@ const router = express.Router();
 
 //Nhận các hàm từ controller
 const {
-  getQuiz, addQuiz, getQuizFromSubject
+  getQuiz,
+  addQuiz,
+  getQuizFromSubject,
+  getQuizById,
 } = require("../controllers/quizController.js");
 
 
@@ -12,5 +15,5 @@ const {
 router.get("/", getQuiz);
 router.get("/subject/:id", getQuizFromSubject);
 router.post("/", addQuiz);
-
+router.get("/:id", getQuizById);
 module.exports = router;

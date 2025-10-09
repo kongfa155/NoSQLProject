@@ -1,0 +1,167 @@
+.drawerContainer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: white;
+    border-top: 1px solid #ccc;
+    transition: transform 0.3s ease;
+    z-index: 30;
+    box-shadow: 0 -3px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Mở chiếm 1/3 màn hình */
+.open {
+    transform: translateY(0);
+    height: 33vh;
+}
+
+/* Khi đóng chỉ để lại thanh toggle */
+.closed {
+    transform: translateY(calc(100% - 35px));
+    height: 35px;
+}
+
+/* Nút toggle nằm bên phải */
+.toggleButton {
+    position: absolute;
+    top: -35px;
+    right: 20px;
+    background: #d1d5db;
+    border: none;
+    border-radius: 10px 10px 0 0;
+    padding: 6px 10px;
+    cursor: pointer;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.drawerContent {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    height: 100%;
+    padding: 20px 40px;
+}
+
+.leftPanel {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 20px;
+}
+
+.gridContainer {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    /* đúng 10 ô 1 hàng */
+    gap: 12px;
+    justify-items: center;
+    width: 100%;
+    max-width: 520px;
+    /* căn cho đẹp */
+    margin: 0 auto;
+}
+
+.questionWrapper {
+    position: relative;
+}
+
+.questionBox {
+    width: 36px;
+    height: 36px;
+    border: 1.5px solid #999;
+    border-radius: 6px;
+    background: white;
+    color: #000;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.questionBox:hover {
+    background: #e6f4e6;
+}
+
+.flagged {
+    background: #ffeb99 !important;
+}
+
+.answered {
+    background: #d1d5db;
+}
+
+.current {
+    outline: 2px solid #3d763a;
+}
+
+.flagIcon {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    color: #d97706;
+}
+
+.rightPanel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    min-width: 220px;
+}
+
+.timerBox {
+    text-align: center;
+}
+
+.timerLabel {
+    font-size: 24px;
+    font-weight: 500;
+}
+
+.timerValue {
+    color: #2e7d32;
+    font-size: 36px;
+    font-weight: 700;
+}
+
+.submitButton,
+.retryButton {
+    background-color: #3d763a;
+    color: white;
+    font-weight: 600;
+    font-size: 18px;
+    border: none;
+    border-radius: 12px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s;
+    width: 100%;
+}
+
+.retryButton:hover {
+    background-color: #2f5d2d;
+    transform: scale(1.03);
+}
+
+.submitButton {
+    background: #2e7d32;
+    color: white;
+    border: none;
+}
+
+.submitButton:hover {
+    background: #256428;
+}
+
+.retryButton {
+    background: white;
+    color: #2e7d32;
+    border: 2px solid #2e7d32;
+}
+
+.retryButton:hover {
+    background: #e6f4e6;
+}
