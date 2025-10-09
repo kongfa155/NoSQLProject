@@ -35,7 +35,7 @@ export default function AboutUs(){
                 </p>
                 <div className="px-8 flex flex-row items-center gap-1">
                     <CheckIcon className="text-[#6ea269] text-2xl"></CheckIcon>
-                    <p className="text-[#6ea269] text-2xl font-black">Tầm nhìn</p>
+                    <p className="text-[#6ea269] text-2xl font-black my-2">Tầm nhìn</p>
                 </div>
                 <div className="px-8 py-4">
                     <p>Phát triển dự án trên tinh thần hướng đến cộng đồng.</p>
