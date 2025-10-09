@@ -21,9 +21,13 @@ function App() {
     const path = location.pathname;
     if(path=="/"){
       setSelected("trangchu");
-    }else if(path.startsWith("/subject")){
+    }else if(path.startsWith("/subject/view")){
       setSelected("monhoc");
-    }else if(path.startsWith("/donggopde")){
+    }else if(path.startsWith("/subject/edit")){
+      setSelected("chinhsuamonhoc");
+    }
+    
+    else if(path.startsWith("/donggopde")){
       setSelected("donggopde");
     }else if(path.startsWith("/login")){
       setSelected("dangnhap");
