@@ -10,7 +10,7 @@ export default function SubjectPage(){
     const {type} = useParams();
     const navigate = useNavigate();
 
-
+    // 
     useEffect(()=>{
         axios.get(`/api/subjects/`)
         .then(res=>{

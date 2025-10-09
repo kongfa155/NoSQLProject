@@ -4,16 +4,13 @@ const router = express.Router();
 
 //Nhận các hàm từ controller
 const {
-  getQuiz,
-  addQuiz,
-  getQuizFromSubject,
-  getQuizById,
-} = require("../controllers/quizController.js");
+  addChapter, getChapters, getChaptersFromSubject
+} = require("../controllers/chapterController");
 
 
 //Gọi các hàm theo nhánh ví dụ question/ mà phương thức get sẽ gọi hàm 1,...
-router.get("/", getQuiz);
-router.get("/chapter/:id", getQuizFromChapter);
-router.post("/", addQuiz);
-router.get("/:id", getQuizById);
+router.get("/", getChapters);
+router.get("/subject/:id", getChaptersFromSubject);
+router.post("/", addChapter);
+
 module.exports = router;

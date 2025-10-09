@@ -1,114 +1,103 @@
-// seed.js
-const axios = require("axios");
+const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+dotenv.config();
 
-const API_BASE = "http://localhost:5000/api";
+// Import models
+const Chapter = require("./models/chapter");
+const Quiz = require("./models/quiz");
 
-async function seed() {
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => console.log("✅ MongoDB connected"))
+.catch((err) => console.error("❌ MongoDB connection error:", err));
+
+const subjects = [
+  {
+    _id: new mongoose.Types.ObjectId("68e31450357b5d5eac2e2add"),
+    name: "Lập trình căn bản",
+  },
+  {
+    _id: new mongoose.Types.ObjectId("68e31451357b5d5eac2e2adf"),
+    name: "Cấu trúc dữ liệu",
+  },
+  {
+    _id: new mongoose.Types.ObjectId("68e334e1683216059b6cb76a"),
+    name: "Triết học mác lê nin",
+  },
+  {
+    _id: new mongoose.Types.ObjectId("68e335d7683216059b6cb76b"),
+    name: "300 bài code thiếu nhi",
+  },
+];
+
+const seed = async () => {
   try {
-    console.log("=== Bắt đầu seed dữ liệu ===");
+    await Chapter.deleteMany();
+    await Quiz.deleteMany();
 
-    // 1️⃣ Tạo Subject
-    const subjectsData = [
-      {
-        name: "Cơ sở lập trình",
-        image: "https://example.com/cslp.png",
-        description: "Nhập môn lập trình căn bản cho sinh viên CNTT",
-      },
-      {
-        name: "Cấu trúc dữ liệu",
-        image: "https://example.com/ctdl.png",
-        description: "Môn học về danh sách, cây, đồ thị, và giải thuật cơ bản",
-      },
-    ];
+    console.log("🧹 Đã xóa dữ liệu cũ trong Chapter và Quiz");
 
-    const subjects = [];
-    for (const s of subjectsData) {
-      const res = await axios.post(`${API_BASE}/subjects`, s);
-      subjects.push(res.data);
-    }
-    console.log(
-      "✅ Đã tạo Subjects:",
-      subjects.map((s) => s.name)
+    const chaptersData = [];
+
+    // --- Lập trình căn bản ---
+    chaptersData.push(
+      { name: "Giới thiệu ngôn ngữ lập trình", subjectId: subjects[0]._id, description: "Hiểu khái niệm lập trình và ngôn ngữ lập trình.", order: 1, availability: true },
+      { name: "Cấu trúc rẽ nhánh và lặp", subjectId: subjects[0]._id, description: "Câu lệnh if, for, while trong lập trình cơ bản.", order: 2, availability: true },
+      { name: "Hàm và biến cục bộ", subjectId: subjects[0]._id, description: "Tổ chức chương trình bằng hàm.", order: 3, availability: true }
     );
 
-    // 2️⃣ Tạo Quiz (mỗi quiz thuộc 1 subject)
-    const quizzesData = [
+    // --- Cấu trúc dữ liệu ---
+    chaptersData.push(
+      { name: "Mảng và danh sách liên kết", subjectId: subjects[1]._id, description: "Tổng quan về cấu trúc lưu trữ tuyến tính.", order: 1, availability: true },
+      { name: "Ngăn xếp và hàng đợi", subjectId: subjects[1]._id, description: "Ứng dụng stack và queue trong thuật toán.", order: 2, availability: true },
+      { name: "Cây và đồ thị", subjectId: subjects[1]._id, description: "Các dạng cấu trúc phân cấp và kết nối.", order: 3, availability: true }
+    );
+
+    // --- Triết học Mác Lênin ---
+    chaptersData.push(
+      { name: "Chủ nghĩa duy vật biện chứng", subjectId: subjects[2]._id, description: "Nền tảng lý luận của triết học Mác.", order: 1, availability: true },
+      { name: "Chủ nghĩa duy vật lịch sử", subjectId: subjects[2]._id, description: "Quan điểm của Mác về lịch sử và xã hội.", order: 2, availability: true }
+    );
+
+    // --- 300 bài code thiếu nhi ---
+    chaptersData.push(
+      { name: "Bài tập vòng lặp cơ bản", subjectId: subjects[3]._id, description: "Những bài luyện tập for và while cho người mới học.", order: 1, availability: true },
+      { name: "Bài tập đệ quy vui vẻ", subjectId: subjects[3]._id, description: "Giúp trẻ nhỏ hiểu đệ quy thông qua ví dụ đơn giản.", order: 2, availability: true }
+    );
+
+    const createdChapters = await Chapter.insertMany(chaptersData);
+    console.log(`✅ Đã thêm ${createdChapters.length} chương`);
+
+    // Tạo quiz cho mỗi chương
+    const quizzesData = createdChapters.flatMap((ch, i) => [
       {
-        name: "Quiz 1: Biến và kiểu dữ liệu",
-        subjectId: subjects[0]._id,
-        questionNum: 3,
+        name: `Bộ đề luyện tập ${ch.name}`,
+        subjectId: ch.subjectId,
+        chapterId: ch._id,
+        questionNum: Math.floor(Math.random() * 10) + 5, // random 5–15 câu
+        timeLimit: 10 + Math.floor(Math.random() * 10), // random 10–20 phút
         availability: true,
       },
       {
-        name: "Quiz 2: Danh sách liên kết",
-        subjectId: subjects[1]._id,
-        questionNum: 2,
+        name: `Kiểm tra nhanh ${ch.name}`,
+        subjectId: ch.subjectId,
+        chapterId: ch._id,
+        questionNum: 5,
+        timeLimit: 5,
         availability: true,
-      },
-    ];
+      }
+    ]);
 
-    const quizzes = [];
-    for (const q of quizzesData) {
-      const res = await axios.post(`${API_BASE}/quizzes`, q);
-      quizzes.push(res.data);
-    }
-    console.log(
-      "✅ Đã tạo Quizzes:",
-      quizzes.map((q) => q.name)
-    );
+    const createdQuizzes = await Quiz.insertMany(quizzesData);
+    console.log(`✅ Đã thêm ${createdQuizzes.length} bộ đề`);
 
-    // 3️⃣ Tạo QuestionText (cho quiz 1)
-    const questionsTextData = [
-      {
-        quizId: quizzes[0]._id,
-        question: "Kiểu dữ liệu nào dùng để lưu chuỗi ký tự?",
-        options: ["int", "string", "float", "boolean"],
-        answer: "string",
-      },
-      {
-        quizId: quizzes[0]._id,
-        question: "Phép gán hợp lệ trong C là?",
-        options: ["x == 5;", "x = 5;", "x := 5;", "5 = x;"],
-        answer: "x = 5;",
-      },
-    ];
-
-    for (const qt of questionsTextData) {
-      await axios.post(`${API_BASE}/questions`, qt);
-    }
-    console.log("✅ Đã tạo QuestionText");
-
-    // 4️⃣ Tạo QuestionImage (cho quiz 2)
-    const questionsImageData = [
-      {
-        quizId: quizzes[1]._id,
-        question: "Hình dưới minh họa cho cấu trúc gì?",
-        image: "https://example.com/linkedlist.png",
-        options: ["Stack", "Queue", "Linked List", "Tree"],
-        answer: "Linked List",
-        explain: "Các node nối với nhau bằng con trỏ next.",
-      },
-    ];
-
-    for (const qi of questionsImageData) {
-      await axios.post(`${API_BASE}/questionImages`, qi);
-    }
-    console.log("✅ Đã tạo QuestionImage");
-
-    // 5️⃣ (Tùy chọn) Tạo Submission demo
-    const submission = {
-      userId: null,
-      quizId: quizzes[0]._id,
-      answers: ["string", "x = 5;"],
-      score: 2,
-    };
-    await axios.post(`${API_BASE}/submissions`, submission);
-    console.log("✅ Đã tạo Submission");
-
-    console.log("🎉 Seed hoàn tất!");
-  } catch (err) {
-    console.error("❌ Lỗi khi seed dữ liệu:", err.message);
+  } catch (error) {
+    console.error("❌ Lỗi khi seed:", error);
+  } finally {
+    mongoose.connection.close();
   }
-}
+};
 
 seed();
