@@ -8,6 +8,7 @@ const {
   addQuestion,
   deleteQuestion,
   getQuestionsById,
+  getQuestionsById,
 } = require("../controllers/questionController.js");
 
 //Gọi các hàm theo nhánh ví dụ question/ mà phương thức get sẽ gọi hàm 1,...

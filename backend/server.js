@@ -10,6 +10,7 @@ app.use(cors());
 app.use(express.json());
 //Hiện tại chỉ có làm việc trên route question
 
+
 app.use("/api/questions", require("./routes/questionRoutes"));
 app.use("/api/questionImages", require('./routes/questionImageRoutes.js'));
 app.use("/api/quizzes", require("./routes/quizRoutes.js"));
