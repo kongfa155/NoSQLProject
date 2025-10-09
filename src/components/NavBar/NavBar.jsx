@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import webLogo from '../../quizLogo_green.svg';
 
 
-export default function NavBar({selected="trangchu", setSelected, isAdmin}){
+export default function NavBar({selected="trangchu", isAdmin}){
     const map = {
         "trangchu":"",
         "monhoc":"subject/view",
@@ -15,34 +15,33 @@ export default function NavBar({selected="trangchu", setSelected, isAdmin}){
     const navigate = useNavigate();
     
     function handleItemOnClick(name){
-        setSelected(name);
         navigate(`/${map[name]}`)
     }
     return (
 
         <div className="w-full h-full shadow-sm bg-white shadow-gray-400 grid grid-cols-8 justify-items-center items-center font-bold select-none">
-            <div className="flex flex-row items-center justify-center ">
-                <img className="w-[32px h-[32px]" src={webLogo}></img>
-                <p>PROJECT-QUIZZES</p>
+            <div className="flex flex-row items-center justify-center cursor-pointer" onClick={()=>{handleItemOnClick("trangchu")}}>
+                <img className="w-[32px] h-[32px]" src={webLogo}></img>
+                <p className="my-2">PROJECT-QUIZZES</p>
             </div>
             <div className={`${(selected=="trangchu")&&"text-[#6ea269]"} cursor-pointer transition-colors duration-500`} onClick={()=>{handleItemOnClick("trangchu")}}>
-                <p>TRANG CHỦ</p>
+                <p className="my-2">TRANG CHỦ</p>
             </div>
             {(!isAdmin)?
             <div className={`${(selected=="monhoc")&&"text-[#6ea269]"} cursor-pointer transition-colors duration-500`} onClick={()=>{handleItemOnClick("monhoc")}}>
-                <p>MÔN HỌC</p>
+                <p className="my-2">MÔN HỌC</p>
             </div>
             :
             <div className={`${(selected=="chinhsuamonhoc")&&"text-[#6ea269]"} cursor-pointer transition-colors duration-500`} onClick={()=>{handleItemOnClick("chinhsuamonhoc")}}>
-                <p>CHỈNH SỬA MÔN HỌC</p>
+                <p className="my-2">CHỈNH SỬA MÔN HỌC</p>
             </div>    
         }  
             <div className={`${(selected=="donggopde")&&"text-[#6ea269]"} cursor-pointer transition-colors duration-500`} onClick={()=>{handleItemOnClick("donggopde")}}>
-                <p>ĐÓNG GÓP ĐỀ</p>
+                <p className="my-2">ĐÓNG GÓP ĐỀ</p>
             </div>
             <div className="col-span-3"></div>
             <div className={`${(selected=="dangnhap")&&"text-[#6ea269]"} cursor-pointer transition-colors duration-500`} onClick={()=>{handleItemOnClick("canhan")}}>
-                <p>ĐĂNG NHẬP</p>
+                <p className="my-2">ĐĂNG NHẬP</p>
             </div>
         </div>
 

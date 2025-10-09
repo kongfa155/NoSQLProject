@@ -31,7 +31,7 @@ export default function SubjectPage(){
         <div className="w-full min-h-screen bg-white flex flex-col overflow-y-auto">
             <div className=" mx-24 my-32">
                 <div id="subjectPageTitle" className="text-[#272b41]">
-                    {(type=="view")?<h1>Làm Bài Trực Tuyến</h1>:<h1>Chỉnh Sửa Môn Học</h1>}
+                    {(type=="view")?<h1 className="text-[#00620B]">Làm Bài Trực Tuyến</h1>:<h1 className="text-[#00620B]">Chỉnh Sửa Môn Học</h1>}
                     <p className="py-2">Danh sách các môn học sẵn có</p>
 
                  </div>

@@ -3,8 +3,5 @@
 @import "tailwindcss/utilities.css" layer(utilities) important;
 
 @layer utilities {
-  .shadow-ssm {
-    @apply shadow-sm; /* optional: kế thừa nếu muốn */
-    box-shadow: 0 0 1px rgba(0, 0, 0, 0.05);
-  }
+
 }
