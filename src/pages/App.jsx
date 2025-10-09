@@ -8,6 +8,8 @@ import LoginPage from "./LoginPage/LoginPage";
 import QuizListPage from "./QuizListPage/QuizListPage";
 import QuizPage from "./QuizPage/QuizPage"; // ✅ thêm dòng này
 import NotFoundPage from "./NotFoundPage/NotFoundPage";
+import AdminPage from "./AdminPage/AdminPage"
+import SettingPage from "./SettingPage/Setting";
 
 
 function App() {
@@ -25,7 +27,11 @@ function App() {
       setSelected("donggopde");
     }else if(path.startsWith("/login")){
       setSelected("dangnhap");
-    }else{
+    }
+    else if(path.startsWith("/admin")){
+      setSelected("admin");
+    }
+    else{
       setSelected("");
     }
     
@@ -34,9 +40,11 @@ function App() {
 
   return (
     <div className="flex flex-col h-screen w-screen">
+      {(selected!="admin")&&
       <div className="h-[5%] w-full my-1">
         <NavBar selected={selected} isAdmin={isAdmin} />
       </div>
+      }
 
       <div className="flex-1 overflow-y-auto">
         <Routes>
@@ -45,7 +53,8 @@ function App() {
           <Route path="/subject/:type/:subjectid" element={<QuizListPage />} />
           <Route path="/login" element={<LoginPage />} />
 
-          {/* ✅ thêm route làm bài */}
+          <Route path="/admin" element={<AdminPage></AdminPage>}></Route>
+          <Route path="/admin/settings" element={<SettingPage></SettingPage>}></Route>
           <Route path="/quiz/:quizid" element={<QuizPage />} />
           <Route path="*" element={<NotFoundPage></NotFoundPage>}></Route>
         </Routes>
