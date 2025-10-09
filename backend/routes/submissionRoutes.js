@@ -4,12 +4,12 @@ const router = express.Router();
 
 //Nhận các hàm từ controller
 const {
-  getSubmissions, addSubmission
+  getUserSubmissions, addSubmission
 } = require("../controllers/submissionController");
 
 
 //Gọi các hàm theo nhánh ví dụ question/ mà phương thức get sẽ gọi hàm 1,...
-router.get("/", getSubmissions);
+router.get("/", getUserSubmissions);
 router.post("/", addSubmission);
 
 module.exports = router;
