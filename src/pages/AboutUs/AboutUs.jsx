@@ -12,13 +12,13 @@ export default function AboutUs(){
         <div className=" w-[95%] mx-auto mt-2 rounded-xl shadow-md shadow-gray-500 pb-8">
             <div id="aboutUs_title" className="py-12 w-[80%] mx-auto text-center">
                 <p className="px-[10%] text-6xl font-black">Sứ mệnh của chúng mình: <span className="text-[#6ea269]">Giúp đỡ cộng đồng cùng nhau ôn luyện</span> </p>
-                <p className="text-gray-700 py-4 px-[5%] text-xl">Chúng mình cùng nhau xây dựng nền tảng này với mục tiêu biến việc thu thập tài liệu, quản lý điểm số môn học một cách đơn giản và hiệu quả hơn bao giờ hết.</p>
+                <p className="text-gray-900 py-4 px-[5%] text-xl">Chúng mình cùng nhau xây dựng nền tảng này với mục tiêu biến việc thu thập tài liệu, quản lý điểm số môn học một cách đơn giản và hiệu quả hơn bao giờ hết.</p>
             </div>
 
             <div className="h-[2px] w-[80%] mx-auto bg-gray-400"></div>
 
             <p className=" p-8 text-4xl font-black">Nơi Câu Chuyện Bắt Đầu</p>
-            <div className="w-[90%] mx-auto shadow-md shadow-gray-500 rounded-xl font-thin text-gray-700">
+            <div className="w-[90%] mx-auto shadow-md shadow-gray-500 rounded-xl font-thin text-gray-900">
                 <p className="p-8 ">Project-Quizzes được sinh ra để giải quyết một vấn đề thường gặp đó chính là
                     việc thu thập tài liệu học tập dường như rất khó khăn và cũng không mấy hiệu quả
                     nếu chỉ có một hoặc một vài nhóm người thu thập.
@@ -48,7 +48,7 @@ export default function AboutUs(){
 
             <div className="my-8 pb-12 w-[90%] mx-auto shadow-md shadow-gray-500 rounded-xl font-thin flex flex-col justify-center items-center ">
                 <p className="mt-8 font-black text-4xl ">Sẵn Sàng Tham Gia?</p>
-                <p className="py-4 text-gray-700 ">Tham gia cùng những người khác để tạo trải nghiệm làm bài kiểm tra ngay trong
+                <p className="py-4 text-gray-900 ">Tham gia cùng những người khác để tạo trải nghiệm làm bài kiểm tra ngay trong
                     hôm nay. Hoàn toàn miễn phí cho việc khởi tạo!
                 </p>
                 <div 

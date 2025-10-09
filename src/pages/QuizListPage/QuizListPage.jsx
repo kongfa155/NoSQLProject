@@ -44,7 +44,7 @@ export default function QuizListPage() {
   // Lấy dữ liệu subject
   useEffect(() => {
     axios.get(`/api/subjects/${subjectid}`)
-      .then(res => setSubject(res.data))
+      .then(res => setSubject(res.data[0]))
       .catch(err => console.log("Lỗi khi lấy subject:", err));
   }, [subjectid]);
 
@@ -56,11 +56,10 @@ export default function QuizListPage() {
   }, [subjectid]);
 
   return (
-    <div className="h-full w-full bg-white">
-      <p className="text-[24px] px-12 pt-4 pb-2">Môn học</p>
-      <p className="text-4xl font-black px-14 text-[#3D763A] ">{subject?.name}</p>
+    <div className="w-full bg-white">
+      <p className="pt-[24px] text-4xl font-black px-14 text-[#3D763A] ">{subject?.name}</p>
 
-      <div id="phantichdulieu" className="mt-4 rounded-[8px] border-1 w-[90%] h-[40%] mx-auto">
+      <div id="phantichdulieu" className="mt-4 rounded-[8px] border-1 w-[90%] min-h-[250px] h-[40%] mx-auto">
         Cái box này là cái phân tích của mày nha công pha
       </div>
 
