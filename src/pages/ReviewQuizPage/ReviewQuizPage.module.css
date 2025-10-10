@@ -1,0 +1,81 @@
+.reviewContainer {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 32px 20px;
+    background-color: #fafafa;
+    line-height: 1.6;
+}
+
+.quizTitle {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    text-align: center;
+}
+
+.quizInfo {
+    text-align: center;
+    color: #666;
+    margin-bottom: 40px;
+}
+
+.questionBlock {
+    margin-bottom: 40px;
+}
+
+.questionText {
+    font-size: 18px;
+    font-weight: 600;
+    color: #222;
+    margin-bottom: 10px;
+}
+
+.optionList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.optionItem {
+    padding: 8px 12px;
+    margin-bottom: 6px;
+    border-radius: 8px;
+    background: #fff;
+    border: 1px solid #ddd;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.optionItem:hover {
+    background: #f7f7f7;
+}
+
+.correctOption {
+    background-color: #d4f8d4;
+    border: 1px solid #44c767;
+    font-weight: 500;
+    color: #2b6d2b;
+}
+
+.userChoice {
+    background-color: red;
+    border: 1px solid black;
+    font-weight: 500;
+    color: #222;
+}
+.explainBox {
+    background-color: #fff6da;
+    border-left: 5px solid #ffcc00;
+    margin-top: 10px;
+    padding: 12px 16px;
+    border-radius: 8px;
+}
+
+.explainLabel {
+    font-weight: 600;
+    color: #b58900;
+}
+
+.explainText {
+    margin: 4px 0 0;
+    color: #4a4a4a;
+}

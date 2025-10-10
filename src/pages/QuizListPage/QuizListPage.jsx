@@ -3,32 +3,34 @@ import { useNavigate, useParams } from 'react-router-dom';
 import './QuizListPage.css';
 import axios from 'axios';
 import ModalOptionQuiz from '../../components/ModalOptionQuiz/ModalOptionQuiz';
-
+import UserStats from '../../components/UserStats/UserStats'
 export default function QuizListPage() {
   const { subjectid } = useParams();
   const [quizzes, setQuizzes] = useState([]);
   const [subject, setSubject] = useState();
-
-  const [showModal, setShowModal] = useState(false);
+// Hiển thị modal option
+  const [showModal, setShowModal] = useState(false); 
   const [selectedQuiz, setSelectedQuiz] = useState(null);
   const navigate = useNavigate();
 
+  //Khi ấn mở option, lưu bài người dùng chọn
   const handleOpenModal = (quiz) => {
     setSelectedQuiz(quiz);
     setShowModal(true);
   };
-
+  //Đóng option thì xóa bài người dùng đã chọn
   const handleCloseModal = () => {
     setShowModal(false);
     setSelectedQuiz(null);
   };
 
-  // === CHỖ SỬA: nhận options và điều hướng kèm state ===
+  //Này xử lý khi ấn làm bài
   const handleStartQuiz = (options) => {
+    //Chưa chọn bài thì không thể làm
     if (!selectedQuiz) return;
-    // đóng modal trước
+    // Tắt modal trước khi làm
     setShowModal(false);
-    // navigate và gửi cả quiz object + options
+    // Chuyển trang + Option
     navigate(`/quiz/${selectedQuiz._id}`, {
       state: {
         quiz: selectedQuiz,
@@ -36,9 +38,10 @@ export default function QuizListPage() {
       },
     });
   };
-
-  const handleReviewQuiz = (quiz) => {
-    console.log("Review quiz:", quiz.name);
+  //Này chuyển sang review toàn bộ bài
+  const handleReviewQuiz = async (quiz) => {
+    if(!quiz) return;
+    navigate(`/quiz/review/${quiz._id}`)
   };
 
   // Lấy dữ liệu subject
@@ -59,8 +62,10 @@ export default function QuizListPage() {
     <div className="w-full bg-white">
       <p className="pt-[24px] text-4xl font-black px-14 text-[#3D763A] ">{subject?.name}</p>
 
-      <div id="phantichdulieu" className="mt-4 rounded-[8px] border-1 w-[90%] min-h-[250px] h-[40%] mx-auto">
-        Cái box này là cái phân tích của mày nha công pha
+      <div id="phantichdulieu" className="mt-4 p-10 rounded-[8px] border-1 w-[90%] min-h-[250px] h-[40%] mx-auto">
+            {/* Này là xài thằng Stats nè */}
+        <UserStats></UserStats> 
+
       </div>
 
       {quizzes.map((quiz, i) => (
@@ -73,12 +78,12 @@ export default function QuizListPage() {
       ))}
 
 
-      {/* Modal popup - truyền onStart để nhận options từ modal */}
+      {/* Thằng này là Modal nè, nó nhận 2 hàm để xử lý khi Start với Close đề */}
       <ModalOptionQuiz
         show={showModal}
         quiz={selectedQuiz}
         onClose={handleCloseModal}
-        onStart={handleStartQuiz} // <-- đây nhận options từ ModalOptionQuiz
+        onStart={handleStartQuiz}
       />
     </div>
   );
@@ -94,7 +99,6 @@ function QuizzBox({ quiz, onOpenModal, onReview }) {
       <div>
         <p className="text-[24px] font-semibold text-[#3D763A]">{quiz.name}</p>
       </div>
-
       <div className="flex gap-3">
         {type=="view"&&
         <>

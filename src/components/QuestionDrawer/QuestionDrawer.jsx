@@ -11,12 +11,13 @@ export default function QuestionDrawer({
   onSubmit,
   onRetry,
   remainingTime = "1:30:00",
-  showRetryButton = false, // 👈 nhận prop mới
+  showRetryButton = false,
 }) {
   const [open, setOpen] = useState(true);
-  const questionCount = 50;
+  const questionCount = 50; //Số ô câu hỏi tối đa hiển thị
 
   return (
+    //Cập nhật trạng thái kéo lên hay xuống
     <div
       className={`${styles.drawerContainer} ${
         open ? styles.open : styles.closed
@@ -31,17 +32,20 @@ export default function QuestionDrawer({
       </button>
 
       <div className={styles.drawerContent}>
+        {/* Bên trái chỗ hiển thị cau hỏi */}
         <div className={styles.leftPanel}>
+          {/* Thiệp lập dạng lưới để render đẹp hơn */}
           <div className={styles.gridContainer}>
-            {Array.from({ length: questionCount }).map((_, i) => {
+            {/* Gán số cho ô, nếu nhiều hơn thì render ra null */}
+            {Array.from({ length: totalQuestions }).map((_, i) => {
               const num = i + 1;
               if (num > totalQuestions) return null;
 
-              const isAnswered = answered.includes(num);
-              const isFlagged = flagged.includes(num);
-              const isCurrent = currentQuestion === num;
+              const isAnswered = answered.includes(num); //Kiểm tra câu hỏi có nằm trong số câu đã trả lời hay không
+              const isFlagged = flagged.includes(num); //Kiểm tra câu hỏi có nằm trong số câu đã gắn cờ
+              const isCurrent = currentQuestion === num; //Kiểm tra câu hỏi có phải câu hiện tại không
 
-              let btnClass = styles.questionBox;
+              let btnClass = styles.questionBox; //Css theo thuộc tính ở trên
               if (isFlagged) btnClass += ` ${styles.flagged}`;
               else if (isAnswered) btnClass += ` ${styles.answered}`;
               if (isCurrent) btnClass += ` ${styles.current}`;
@@ -51,7 +55,8 @@ export default function QuestionDrawer({
                   {isFlagged && <Flag size={12} className={styles.flagIcon} />}
                   <button
                     className={btnClass}
-                    onClick={() => onSelectQuestion(num)}
+                    onClick={() => onSelectQuestion(num)} 
+                    // Chọn số thì sẽ gọi hàm chỉnh câu hỏi hiện tại, xong render lại trang
                   >
                     {num}
                   </button>
@@ -71,7 +76,7 @@ export default function QuestionDrawer({
             Nộp bài
           </button>
 
-          {/* 👇 Chỉ hiển thị nếu bật “Luyện tập xoay vòng” */}
+          {/* Hiển thị cái nút này nếu bật làm bài lại nè */}
           {showRetryButton && (
             <button className={styles.retryButton} onClick={onRetry}>
               Làm lại câu sai
@@ -82,3 +87,5 @@ export default function QuestionDrawer({
     </div>
   );
 }
+
+

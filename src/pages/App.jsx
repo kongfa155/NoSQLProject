@@ -12,6 +12,7 @@ import AdminPage from "./AdminPage/AdminPage"
 import SettingPage from "./SettingPage/Setting";
 
 import SmokeTrail from "../components/Effect/SmokeTrail";
+import ReviewQuizPage from "./ReviewQuizPage/ReviewQuizPage";
 
 function App() {
   const [selected, setSelected] = useState("trangchu");
@@ -65,6 +66,7 @@ function App() {
           <Route path="/admin" element={<AdminPage></AdminPage>}></Route>
           <Route path="/admin/settings" element={<SettingPage></SettingPage>}></Route>
           <Route path="/quiz/:quizid" element={<QuizPage />} />
+          <Route path="/quiz/review/:quizid" element={<ReviewQuizPage/>}></Route>
           <Route path="*" element={<NotFoundPage></NotFoundPage>}></Route>
         </Routes>
       </div>
