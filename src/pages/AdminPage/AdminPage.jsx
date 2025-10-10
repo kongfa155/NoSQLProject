@@ -3,8 +3,20 @@ import { useState } from "react";
 import SidebarAdmin from "../../components/Users/SidebarAdmin";
 import NavbarAdmin from "../../components/Users/NavbarAdmin";
 import UserTable from "../../components/Users/UserTable";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
 
 function AdminDashboard() {
+   const navigate = useNavigate();
+
+  useEffect(() => {
+    const role = localStorage.getItem("role");
+    if (role !== "Admin") {
+      navigate("/login");
+    }
+  }, []);
+  
   const [users, setUsers] = useState([
     { id: 1, name: "Olivia Rhye", username: "@olivia", email: "olivia@untitledui.com", role: "Admin", status: "Active" },
     { id: 2, name: "Phoenix Baker", username: "@phoenix", email: "phoenix@untitledui.com", role: "User", status: "Active" },

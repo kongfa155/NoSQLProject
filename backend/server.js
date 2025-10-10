@@ -1,7 +1,7 @@
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/db");
-require("dotenv").config();
 //Các thư viện hỗ trợ của mongo và backend cho nó dễ làm hơn
 const app = express();
 connectDB();
@@ -17,6 +17,9 @@ app.use("/api/quizzes", require("./routes/quizRoutes.js"));
 app.use("/api/submissions", require("./routes/submissionRoutes.js"));   
 app.use("/api/subjects", require("./routes/subjectRoutes.js"));
 app.use("/api/chapters", require("./routes/chapterRoutes.js"));
+
+app.use("/api/users", require("./routes/userRoutes.js"));
+app.use("/api/auth", require("./routes/authRoutes.js"));
 
 
 
