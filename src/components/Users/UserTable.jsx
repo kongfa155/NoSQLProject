@@ -49,7 +49,7 @@ export default function UserTable({ users, setUsers }) {
           />
        <button onClick={() => setShowAddModal(true)}
            className="bg-[#6EA269] text-white px-3 py-1 rounded-sm text-sm 
-          hover:bg-[#41563F] hover:text-black transition">
+  hover:bg-[#41563F] hover:text-amber-100 transition transform hover:scale-110 durantion-700">
         + Thêm user
         </button>
 
@@ -69,19 +69,21 @@ export default function UserTable({ users, setUsers }) {
         </thead>
         <tbody>
           {slicedItems.map((u) => (
-            <tr key={u.id} className="border-b hover:bg-gray-50">
+            <tr key={u.id} className="border-b hover:bg-gray-50 ">
               <td className="py-2">{u.name}</td>
               <td>{u.status}</td>
               <td>{u.role}</td>
               <td>{u.email}</td>
               <td className="text-right space-x-2">
                  <button onClick={() => setEditingUser(u)}
-                    className="text-[#6EA269] hover:text-green-900">
+                    className="text-[#6EA269] hover:text-green-900 ansition-transform 
+  duration-300 ease-out hover:scale-120">
                       <Pencil size={16} />
                   </button>
 
                <button onClick={() => setDeletingUser(u)} // mở modal xác nhận
-                  className="text-red-600 hover:text-red-800">
+                  className="text-red-600 hover:text-red-800  ansition-transform 
+  duration-300 ease-out hover:scale-120">
                    <Trash2 size={16} />
                 </button>
 

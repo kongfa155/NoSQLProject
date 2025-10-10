@@ -12,7 +12,7 @@ function AdminDashboard() {
   ]);
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-[100%] bg-gray-50">
       {/* Sidebar */}
       <SidebarAdmin />
 

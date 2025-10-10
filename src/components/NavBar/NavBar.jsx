@@ -19,7 +19,9 @@ export default function NavBar({selected="trangchu", setSelected}){
     }
     return (
 
-        <div className="w-full h-full shadow-sm bg-white shadow-gray-400 grid grid-cols-8 justify-items-center items-center font-bold select-none">
+        <div className="w-full h-full shadow-sm shadow-gray-400 grid grid-cols-8 justify-items-center
+         items-center font-bold select-none bg-[#41563F]/95 text-white transition-all duration-500
+         backdrop-blur-md">
             <div className="flex flex-row items-center justify-center ">
                 <img className="w-[32px h-[32px]" src={webLogo}></img>
                 <p>PROJECT-QUIZZES</p>
@@ -34,7 +36,9 @@ export default function NavBar({selected="trangchu", setSelected}){
                 <p>ĐÓNG GÓP ĐỀ</p>
             </div>
             <div className="col-span-3"></div>
-            <div className={`${(selected=="dangnhap")&&"text-[#6ea269]"} cursor-pointer transition-colors duration-500`} onClick={()=>{handleItemOnClick("canhan")}}>
+            <div className={`${(selected=="dangnhap")&&"text-white"} cursor-pointer border-2 border-white rounded-lg px-4 py-1 
+                    text-white hover:scale-115 hover:bg-[#6ea269]
+                    transition-all duration-300 bg-[#a5a7a4]`} onClick={()=>{handleItemOnClick("canhan")}}>
                 <p>ĐĂNG NHẬP</p>
             </div>
         </div>

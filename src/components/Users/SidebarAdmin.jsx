@@ -45,13 +45,15 @@ export default function SidebarAdmin() {
       </div>
 
       <div className="p-4 border-t border-green-700">
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-2 w-full hover:bg-[#41563F] p-2 transition-colors hover:text-white"
-        >
+        <button onClick={handleLogout}
+          className="flex items-center justify-center gap-2 w-full p-2 rounded-full
+            bg-[#6EA269] text-white shadow-md transition-all duration-300 ease-out
+            hover:scale-105 hover:shadow-lg hover:bg-[#4E6B47] border-[#86c576]">
           <LogOut size={18} />
-          Logout
+            Logout
         </button>
+
+
       </div>
     </aside>
   );
