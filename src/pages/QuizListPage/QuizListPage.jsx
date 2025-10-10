@@ -72,6 +72,7 @@ export default function QuizListPage() {
         />
       ))}
 
+
       {/* Modal popup - truyền onStart để nhận options từ modal */}
       <ModalOptionQuiz
         show={showModal}
@@ -84,6 +85,10 @@ export default function QuizListPage() {
 }
 
 function QuizzBox({ quiz, onOpenModal, onReview }) {
+
+  const {type} = useParams();
+
+
   return (
     <div className="mt-4 rounded-[8px] border border-gray-300 w-[90%] py-4 px-8 mx-auto flex justify-between items-center hover:shadow-md transition-all">
       <div>
@@ -91,6 +96,8 @@ function QuizzBox({ quiz, onOpenModal, onReview }) {
       </div>
 
       <div className="flex gap-3">
+        {type=="view"&&
+        <>
         <button
           className="border border-[#3D763A] text-[#3D763A] px-6 py-2 rounded-xl hover:bg-[#E6F4E6] transition-all"
           onClick={() => onReview(quiz)}
@@ -103,6 +110,25 @@ function QuizzBox({ quiz, onOpenModal, onReview }) {
         >
           Làm bài
         </button>
+        </>
+        }
+        {type=="edit"&&
+        <>
+        <button
+          className=" bg-[#EF4444] border-none text-white px-6 py-2 rounded-xl shadow-sm shadow-black hover:scale-105 transition-all duration-400"
+          onClick={() => onReview(quiz)}
+        >
+          Xóa bài
+        </button>
+        <button
+          className="text-[#3D763A] bg-white border-none  px-6 py-2 rounded-xl shadow-sm shadow-black hover:scale-105 transition-all duration-400"
+          onClick={() => onOpenModal(quiz)}
+        >
+          Chỉnh sửa
+        </button>
+        </>
+        }
+
       </div>
     </div>
   );

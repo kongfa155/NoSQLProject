@@ -15,7 +15,7 @@ import SmokeTrail from "../components/Effect/SmokeTrail";
 
 function App() {
   const [selected, setSelected] = useState("trangchu");
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(true);
   const location = useLocation();
 
   useEffect(()=>{
