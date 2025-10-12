@@ -65,8 +65,8 @@ function App() {
 
           <Route path="/admin" element={<AdminPage></AdminPage>}></Route>
           <Route path="/admin/settings" element={<SettingPage></SettingPage>}></Route>
-          <Route path="/quiz/:quizid" element={<QuizPage />} />
-          <Route path="/quiz/review/:quizid" element={<ReviewQuizPage/>}></Route>
+          <Route path="/quizzes/:quizid" element={<QuizPage />} />
+          <Route path="/quizzes/review/:quizid" element={<ReviewQuizPage/>}></Route>
           <Route path="*" element={<NotFoundPage></NotFoundPage>}></Route>
         </Routes>
       </div>

@@ -2,12 +2,13 @@ import { useState, useEffect } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import styles from "./QuizPage.module.css";
 import QuestionDrawer from "../../components/QuestionDrawer/QuestionDrawer"; //Cái bảng chọn câu hỏi
+import axios from "axios";
 
 export default function QuizPage() {
   const { quizid } = useParams(); //Lấy id bài
   const location = useLocation();
-const navigate = useNavigate();
-//Lấy state được truyền để biết tên bài
+  const navigate = useNavigate();
+  //Lấy state được truyền để biết tên bài
   const quizInfo = location.state?.quiz || {
     name: "Kiểm tra nhanh Giới thiệu ngôn ngữ lập trình",
     timeLimit: 5, // phút
@@ -23,7 +24,7 @@ const navigate = useNavigate();
   };
 
   const [questions, setQuestions] = useState([]); //Lưu các câu hỏi
-  const [answers, setAnswers] = useState({}); //Lưu đáp án 
+  const [answers, setAnswers] = useState({}); //Lưu đáp án
   const [currentIndex, setCurrentIndex] = useState(0); //Câu hỏi hiện tại
   const [flagged, setFlagged] = useState([]); //Cái cờ
   const [submitted, setSubmitted] = useState(false); //Kiểm tra nộp bài
@@ -34,51 +35,36 @@ const navigate = useNavigate();
 
   // Fake data
   useEffect(() => {
-    let fakeQuestions = [
-      {
-        _id: "q1",
-        question: "Ngôn ngữ lập trình nào sau đây là ngôn ngữ bậc thấp?",
-        options: ["Python", "C", "Assembly", "Java"],
-        answer: "Assembly",
-        explain: "Assembly là ngôn ngữ bậc thấp gần với mã máy nhất.",
-      },
-      {
-        _id: "q2",
-        question: "Từ khóa nào dùng để khai báo biến trong JavaScript?",
-        options: ["var", "int", "define", "dim"],
-        answer: "var",
-        explain: "JavaScript dùng var, let, const để khai báo biến.",
-      },
-      {
-        _id: "q3",
-        question: "Kết quả của 3 + '2' trong JavaScript là gì?",
-        options: ["5", "32", "NaN", "Error"],
-        answer: "32",
-        explain: "JavaScript sẽ chuyển số 3 thành chuỗi → '3' + '2' = '32'.",
-      },
-      {
-        _id: "q4",
-        question: "Câu lệnh nào dùng để in ra màn hình trong Python?",
-        options: ["echo()", "console.log()", "printf()", "print()"],
-        answer: "print()",
-        explain: "Hàm print() được dùng để in ra màn hình trong Python.",
-      },
-    ];
-    //Nếu có trộn câu hỏi thì hãy xáo trộn thứ tự câu hỏi bằng cách sắp xếp ngẫu nhiên
-    //Tà đạo vc, so sánh bên trái với bên phải nhưng trả về là tùy tâm trạng chứ không dựa vào nó lớn hơn hay bé hơn =)))
-    if (options.shuffleQuestions) {
-      fakeQuestions = fakeQuestions.sort(() => Math.random() - 0.5);
-    }
-    //Đảo thứ tự đáp án
-    if (options.shuffleOptions) {
-      fakeQuestions = fakeQuestions.map((q) => ({
-        ...q,
-        options: [...q.options].sort(() => Math.random() - 0.5),
-      }));
-    }
+    if (!quizid) return;
+    const fetchQuestions = async () => {
+      try {
+        const res = await axios(`http://localhost:5000/api/quizzes/${quizid}`);
+        const data = res.data;
+        console.log(data);
 
-    setQuestions(fakeQuestions);
-    setStartTime(Date.now()); //Bắt đầu tính khi câu hỏi load
+        let fetchQuestions = [];
+        if (data.questions) fetchQuestions = data.questions;
+        else console.log("Không có data");
+        // Nếu có trộn câu hỏi thì hãy xáo trộn thứ tự câu hỏi bằng cách sắp xếp ngẫu nhiên
+        // Tà đạo vc, so sánh bên trái với bên phải nhưng trả về là tùy tâm trạng chứ không dựa vào nó lớn hơn hay bé hơn =)))
+        if (options.shuffleQuestions) {
+          fetchQuestions = fetchQuestions.sort(() => Math.random() - 0.5);
+        }
+        //Đảo thứ tự đáp án
+        if (options.shuffleOptions) {
+          fetchQuestions = fetchQuestions.map((q) => ({
+            ...q,
+            options: [...q.options].sort(() => Math.random() - 0.5),
+          }));
+        }
+
+        setQuestions(fetchQuestions);
+        setStartTime(Date.now()); //Bắt đầu tính khi câu hỏi load
+      } catch {
+        console.log("Can't get data");
+      }
+    };
+    fetchQuestions();
   }, [quizid]); //Chạy khi đổi đề giữa chừng luôn (nếu có)
 
   // Đếm ngược thời gian
@@ -96,7 +82,7 @@ const navigate = useNavigate();
   const handleAnswerSelect = (questionId, option) => {
     if (submitted) return;
     setAnswers((prev) => ({ ...prev, [questionId]: option }));
-  }; //Xử lý chọn đáp án 
+  }; //Xử lý chọn đáp án
 
   const handleToggleFlag = (questionId) => {
     setFlagged((prev) =>
@@ -152,12 +138,10 @@ const navigate = useNavigate();
       }
     } else {
       alert(`🎉 Bạn làm đúng ${correct}/${questions.length} câu!`);
-      
     }
   };
   //Xử lý luyện tập lại
   const handleRetry = () => {
-
     //Nếu mà số câu làm sai không còn thì không thể làm lại
     const incorrect = questions.filter((q) => answers[q._id] !== q.answer);
     if (incorrect.length === 0) {
@@ -216,13 +200,13 @@ const navigate = useNavigate();
             let optionClass = styles.optionRow;
             // Nếu trạng thái hiển thị đáp án và có đáp án
             if (options.showAnswers && hasAnswered) {
-                // đáp án đúng tô màu đáp án đúng
+              // đáp án đúng tô màu đáp án đúng
               if (opt === q.answer) optionClass += ` ${styles.correctOption}`;
-              else if (isSelected && opt !== q.answer) 
+              else if (isSelected && opt !== q.answer)
                 //đáp án sai tô màu sai và tô màu đáp án đúng
                 optionClass += ` ${styles.incorrectOption}`;
             } else if (isSelected) {
-                //Nếu không bật thì chỉ tô màu đáp án được chọn
+              //Nếu không bật thì chỉ tô màu đáp án được chọn
               optionClass += ` ${styles.optionSelected}`;
             }
 
@@ -245,7 +229,7 @@ const navigate = useNavigate();
             );
           })}
         </div>
-          {/* Chú thích chỉ bật khi có showw đáp án và đã chọn đáp án thôi hoặc đã nộp bài */}
+        {/* Chú thích chỉ bật khi có showw đáp án và đã chọn đáp án thôi hoặc đã nộp bài */}
         {(submitted || (options.showAnswers && answers[q._id])) && (
           <div className={styles.explainBox}>
             <p>

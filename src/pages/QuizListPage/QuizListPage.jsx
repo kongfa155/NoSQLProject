@@ -41,7 +41,7 @@ export default function QuizListPage() {
     // Tắt modal trước khi làm
     setShowModal(false);
     // Chuyển trang + Option
-    navigate(`/quiz/${selectedQuiz._id}`, {
+    navigate(`/quizzes/${selectedQuiz._id}`, {
       state: {
         quiz: selectedQuiz,
         options: options || {},
