@@ -78,23 +78,23 @@ export default function CreateQuizModal({subjectid, showCreateQuiz, setShowCreat
 
 
     await Promise.all(
-      questionList.map((q) => {
-        const payload = {
-          quizId: quizId,
-          question: q.question,
-          options: q.options,
-          explain: q.explain,
-          answer: q.options[0], 
-        };
+        questionList.map((q) => {
+            const payload = {
+            quizId: quizId,
+            question: q.question,
+            options: q.options,
+            explain: q.explain,
+            answer: q.answer, 
+            };
 
-        if (q.type === "image") {
-            payload.image = q.imageURL;
-            return axios.post("/api/questionImages", payload);
+            if (q.type === "image") {
+                payload.image = q.imageURL;
+                return axios.post("/api/questionImages", payload);
             } else {
-            return axios.post("/api/questions", payload);
+                return axios.post("/api/questions", payload);
             }
-      })
-    );
+        })
+        );
     setShowAlert(true);
     console.log("Tao de thanh cong");
   } catch (err) {
@@ -249,15 +249,29 @@ const NewQuestion = forwardRef((props,ref)=>{
     const [type,setType] = useState("text");
     const {index} = props;
     const [question, setQuestion] = useState("");
+    const [answer, setAnswer] = useState("");
     const [options, setOptions] = useState(["",""]);
     const [explain,setExplain] = useState("");
     const [imageURL, setImageURL] = useState("");
     
     const [showImageURL, setShowImageURL] = useState(false);
 
+    useEffect(() => {
+       
+        const currentAnswerIsValid = answer && options.includes(answer);
+
+        if (!currentAnswerIsValid) {
+
+            const firstValidOption = options.find(opt => opt && opt.trim() !== '') || '';
+            setAnswer(firstValidOption);
+        }
+    }, [options]);
+
+
+
     useImperativeHandle(ref, ()=>({
         getQuestionData: ()=>({
-            type, question, options,explain,imageURL
+            type, question, options,explain,imageURL,answer
         })
     }));
 
@@ -338,7 +352,7 @@ const NewQuestion = forwardRef((props,ref)=>{
         <div className="h-[4rem] w-1"></div>
         <div className="flex flex-row mt-4 items-center ">
             <p className="w-[15%] text-[1rem] pt-4 ">Chọn đáp án: </p>
-            <select name="optionsList" className="flex-grow max-w-[85%] bg-white px-4 py-2 rounded-[8px]">
+            <select  value={answer} onChange={(e) => setAnswer(e.target.value)}  name="optionsList" className="flex-grow max-w-[85%] bg-white px-4 py-2 rounded-[8px]">
                 {options.map((option,index)=>{
                     return (<option key={`option_select_${index}`} value={option}>{option}</option>);
                 })}
