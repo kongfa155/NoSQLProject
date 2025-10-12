@@ -3,8 +3,8 @@ const { getChaptersFromSubject } = require("./chapterController");
 
 const addQuiz = async (req, res) => {
   console.log("Request body:", req.body);
-  const { name, subjectId, questionNum, availability } = req.body;
-  const newQuiz = new Quiz({ name, subjectId, questionNum, availability });
+  const { name, subjectId,chapterId, questionNum, availability } = req.body;
+  const newQuiz = new Quiz({ name, subjectId, questionNum,chapterId, availability });
   await newQuiz.save();
   res.json(newQuiz);
 };

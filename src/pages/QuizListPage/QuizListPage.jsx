@@ -4,11 +4,13 @@ import './QuizListPage.css';
 import axios from 'axios';
 import ModalOptionQuiz from '../../components/ModalOptionQuiz/ModalOptionQuiz';
 import UserStats from '../../components/UserStats/UserStats'
+import { MdExpandMore as ExpandButton } from "react-icons/md";
 import CreateQuizModal from '../../components/CreateQuizModal/CreateQuizModal';
 export default function QuizListPage() {
   const { subjectid,type } = useParams();
   const [quizzes, setQuizzes] = useState([]);
   const [subject, setSubject] = useState();
+  const [chapters,setChapters]= useState([]);
 // Hiển thị modal option
   const [showModal, setShowModal] = useState(false); 
   const [selectedQuiz, setSelectedQuiz] = useState(null);
@@ -60,11 +62,23 @@ export default function QuizListPage() {
   }, [subjectid]);
 
   // Lấy dữ liệu quizzes
-  useEffect(() => {
-    axios.get(`/api/quizzes/subject/${subjectid}`)
-      .then(res => setQuizzes(res.data))
-      .catch(err => console.log("Lỗi khi lấy quiz:", err));
+  // useEffect(() => {
+  //   axios.get(`/api/quizzes/subject/${subjectid}`)
+  //     .then(res => setQuizzes(res.data))
+  //     .catch(err => console.log("Lỗi khi lấy quiz:", err));
+  // }, [subjectid]);
+
+
+  //Lay chapter truoc
+  useEffect(()=>{
+    axios.get(`/api/chapters/subject/${subjectid}`)
+    .then(res=> {
+      console.log(res.data);
+      setChapters(res.data)
+    })
+    .catch(err=>console.log("khong lay dc chapters: ",err));
   }, [subjectid]);
+
 
   return (
     <div className="w-full pb-24 bg-white">
@@ -95,17 +109,18 @@ export default function QuizListPage() {
       </div>
       }
 
-      {quizzes.map((quiz, i) => (
-        <QuizBox
-          key={`quiz_${i}`}
-          quiz={quiz}
-          onOpenModal={handleOpenModal}
-          onReview={handleReviewQuiz}
-        />
-      ))}
+      
+      {
+        chapters?.map((chapter,i)=>{
+          return (
+            <ChapterBox key={`chapter_${i}`} chapter={chapter} setSelectedQuiz={setSelectedQuiz} setShowModal={setShowModal}>
+
+          </ChapterBox>
+          )
+        })
+      }
 
 
-      {/* Thằng này là Modal nè, nó nhận 2 hàm để xử lý khi Start với Close đề */}
       <ModalOptionQuiz
         show={showModal}
         quiz={selectedQuiz}
@@ -118,16 +133,89 @@ export default function QuizListPage() {
     </div>
   );
 }
+function ChapterBox({chapter, setSelectedQuiz, setShowModal}){
+    const [quizList, setQuizList] = useState([]);
+    const [expandChapterBox, setExpandChapterBox] = useState(false);
+    const navigate = useNavigate();
+
+    const handleReviewQuiz = async (quiz) => {
+    if(!quiz) return;
+    navigate(`/quiz/review/${quiz._id}`)
+  };
+
+    const handleOpenModal = (quiz) => {
+    setSelectedQuiz(quiz);
+    setShowModal(true);
+  };
+
+
+
+    async function getQuizList(){
+      if(quizList.length>=1){
+        return;
+      }
+        try{
+          axios.get(`/api/quizzes/chapter/${chapter._id}`)
+          .then(res=>{setQuizList(res.data)})
+          .catch(err=>{console.log("Loi lay quizz: ",err)})
+        }catch(err){
+          console.log("Gap loi: ",err);
+        }
+    }
+
+    return (
+      <div className={`mt-8 mx-auto w-[90%] pb-4 transition-all duration-500 shadow-black shadow-sm rounded-[8px]`}>
+          <div className="flex flex-row justify-between">
+            <p className="text-4xl pt-4 px-8 text-[#3D763A]">{chapter.name}</p>
+            <ExpandButton 
+                    onClick={()=>{
+                      getQuizList();
+                      setExpandChapterBox(prev=>!prev);                      
+                    }}
+                    className={`text-4xl hover:scale-120 transition-alll duration-500 ${expandChapterBox&&"rotate-180"}`}></ExpandButton>
+          </div>
+          <div className={`${expandChapterBox?"h-[312px]":"h-0"} transition-all duration-500 overflow-hidden`}>
+            {/* {quizzes.map((quiz, i) => (
+        <QuizBox
+          key={`quiz_${i}`}
+          quiz={quiz}
+          onOpenModal={handleOpenModal}
+          onReview={handleReviewQuiz}
+        />
+      ))} */}
+            <div className="w-full h-full pb-8 overflow-scroll">
+                {quizList.map((quiz,i)=>(
+                <QuizBox key={`quiz_chapter_${i}`} quiz={quiz} onOpenModal={handleOpenModal} onReview={handleReviewQuiz}></QuizBox>
+
+              ))}
+              
+            </div>
+              
+          </div>
+      </div>
+
+
+    );
+
+
+
+}
+
+
+
 
 function QuizBox({ quiz, onOpenModal, onReview, isNew=false}) {
+  useEffect(()=>{
+    console.log("Quiz: ",quiz)
+  },[])
 
   const {type} = useParams();
 
   if(!isNew){
     return (
-    <div className="mt-4 rounded-[8px] border border-gray-300 w-[90%] pt-4 pb-2 px-8 mx-auto flex justify-between items-center hover:shadow-md transition-all">
+    <div className="mt-4 rounded-[8px] border border-gray-300 w-[95%] pt-4 pb-2 px-8 mx-auto flex justify-between items-center hover:shadow-md transition-all">
       <div>
-        <p className="text-[24px] font-semibold text-[#3D763A] ">{quiz.name}</p>
+        <p className="text-[24px]  text-gray-700 font-light ">{quiz.name}</p>
       </div>
       <div className="flex gap-3">
         {type=="view"&&

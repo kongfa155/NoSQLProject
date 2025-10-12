@@ -107,7 +107,9 @@ export default function CreateQuizModal({subjectid, showCreateQuiz, setShowCreat
         return <></>;
     }
     return (
-        <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-50 ">
+        <div 
+   
+        className="absolute inset-0 bg-black/50 flex items-center justify-center z-50 ">
             
             <div className="relative w-[50%] h-[70%] bg-white rounded-[8px] shadow-black shadow-md pb-[96px] overflow-y-auto ">
                 <div className="sticky top-0 right-0 flex justify-end p-4 bg-white z-10">
