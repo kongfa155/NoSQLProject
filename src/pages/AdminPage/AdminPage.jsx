@@ -1,16 +1,22 @@
 // src/pages/AdminDashboard/AdminDashboard.jsx
-import { useState } from "react";
 import SidebarAdmin from "../../components/Users/SidebarAdmin";
 import NavbarAdmin from "../../components/Users/NavbarAdmin";
 import UserTable from "../../components/Users/UserTable";
+import axios from "axios";
+import { useEffect, useState } from "react";
 
 function AdminDashboard() {
-  const [users, setUsers] = useState([
-    { id: 1, name: "Olivia Rhye", username: "@olivia", email: "olivia@untitledui.com", role: "Admin", status: "Active" },
-    { id: 2, name: "Phoenix Baker", username: "@phoenix", email: "phoenix@untitledui.com", role: "User", status: "Active" },
-    // ...
-  ]);
+  const [users, setUsers] = useState([]);
 
+  useEffect(() => {
+    const token = localStorage.getItem("token"); // token từ login
+    axios
+      .get("http://localhost:5000/api/admin/users", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then(res => setUsers(res.data))
+      .catch(err => console.error(err));
+  }, []);
   return (
     <div className="flex h-[100%] bg-gray-50">
       {/* Sidebar */}

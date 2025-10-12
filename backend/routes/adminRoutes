@@ -1,0 +1,15 @@
+const express = require("express");
+const router = express.Router();
+const adminController = require("../controllers/adminController");
+const { verifyToken, verifyAdmin } = require("../middleware/authMiddleware");
+
+// Auth
+router.post("/register", adminController.register);
+router.post("/login", adminController.login);
+
+// CRUD user (chỉ admin)
+router.get("/users", verifyToken, verifyAdmin, adminController.getAllUsers);
+router.put("/users/:id", verifyToken, verifyAdmin, adminController.updateUser);
+router.delete("/users/:id", verifyToken, verifyAdmin, adminController.deleteUser);
+
+module.exports = router;
