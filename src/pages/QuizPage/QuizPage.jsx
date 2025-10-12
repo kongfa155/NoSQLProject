@@ -131,7 +131,7 @@ export default function QuizPage() {
             timeTaken / 60
           )} phút ${timeTaken % 60} giây`
         );
-        navigate(`/quiz/review/${quizid}`, { state: { submission: data } });
+        //   navigate(`/quizzes/review/${quizId}`, { state: { mode: "latest" } }); Phải đợi có user mới làm tiếp được
       } catch (err) {
         console.error(err);
         alert("❌ Lỗi khi nộp bài. Vui lòng thử lại sau!");
@@ -191,7 +191,19 @@ export default function QuizPage() {
             🚩
           </button>
         </div>
-
+        {q.image && (
+          <div className={styles.questionIMGContainer}>
+            <img
+              scr={
+                q.image.startWith("http")
+                  ? q.image
+                  : `http://localhost:5000/${q.image}`
+              }
+              alt="Question"
+              className={styles.QuestionIMG}
+            />
+          </div>
+        )}
         {/* Danh sách đáp án */}
         <div className={styles.optionList}>
           {q.options.map((opt, i) => {

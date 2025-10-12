@@ -1,15 +1,18 @@
 const express = require("express");
 const router = express.Router();
-//Các hàm gọi của router (Không cần thiết phải hiểu)
-
-//Nhận các hàm từ controller
 const {
-  getUserSubmissions, addSubmission
+  getUserSubmissions,
+  addSubmission,
+  getLatestSubmission,
 } = require("../controllers/submissionController");
 
+// Lấy tất cả bài nộp của user
+router.get("/:userId", getUserSubmissions);
 
-//Gọi các hàm theo nhánh ví dụ question/ mà phương thức get sẽ gọi hàm 1,...
-router.get("/", getUserSubmissions);
+// Lấy bài làm gần nhất của user cho 1 quiz
+router.get("/latest/:quizId/:userId", getLatestSubmission);
+
+// Thêm hoặc cập nhật bài nộp
 router.post("/", addSubmission);
 
 module.exports = router;

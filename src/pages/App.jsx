@@ -46,15 +46,13 @@ function App() {
 
   return (
     <div className="relative z-10 flex flex-col h-screen w-screen">
-      {(selected=="trangchu")&&
-      <SmokeTrail />
-      }
+      {selected == "trangchu" && <SmokeTrail />}
 
-      {(selected!="admin")&&
-      <div className="h-[5%] w-full my-1">
-        <NavBar selected={selected} isAdmin={isAdmin} />
-      </div>
-      }
+      {!location.pathname.startsWith("/quizzes/") &&(selected != "admin") && (
+        <div className="h-[5%] w-full my-1">
+          <NavBar selected={selected} isAdmin={isAdmin} />
+        </div>
+      )}
 
       <div className="flex-1 overflow-y-auto">
         <Routes>
@@ -64,13 +62,18 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
 
           <Route path="/admin" element={<AdminPage></AdminPage>}></Route>
-          <Route path="/admin/settings" element={<SettingPage></SettingPage>}></Route>
+          <Route
+            path="/admin/settings"
+            element={<SettingPage></SettingPage>}
+          ></Route>
           <Route path="/quizzes/:quizid" element={<QuizPage />} />
-          <Route path="/quizzes/review/:quizid" element={<ReviewQuizPage/>}></Route>
+          <Route
+            path="/quizzes/review/:quizid"
+            element={<ReviewQuizPage />}
+          ></Route>
           <Route path="*" element={<NotFoundPage></NotFoundPage>}></Route>
         </Routes>
       </div>
-      
     </div>
   );
 }

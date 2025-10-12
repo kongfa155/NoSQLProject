@@ -13,7 +13,6 @@ const submissionSchema = new mongoose.Schema(
       required: true,
     },
 
-    // Lưu mảng câu trả lời (để review chi tiết)
     answers: [
       {
         questionId: { type: String, required: true },
@@ -23,15 +22,9 @@ const submissionSchema = new mongoose.Schema(
     ],
 
     score: { type: Number, required: true },
+    bestScore: { type: Number, default: 0 }, // ✅ thêm field điểm cao nhất
     totalQuestions: { type: Number, required: true },
     timeSpent: { type: Number, default: 0 }, // giây
-
-    // Loại bài nộp (best hoặc latest)
-    type: {
-      type: String,
-      enum: ["latest", "best"],
-      default: "latest",
-    },
   },
   { timestamps: true }
 );

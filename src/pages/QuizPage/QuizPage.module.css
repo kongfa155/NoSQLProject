@@ -107,3 +107,16 @@
     border: 1px solid #d11a2a;
 }
 
+.questionImageContainer {
+    display: flex;
+    justify-content: center;
+    margin: 12px 0;
+}
+
+.questionImage {
+    max-width: 80%;
+    max-height: 400px;
+    border-radius: 12px;
+    object-fit: contain;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}

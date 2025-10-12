@@ -79,3 +79,42 @@
     margin: 4px 0 0;
     color: #4a4a4a;
 }
+.questionImage {
+    width: 80%;
+    max-width: 600px;
+    border-radius: 8px;
+    margin: 10px auto;
+    display: block;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.optionItem {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    margin-bottom: 6px;
+    transition: background 0.2s;
+}
+
+.correctOption {
+    background-color: #d4edda;
+    border-color: #28a745;
+}
+
+.incorrectOption {
+    background-color: #f8d7da;
+    border-color: #dc3545;
+}
+
+.userChoice {
+    font-weight: bold;
+    border-width: 2px;
+    border-color: #007bff;
+}
+
+.questionImage {
+    width: 80%;
+    max-width: 400px;
+    border-radius: 12px;
+    margin: 10px 0;
+}

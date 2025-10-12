@@ -1,101 +1,153 @@
 import { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
+import axios from "axios";
 import styles from "./ReviewQuizPage.module.css";
 import ReviewDrawer from "../../components/ReviewDrawer/ReviewDrawer";
 
 const ReviewQuizPage = () => {
   const { quizid } = useParams();
+  const location = useLocation();
+  const initialMode = location.state?.mode || "latest"; // nhận từ QuizListPage
+  const [mode, setMode] = useState(initialMode);
+
   const [quizInfo, setQuizInfo] = useState(null);
   const [questions, setQuestions] = useState([]);
+  const [submission, setSubmission] = useState(null);
   const [loading, setLoading] = useState(true);
-    const location = useLocation();
-    const submission = location.state?.data;
-    useEffect(() => {
-    const fetchQuiz = async () => {
-        if(submission) {
-            //Sau này fetch dữ liệu câu hỏi
-        } 
-      const fakeQuiz = {
-        _id: quizid,
-        name: "Kiểm tra nhanh Giới thiệu ngôn ngữ lập trình",
-        timeLimit: 5,
-        questions: [
-          {
-            _id: "q1",
-            question: "Ngôn ngữ lập trình nào sau đây là ngôn ngữ bậc thấp?",
-            options: ["Python", "C", "Assembly", "Java"],
-            answer: "Assembly",
-            explain: "Assembly là ngôn ngữ bậc thấp gần với mã máy nhất.",
-          },
-          {
-            _id: "q2",
-            question: "Từ khóa nào dùng để khai báo biến trong JavaScript?",
-            options: ["var", "int", "define", "dim"],
-            answer: "var",
-            explain: "JavaScript dùng var, let, const để khai báo biến.",
-          },
-          {
-            _id: "q3",
-            question: "Kết quả của 3 + '2' trong JavaScript là gì?",
-            options: ["5", "32", "NaN", "Error"],
-            answer: "32",
-            explain:
-              "JavaScript sẽ chuyển số 3 thành chuỗi → '3' + '2' = '32'.",
-          },
-        ],
-      };
 
-      setQuizInfo(fakeQuiz);
-      setQuestions(fakeQuiz.questions);
-      setLoading(false);
-    
+
+
+  useEffect(() => {
+    const fetchQuizAndSubmission = async () => {
+      try {
+        const userId = localStorage.getItem("userId") || "demoUser"; // tạm gán user giả
+
+        // 1️⃣ Lấy thông tin quiz
+        const quizRes = await axios.get(
+          `http://localhost:5000/api/quizzes/${quizid}`
+        );
+        setQuizInfo(quizRes.data);
+        setQuestions(quizRes.data.questions || []);
+
+        // 2️⃣ Lấy submission gần nhất
+        // const subRes = await axios.get(
+        //   `http://localhost:5000/api/submissions/latest/${quizid}/${userId}`
+        // );
+
+        // if (!subRes.data) {
+        //   alert("Cậu chưa từng làm bài thì sao có lần gần nhất ^^");
+        //   setMode("full");
+        // } else {
+        //   setSubmission(subRes.data);
+        // }
+      } catch (err) {
+        console.error("❌ Lỗi khi tải dữ liệu:", err);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    fetchQuiz();
+    fetchQuizAndSubmission();
   }, [quizid]);
 
+
   if (loading) return <div>Đang tải dữ liệu bài kiểm tra...</div>;
+  if (!quizInfo) return <div>Không tìm thấy bài kiểm tra.</div>;
+
+  // 🧠 Dữ liệu answers được lưu trong submission.answers (mảng)
+  const userAnswers =
+    submission?.answers?.reduce((acc, ans) => {
+      acc[ans.questionId] = ans.selectedOption;
+      return acc;
+    }, {}) || {};
 
   return (
-    // Hiển thị tiêu đề
     <div className={styles.reviewContainer}>
       <h2 className={styles.quizTitle}>Xem lại: {quizInfo.name}</h2>
-      <p className={styles.quizInfo}>
-        Thời gian giới hạn: {quizInfo.timeLimit} phút
-      </p>
-    {/* Hiển thị toàn bộ câu hỏi và giải thích */}
-      {questions.map((q, idx) => (
-        <div
-          key={q._id}
-          id={`question-${idx + 1}`}
-          className={styles.questionBlock}
-        >
-          <p className={styles.questionText}>
-            {idx + 1}. {q.question}
-          </p>
-            {/* Hiển thị toàn bộ đáp án và set class đáp án */}
-          <ul className={styles.optionList}>
-            {q.options.map((opt, i) => (
-              <li
-                key={i}
-                className={`${styles.optionItem}
-                 ${opt === submission?.answer[q._id] ? styles.userChoice : ""}
-                 ${opt === q.answer ? styles.correctOption : ""}
-                 `}
-              >
-                {opt}
-              </li>
-            ))}
-          </ul>
-            {/* Chỗ này hiển thị giải thích */}
-          <div className={styles.explainBox}>
-            <span className={styles.explainLabel}>💡 Giải thích:</span>
-            <p className={styles.explainText}>{q.explain}</p>
-          </div>
-        </div>
-      ))}
 
-      {/* Drawer mới */}
+      {submission && mode === "latest" && (
+        <div className={styles.scoreBox}>
+          <p>🎯 Điểm lần này: {submission.score}%</p>
+          {submission.bestScore !== undefined && (
+            <p>🏆 Điểm cao nhất: {submission.bestScore}%</p>
+          )}
+          <p>
+            ⏱️ Thời gian làm bài: {Math.floor(submission.timeSpent / 60)} phút{" "}
+            {submission.timeSpent % 60} giây
+          </p>
+        </div>
+      )}
+
+      {/* Duyệt qua câu hỏi */}
+      {questions.map((q, idx) => {
+        const userChoice = userAnswers[q._id];
+        const isCorrect = userChoice === q.answer;
+
+        // Nếu ở chế độ "full" thì không tô màu gì
+        const userOptionClass = (opt) => {
+          // Nếu có submission thì tô như cũ
+          if (mode === "latest") {
+            if (opt === q.answer) return styles.correctOption;
+            if (opt === userChoice && opt !== q.answer)
+              return styles.incorrectOption;
+            return "";
+          }
+
+          // Nếu là "full" (xem toàn bộ câu hỏi) thì chỉ highlight đáp án đúng
+          if (mode === "full") {
+            if (opt === q.answer) return styles.correctOption;
+          }
+
+          return "";
+        };
+
+        return (
+          <div
+            key={q._id}
+            id={`question-${idx + 1}`}
+            className={styles.questionBlock}
+          >
+            <p className={styles.questionText}>
+              {idx + 1}. {q.question}
+            </p>
+
+            {q.image && (
+              <div className={styles.imageWrapper}>
+                <img
+                  src={
+                    q.image.startsWith("http")
+                      ? q.image
+                      : `http://localhost:5000/${q.image}`
+                  }
+                  alt="Question"
+                  className={styles.questionImage}
+                />
+              </div>
+            )}
+
+            <ul className={styles.optionList}>
+              {q.options.map((opt, i) => (
+                <li
+                  key={i}
+                  className={`${styles.optionItem} ${userOptionClass(opt)} ${
+                    userChoice === opt && mode === "latest"
+                      ? styles.userChoice
+                      : ""
+                  }`}
+                >
+                  {opt}
+                </li>
+              ))}
+            </ul>
+
+            <div className={styles.explainBox}>
+              <span className={styles.explainLabel}>💡 Giải thích:</span>
+              <p className={styles.explainText}>{q.explain}</p>
+            </div>
+          </div>
+        );
+      })}
+
       <ReviewDrawer totalQuestions={questions.length} />
     </div>
   );
