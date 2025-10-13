@@ -194,8 +194,8 @@ export default function QuizPage() {
         {q.image && (
           <div className={styles.questionIMGContainer}>
             <img
-              scr={
-                q.image.startWith("http")
+              src={
+                q.image.startsWith("http")
                   ? q.image
                   : `http://localhost:5000/${q.image}`
               }
