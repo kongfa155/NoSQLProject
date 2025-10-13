@@ -63,12 +63,12 @@
 }
 
 .optionRow:hover {
-    background: #eef7ee;
+    background: #d2d2d2;
 }
 
 .optionSelected {
-    background: #d1f5d3;
-    border: 1px solid #3d763a;
+    background: #d2d2d2;
+    border: none;
 }
 
 .radioInput {

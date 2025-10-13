@@ -80,8 +80,8 @@ export default function QuizPage() {
   }, [submitted, remainingTime, options.timeLimit]);
 
   const handleAnswerSelect = (questionId, option) => {
-    if (submitted) return;
-    setAnswers((prev) => ({ ...prev, [questionId]: option }));
+    if (submitted ||(options.showAnswers && answers[questionId])) return;
+      setAnswers((prev) => ({ ...prev, [questionId]: option }));
   }; //Xử lý chọn đáp án
 
   const handleToggleFlag = (questionId) => {
