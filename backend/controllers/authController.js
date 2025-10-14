@@ -1,54 +1,102 @@
-const User = require("../models/User");
+//backend/src/controllers/authController.js
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const User = require("../models/User");
 
-const loginUser = async (req, res) => {
-  try {
-    const { username, password } = req.body; // username đang chứa email
 
-      // Kiểm tra đầu vào an toàn
-    if (!username || !password) {
-        // Log lỗi cụ thể này
-        console.error("Lỗi đăng nhập: Thiếu username hoặc password");
-        return res.status(400).json({ message: "Vui lòng cung cấp đầy đủ email và mật khẩu." });
-    }
-
-    // 1. CHUẨN HÓA EMAIL TRƯỚC KHI TRUY VẤN
-    const normalizedEmail = username.toLowerCase().trim();
-    // 2. TÌM USER BẰNG EMAIL ĐÃ CHUẨN HÓA
-    const user = await User.findOne({ email: normalizedEmail });
+// -------------------------
+// Xử lý đăng nhập
+// -------------------------
+exports.login = async (req, res) => { 
+  try {
+    const { username, email, password } = req.body;
+    
+    const searchEmail = (email || '').toLowerCase().trim();
+    const searchUsername = (username || '').toLowerCase().trim();
     
-    // Lỗi: "Email không tồn tại" xảy ra ở đây
-    if (!user) {
-        return res.status(400).json({ message: "Email không tồn tại" });
+    if (!(searchEmail || searchUsername) || !password) {
+      return res.status(400).json({ message: "Vui lòng gửi email và mật khẩu" });
+    }
+
+    // ✅ BƯỚC MỚI: Xây dựng mảng điều kiện $or động
+    const orConditions = [];
+
+    if (searchEmail) {
+        // Tìm kiếm email không phân biệt chữ hoa/thường (i: case-insensitive)
+        orConditions.push({ email: { $regex: new RegExp('^' + searchEmail + '$', 'i') } });
+    }
+    
+    if (searchUsername) {
+        orConditions.push({ username: { $regex: new RegExp('^' + searchUsername + '$', 'i') } });
     }
 
-    // 3. SO SÁNH MẬT KHẨU (Yêu cầu mật khẩu trong DB phải được băm)
+    // Đảm bảo có điều kiện tìm kiếm trước khi gọi findOne
+    if (orConditions.length === 0) {
+        return res.status(400).json({ message: "Vui lòng gửi email hoặc username" });
+    }
+
+    // Tìm kiếm user bằng $or
+    const user = await User.findOne({ $or: orConditions });
+
+    if (!user) return res.status(400).json({ message: "Email không tồn tại" });
+
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-        return res.status(400).json({ message: "Sai mật khẩu" });
-    }
+    if (!isMatch) return res.status(400).json({ message: "Sai mật khẩu" });
 
-    // 4. TẠO TOKEN
-    const token = jwt.sign(
+    const accessToken = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: "1d" }
+      { expiresIn: "15m" }
     );
 
-    // 5. TRẢ VỀ KẾT QUẢ ĐĂNG NHẬP
-    res.json({
+    const refreshToken = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_REFRESH_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    res.status(200).json({
       message: "Đăng nhập thành công",
-      token,
+      accessToken,
+      refreshToken,
       role: user.role,
-      email: user.email, // <-- Gửi về email (đã có)
-      name: user.name
+      email: user.email,
+      name: user.username,
     });
   } catch (err) {
-    // Log lỗi chi tiết trên server
-    console.error("Lỗi đăng nhập:", err.message);
+    console.error("Lỗi đăng nhập:", err);
     res.status(500).json({ message: "Lỗi Server Nội bộ" });
   }
 };
+// -------------------------
+// Làm mới token
+// -------------------------
+exports.refresh = (req, res) => { 
 
-module.exports = { loginUser };
+  const { refreshToken } = req.body;
+  if (!refreshToken)
+    return res.status(401).json({ message: "No refresh token provided" });
+
+  jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET, (err, decoded) => {
+    if (err)
+      return res.status(403).json({ message: "Invalid or expired refresh token" });
+
+    const newAccessToken = jwt.sign(
+      { id: decoded.id, role: decoded.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "15m" }
+    );
+
+    res.json({ accessToken: newAccessToken });
+});
+};
+// -------------------------
+// Kiểm tra token
+// -------------------------
+exports.checkToken = (req, res) => { // ✅ Export hàm checkToken
+  res.status(200).json({
+    message: "Token hợp lệ",
+    user: req.user,
+  });
+};
+

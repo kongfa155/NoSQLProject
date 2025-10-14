@@ -1,4 +1,4 @@
-// authMiddleware.js (Sử dụng CommonJS)
+//backend/src/middlewares/authMiddleware.js
 const jwt = require('jsonwebtoken');
 app.use(express.json()); 
 

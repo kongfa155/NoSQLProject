@@ -1,27 +1,25 @@
-// src/pages/AdminDashboard/AdminDashboard.jsx
-import { useState } from "react";
+// src/pages/AdminPage/AdminPage.jsx
 import SidebarAdmin from "../../components/Users/SidebarAdmin";
 import NavbarAdmin from "../../components/Users/NavbarAdmin";
 import UserTable from "../../components/Users/UserTable";
-import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
+import { useEffect, useState } from "react";
+import api from "../../api/axiosInstance";
 
 function AdminDashboard() {
-   const navigate = useNavigate();
+const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    const role = localStorage.getItem("role");
-    if (role !== "Admin") {
-      navigate("/login");
-    }
+    const fetchUsers = async () => {
+      try {
+        const res = await api.get("/users");
+        setUsers(res.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchUsers();
   }, []);
-  
-  const [users, setUsers] = useState([
-    { id: 1, name: "Olivia Rhye", username: "@olivia", email: "olivia@untitledui.com", role: "Admin", status: "Active" },
-    { id: 2, name: "Phoenix Baker", username: "@phoenix", email: "phoenix@untitledui.com", role: "User", status: "Active" },
-    // ...
-  ]);
 
   return (
     <div className="flex h-screen bg-gray-50">
