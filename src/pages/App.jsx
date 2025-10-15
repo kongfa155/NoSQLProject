@@ -59,6 +59,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+          
           <Route path="/" element={<AboutUs />} />
           <Route path="/subject/:type" element={<SubjectPage />} />
           <Route path="/subject/:type/:subjectid" element={<QuizListPage />} />

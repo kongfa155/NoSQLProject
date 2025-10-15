@@ -1,4 +1,4 @@
-//src/components/User/UserTable.jsx
+// src/components/User/UserTable.jsx
 import { useState } from "react";
 import { Trash2, Pencil } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -21,6 +21,8 @@ export default function UserTable({ users, setUsers }) {
   const [newUser, setNewUser] = useState({
     name: "",
     email: "",
+    password: "", 
+    confirmPassword: "", // 🔑 ĐÃ THÊM XÁC NHẬN MẬT KHẨU
     role: "user",
     status: "Active",
   });
@@ -68,16 +70,35 @@ export default function UserTable({ users, setUsers }) {
 
   // ➕ Thêm user
   const handleAdd = async () => {
-    if (!newUser.name || !newUser.email) {
-      alert("Vui lòng nhập đủ thông tin!");
+    const { name, email, password, confirmPassword } = newUser;
+
+    // 1. Kiểm tra đủ thông tin
+    if (!name || !email || !password || !confirmPassword) { 
+      alert("Vui lòng nhập đủ Tên, Email, Mật khẩu và Xác nhận Mật khẩu!");
       return;
     }
 
+    // 2. Kiểm tra khớp mật khẩu
+    if (password !== confirmPassword) {
+      alert("Mật khẩu và Xác nhận Mật khẩu không khớp!");
+      return;
+    }
+
+    // Tạo payload chỉ bao gồm các trường cần gửi đi
+    const payload = {
+      name,
+      email,
+      password,
+      role: newUser.role,
+      status: newUser.status,
+    };
+
     try {
-      const { data } = await api.post("/users", newUser);
+      const { data } = await api.post("/users", payload);
       setUsers((prev) => [...prev, data]);
       setShowAddModal(false);
-      setNewUser({ name: "", email: "", role: "user", status: "Active" });
+      // Reset state newUser về giá trị mặc định
+      setNewUser({ name: "", email: "", password: "", confirmPassword: "", role: "user", status: "Active" });
     } catch (err) {
       console.error(err);
       alert("Không thể thêm user mới!");
@@ -169,7 +190,7 @@ export default function UserTable({ users, setUsers }) {
         </button>
       </div>
 
-      {/* ✏️ MODAL EDIT */}
+      {/* ✏️ MODAL EDIT (Không thay đổi) */}
       <AnimatePresence>
         {editingUser && (
           <motion.div
@@ -236,7 +257,7 @@ export default function UserTable({ users, setUsers }) {
         )}
       </AnimatePresence>
 
-      {/* 🗑️ MODAL DELETE */}
+      {/* 🗑️ MODAL DELETE (Không thay đổi) */}
       <AnimatePresence>
         {deletingUser && (
           <motion.div
@@ -280,7 +301,7 @@ export default function UserTable({ users, setUsers }) {
         )}
       </AnimatePresence>
 
-      {/* ➕ MODAL ADD */}
+      {/* ➕ MODAL ADD (ĐÃ CẬP NHẬT) */}
       <AnimatePresence>
         {showAddModal && (
           <motion.div
@@ -288,8 +309,15 @@ export default function UserTable({ users, setUsers }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+            onClick={() => setShowAddModal(false)}
           >
-            <div className="bg-white p-6 rounded-xl shadow-lg w-96">
+            <motion.div 
+              onClick={(e) => e.stopPropagation()}
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white p-6 rounded-xl shadow-lg w-96"
+            >
               <h2 className="text-lg font-semibold mb-4">
                 Thêm người dùng mới
               </h2>
@@ -311,6 +339,25 @@ export default function UserTable({ users, setUsers }) {
                   value={newUser.email}
                   onChange={(e) =>
                     setNewUser({ ...newUser, email: e.target.value })
+                  }
+                />
+                <input
+                  type="password"
+                  placeholder="Mật khẩu"
+                  className="border rounded-md px-3 py-2 text-sm"
+                  value={newUser.password}
+                  onChange={(e) =>
+                    setNewUser({ ...newUser, password: e.target.value })
+                  }
+                />
+                {/* 🔑 INPUT XÁC NHẬN MẬT KHẨU ĐÃ ĐƯỢC THÊM */}
+                <input 
+                  type="password"
+                  placeholder="Xác nhận Mật khẩu"
+                  className="border rounded-md px-3 py-2 text-sm"
+                  value={newUser.confirmPassword}
+                  onChange={(e) =>
+                    setNewUser({ ...newUser, confirmPassword: e.target.value })
                   }
                 />
                 <select
@@ -339,7 +386,7 @@ export default function UserTable({ users, setUsers }) {
                   Thêm
                 </button>
               </div>
-            </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
