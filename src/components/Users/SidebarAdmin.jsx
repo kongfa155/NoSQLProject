@@ -4,13 +4,18 @@ import { Link, useNavigate } from "react-router-dom";
 export default function SidebarAdmin() {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    // 🧹 (tuỳ chọn) Xóa dữ liệu đăng nhập trong localStorage/sessionStorage nếu có
-    // localStorage.removeItem("token");
-    // localStorage.removeItem("user");
+  // src/components/User/SidebarAdmin.jsx
 
-    navigate("/"); // 👉 chuyển về trang chủ
-  };
+  const handleLogout = () => {
+    // 🧹 Xóa DỮ LIỆU ĐĂNG NHẬP
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("role");
+    localStorage.removeItem("email");
+    localStorage.removeItem("name");
+
+    navigate("/"); //
+  }
 
   return (
     <aside className="w-60 bg-[#6EA269] text-white flex flex-col justify-between">

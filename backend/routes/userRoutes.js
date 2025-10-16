@@ -1,17 +1,12 @@
+//backend/src/routes/UserRoutes.js
 const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/userController");
+const { verifyAdmin } = require("../middlewares/verifyToken"); // 👈 Chuẩn với export ở trên
 
-// Lấy danh sách tất cả user
-router.get("/", userController.getUsers);
-
-// Tạo user mới
-router.post("/", userController.createUser);
-
-// Chuyển trạng thái active (true ↔ false)
-router.patch("/:id/toggle", userController.toggleUserStatus);
-
-// Xóa user
-router.delete("/:id", userController.deleteUser);
+router.get("/", verifyAdmin, userController.getUsers);
+router.post("/", verifyAdmin, userController.createUser);
+router.patch("/:id/toggle", verifyAdmin, userController.toggleUserStatus);
+router.delete("/:id", verifyAdmin, userController.deleteUser);
 
 module.exports = router;

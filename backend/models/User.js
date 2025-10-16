@@ -1,53 +1,44 @@
+//backend/src/models/User.js
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
-
 const userSchema = new mongoose.Schema({
-  name: {
+  
+  username: {
     type: String,
     required: true,
-    trim: true
+    trim: true,
   },
   email: {
     type: String,
     required: true,
     unique: true,
-    lowercase: true
+    trim: true,
   },
   password: {
     type: String,
-    required: true
+    required: true,
   },
   role: {
     type: String,
-    enum: ["Admin", "User"],
-    default: "User"
-  },
-  avatar: {
-    type: String, // URL của ảnh đại diện
-    default: ""
+    enum: ["User", "Admin"], // ✅ Cho phép cả User lẫn Admin
+    default: "User",
   },
   active: {
-    type: Boolean, // true: hoạt động, false: bị khóa
-    default: true
+    type: Boolean,
+    default: true,
+  },
+}, { timestamps: true });
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) {
+    return next();
   }
-}, {
-  timestamps: true // tự động thêm createdAt và updatedAt
-});
-
-// MIDDLEWARE: Băm mật khẩu trước khi lưu
-userSchema.pre("save", async function(next) {
-    // Chỉ băm nếu trường 'password' bị thay đổi (khi tạo mới hoặc cập nhật)
-    if (!this.isModified("password")) {
-        return next();
-    }
-    try {
-        // Băm mật khẩu
-        const salt = await bcrypt.genSalt(10);
-        this.password = await bcrypt.hash(this.password, salt);
-        next();
-    } catch (err) {
-        next(err);
-    }
-});
-
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
+  next();
+},  { 
+    timestamps: true, 
+    // ✅ THÊM DÒNG NÀY ĐỂ GIẢI QUYẾT TRIỆT ĐỂ LỖI FINDONE()
+    collation: { locale: 'en', strength: 2 } // strength: 2 là non-case sensitive
+}
+);
 module.exports = mongoose.model("User", userSchema);

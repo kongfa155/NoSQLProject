@@ -1,53 +1,55 @@
+//src/Page/LoginPage/LoginPage.jsx
 import './LoginPage.css';
 import quizLogo from '../../quizLogo_green.svg';
 import { FaEye as EyeLogo } from "react-icons/fa";
 import { RiEyeOffFill as CloseEye } from "react-icons/ri";
 import { useState } from 'react';
-import axios from 'axios';
+import axios from '../../api/axiosInstance'
 import { useNavigate } from 'react-router-dom';
-import backGround from'../../../public/backGround.svg';
+
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState(""); // <-- Đã thêm state error
-  const navigate = useNavigate(); // <-- Đã thêm useNavigate
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
-  // <-- Đã thêm hàm handleLogin
-  const handleLogin = async () => {
-    try {
-      // Đặt lại lỗi khi bắt đầu gửi request
-      setError(""); 
-      const res = await axios.post("http://localhost:5000/api/auth/login", {
-        username,
-        password
-      });
+    const handleLogin = async () => {
+    try {
+      setError("");
+      // ✅ SỬ DỤNG INSTANCE API ĐÃ CẤU HÌNH (hoặc api, tùy bạn đặt tên)
+      const res = await axios.post("/auth/login", { 
+          email: username,
+        password
+      });
 
-      // Lưu token và thông tin user vào localStorage
-      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("accessToken", res.data.accessToken);
+      localStorage.setItem("refreshToken", res.data.refreshToken);
       localStorage.setItem("role", res.data.role);
       localStorage.setItem("email", res.data.email);
+      localStorage.setItem("name", res.data.username);
 
-      // Chuyển hướng dựa trên vai trò
       if (res.data.role === "Admin") {
         navigate("/admin");
       } else {
         navigate("/home");
       }
     } catch (err) {
-      // Xử lý lỗi từ backend
-      setError(err.response?.data?.message || "Đăng nhập thất bại");
-    }
-  };
-   const backGroundURL = "/backGround.svg"
+      setError(err.response?.data?.message || "Đăng nhập thất bại");
+    }
+  };
+
+
   return (
-    <div className="flex w-full h-screen justify-center items-center bg-gray-100"
-     style={{ 
-        backgroundImage: `url(${backGroundURL})`,
-        backgroundSize: 'cover',        // <-- THÊM DÒNG NÀY
-        backgroundPosition: 'center',   // <-- THÊM DÒNG NÀY
-        backgroundRepeat: 'no-repeat'   // <-- Đảm bảo không lặp lại
-          }}> 
+    <div
+      className="flex w-full h-screen justify-center items-center bg-gray-100"
+      style={{
+        backgroundImage: `url("/backGround.svg")`, // 🔥 chỉ cần đường dẫn tuyệt đối
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
+    >
         {/* Khung chính: GLASSMORPHISM */}
       <div 
         className="flex w-[70%] h-[70%] rounded-[20px] overflow-hidden shadow-2xl shadow-gray-400 
@@ -75,7 +77,7 @@ export default function LoginPage() {
           
           {/* Ô nhập email/username */}
           <div className="flex justify-center items-center mb-5 rounded-[8px] border border-white/50 w-[90%] h-[3rem]
-           bg-white/70 focus-within:bg-white transform transition ease-in-out duration-[450ms] hover:scale-[1.15]">
+           bg-white/70 focus-within:bg-white transform transition ease-in-out duration-[450ms] hover:scale-[1.05]">
             <input
               onChange={(e) => setUsername(e.target.value)}
               value={username}
@@ -89,7 +91,7 @@ export default function LoginPage() {
           {/* Ô nhập password + icon ẩn/hiện */}
           <div className="flex flex-row items-center justify-center mb-4 rounded-[8px] border border-white/50
            w-[90%] h-[3rem] bg-white/70 focus-within:bg-white transform 
-             transition ease-in-out duration-[450ms] hover:scale-[1.15]">
+             transition ease-in-out duration-[450ms] hover:scale-[1.05]">
             <input
               onChange={(e) => setPassword(e.target.value)}
               value={password}

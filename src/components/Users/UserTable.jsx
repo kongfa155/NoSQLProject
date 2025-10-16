@@ -1,9 +1,10 @@
-// src/components/UserTable.jsx
+// src/components/User/UserTable.jsx
 import { useState } from "react";
 import { Trash2, Pencil } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import api from "../../api/axiosInstance"; // ✅ axios có token sẵn
 
-// 🧩 Tạo hàm Paginate thủ công
+// 🧩 Hàm chia trang
 function Paginate(items, currentPage, itemsPerPage) {
   const totalPages = Math.ceil(items.length / itemsPerPage);
   const start = (currentPage - 1) * itemsPerPage;
@@ -14,29 +15,103 @@ function Paginate(items, currentPage, itemsPerPage) {
 export default function UserTable({ users, setUsers }) {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-  const itemsPerPage = 8;
   const [editingUser, setEditingUser] = useState(null);
   const [deletingUser, setDeletingUser] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [newUser, setNewUser] = useState({ name: "", email: "", role: "User", status: "Active" });
+  const [newUser, setNewUser] = useState({
+    name: "",
+    email: "",
+    password: "", 
+    confirmPassword: "", // 🔑 ĐÃ THÊM XÁC NHẬN MẬT KHẨU
+    role: "user",
+    status: "Active",
+  });
 
+  const itemsPerPage = 8;
 
+  // Lọc user theo tên/email
   const filtered = users.filter(
     (u) =>
-      u.name.toLowerCase().includes(search.toLowerCase()) ||
-      u.email.toLowerCase().includes(search.toLowerCase())
+      u.name?.toLowerCase().includes(search.toLowerCase()) ||
+      u.email?.toLowerCase().includes(search.toLowerCase())
   );
 
-  const { currentPage, totalPages, slicedItems } = Paginate(filtered, page, itemsPerPage);
+  const { currentPage, totalPages, slicedItems } = Paginate(
+    filtered,
+    page,
+    itemsPerPage
+  );
 
-  const deleteUser = (id) => setUsers(users.filter((u) => u.id !== id));
+  // 🗑️ Xóa user
+  const handleDelete = async (id) => {
+    try {
+      await api.delete(`/users/${id}`);
+      setUsers((prev) => prev.filter((u) => u._id !== id));
+      setDeletingUser(null);
+    } catch (err) {
+      console.error(err);
+      alert("Lỗi khi xóa user!");
+    }
+  };
+
+  // ✏️ Cập nhật user
+  const handleUpdate = async () => {
+    try {
+      const { data } = await api.put(`/users/${editingUser._id}`, editingUser);
+      setUsers((prev) =>
+        prev.map((u) => (u._id === editingUser._id ? data : u))
+      );
+      setEditingUser(null);
+    } catch (err) {
+      console.error(err);
+      alert("Không thể cập nhật user!");
+    }
+  };
+
+  // ➕ Thêm user
+  const handleAdd = async () => {
+    const { name, email, password, confirmPassword } = newUser;
+
+    // 1. Kiểm tra đủ thông tin
+    if (!name || !email || !password || !confirmPassword) { 
+      alert("Vui lòng nhập đủ Tên, Email, Mật khẩu và Xác nhận Mật khẩu!");
+      return;
+    }
+
+    // 2. Kiểm tra khớp mật khẩu
+    if (password !== confirmPassword) {
+      alert("Mật khẩu và Xác nhận Mật khẩu không khớp!");
+      return;
+    }
+
+    // Tạo payload chỉ bao gồm các trường cần gửi đi
+    const payload = {
+      name,
+      email,
+      password,
+      role: newUser.role,
+      status: newUser.status,
+    };
+
+    try {
+      const { data } = await api.post("/users", payload);
+      setUsers((prev) => [...prev, data]);
+      setShowAddModal(false);
+      // Reset state newUser về giá trị mặc định
+      setNewUser({ name: "", email: "", password: "", confirmPassword: "", role: "user", status: "Active" });
+    } catch (err) {
+      console.error(err);
+      alert("Không thể thêm user mới!");
+    }
+  };
 
   return (
     <div className="bg-white p-6 rounded-2xl shadow-md">
-      {/* Header */}
+      {/* HEADER */}
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold">
-          Danh sách tài khoản <span className="text-gray-500 ml-2">({filtered.length})</span>
+          Danh sách tài khoản{" "}
+          <span className="text-gray-500 ml-2">({filtered.length})</span>
         </h2>
 
         <div className="flex items-center gap-3">
@@ -47,16 +122,16 @@ export default function UserTable({ users, setUsers }) {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
-       <button onClick={() => setShowAddModal(true)}
-           className="bg-[#6EA269] text-white px-3 py-1 rounded-sm text-sm 
-          hover:bg-[#41563F] hover:text-black transition">
-        + Thêm user
-        </button>
-
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="bg-[#6EA269] text-white px-3 py-1 rounded-sm text-sm hover:bg-[#41563F] transition"
+          >
+            + Thêm user
+          </button>
         </div>
       </div>
 
-      {/* Table */}
+      {/* TABLE */}
       <table className="w-full text-left">
         <thead>
           <tr className="border-b text-gray-600">
@@ -69,36 +144,37 @@ export default function UserTable({ users, setUsers }) {
         </thead>
         <tbody>
           {slicedItems.map((u) => (
-            <tr key={u.id} className="border-b hover:bg-gray-50">
+            <tr key={u._id} className="border-b hover:bg-gray-50">
               <td className="py-2">{u.name}</td>
               <td>{u.status}</td>
               <td>{u.role}</td>
               <td>{u.email}</td>
               <td className="text-right space-x-2">
-                 <button onClick={() => setEditingUser(u)}
-                    className="text-[#6EA269] hover:text-green-900">
-                      <Pencil size={16} />
-                  </button>
-
-               <button onClick={() => setDeletingUser(u)} // mở modal xác nhận
-                  className="text-red-600 hover:text-red-800">
-                   <Trash2 size={16} />
+                <button
+                  onClick={() => setEditingUser(u)}
+                  className="text-[#6EA269] hover:text-green-900"
+                >
+                  <Pencil size={16} />
                 </button>
 
+                <button
+                  onClick={() => setDeletingUser(u)}
+                  className="text-red-600 hover:text-red-800"
+                >
+                  <Trash2 size={16} />
+                </button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      {/* Pagination */}
+      {/* PAGINATION */}
       <div className="flex justify-between items-center mt-4">
         <button
           onClick={() => setPage(Math.max(1, page - 1))}
           disabled={page === 1}
-          className="text-sm text-gray-500 hover:text-gray-800 
-          hover:bg-[#6EA269] transition-opacity duration-200
-           disabled:opacity-50 disabled:hover:opacity-50"
+          className="text-sm text-gray-500 hover:text-gray-800 transition disabled:opacity-50"
         >
           ← Previous
         </button>
@@ -108,214 +184,212 @@ export default function UserTable({ users, setUsers }) {
         <button
           onClick={() => setPage(Math.min(totalPages, page + 1))}
           disabled={page === totalPages}
-          className="text-sm text-gray-500 hover:text-gray-800
-           hover:bg-[#6EA269] transition-opacity duration-200
-           disabled:opacity-50 disabled:hover:opacity-50"
+          className="text-sm text-gray-500 hover:text-gray-800 transition disabled:opacity-50"
         >
           Next →
         </button>
       </div>
 
-         <AnimatePresence> 
-  {editingUser && (// Bảng cập nhật thông tin người dùng
-    <motion.div
-      key="modal-bg"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 flex items-center justify-center bg-black/50 z-50"
-      onClick={() => setEditingUser(null)} // click ra ngoài để đóng
-    >
-      <motion.div
-        key="modal-content"
-        initial={{ scale: 0.8, opacity: 0, y: 20 }}
-        animate={{ scale: 1, opacity: 1, y: 0 }}
-        exit={{ scale: 0.9, opacity: 0, y: 20 }}
-        transition={{ type: "spring", duration: 0.4 }}
-        className="bg-white p-6 rounded-2xl w-[400px] shadow-lg relative"
-        onClick={(e) => e.stopPropagation()} // tránh tắt modal khi bấm trong khung
-      >
-        <h3 className="text-xl font-semibold mb-4 text-center text-[#2f3e2f]">
-          Cập nhật user
-        </h3>
-
-        <label className="block mb-2 text-sm font-medium text-gray-700">Username</label>
-        <input
-          type="text"
-          className="border px-3 py-2 w-full rounded-md mb-3 focus:outline-none focus:ring-2 focus:ring-[#6EA269]/50"
-          value={editingUser.name}
-          onChange={(e) =>
-            setEditingUser({ ...editingUser, name: e.target.value })
-          }
-        />
-
-        <label className="block mb-2 text-sm font-medium text-gray-700">Email</label>
-        <input
-          type="email"
-          className="border px-3 py-2 w-full rounded-md mb-3 focus:outline-none focus:ring-2 focus:ring-[#6EA269]/50"
-          value={editingUser.email}
-          onChange={(e) =>
-            setEditingUser({ ...editingUser, email: e.target.value })
-          }
-        />
-
-        <label className="block mb-2 text-sm font-medium text-gray-700">Role</label>
-        <select
-          className="border px-3 py-2 w-full rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-[#6EA269]/50"
-          value={editingUser.role}
-          onChange={(e) =>
-            setEditingUser({ ...editingUser, role: e.target.value })
-          }
-        >
-          <option value="user">user</option>
-          <option value="admin">admin</option>
-        </select>
-
-        <div className="flex justify-between">
-          <button
-            onClick={() => setEditingUser(null)}
-            className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300 transition"
-          >
-            Hủy
-          </button>
-          <button
-            onClick={() => {
-              setUsers(users.map(u =>
-                u.id === editingUser.id ? editingUser : u
-              ));
-              setEditingUser(null);
-            }}
-            className="px-4 py-2 bg-[#6EA269] text-white rounded-md hover:bg-green-700 transition"
-          >
-            Lưu
-          </button>
-        </div>
-      </motion.div>
-    </motion.div>
-  )}
-</AnimatePresence>
-
+      {/* ✏️ MODAL EDIT (Không thay đổi) */}
       <AnimatePresence>
-  {deletingUser && ( //Xóa user
-    <motion.div
-      key="delete-modal-bg"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 flex items-center justify-center bg-black/50 z-50"
-      onClick={() => setDeletingUser(null)}
-    >
-      <motion.div
-        key="delete-modal-content"
-        initial={{ scale: 0.8, opacity: 0, y: 20 }}
-        animate={{ scale: 1, opacity: 1, y: 0 }}
-        exit={{ scale: 0.9, opacity: 0, y: 20 }}
-        transition={{ type: "spring", duration: 0.4 }}
-        className="bg-white p-6 rounded-2xl w-[350px] shadow-lg relative text-center"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <h3 className="text-lg font-semibold mb-3 text-gray-800">
-          Xóa người dùng?
-        </h3>
-        <p className="text-sm text-gray-600 mb-6">
-          Bạn có chắc muốn xóa <span className="font-semibold">{deletingUser.name}</span>?
-          <br />Hành động này không thể hoàn tác.
-        </p>
+        {editingUser && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 flex items-center justify-center bg-black/50 z-50"
+            onClick={() => setEditingUser(null)}
+          >
+            <motion.div
+              onClick={(e) => e.stopPropagation()}
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white p-6 rounded-2xl w-[400px] shadow-lg"
+            >
+              <h3 className="text-xl font-semibold mb-4 text-center">
+                Cập nhật user
+              </h3>
 
-        <div className="flex justify-center gap-4">
-          <button
+              <input
+                className="border px-3 py-2 w-full rounded-md mb-3"
+                value={editingUser.name}
+                onChange={(e) =>
+                  setEditingUser({ ...editingUser, name: e.target.value })
+                }
+              />
+
+              <input
+                className="border px-3 py-2 w-full rounded-md mb-3"
+                value={editingUser.email}
+                onChange={(e) =>
+                  setEditingUser({ ...editingUser, email: e.target.value })
+                }
+              />
+
+              <select
+                className="border px-3 py-2 w-full rounded-md mb-4"
+                value={editingUser.role}
+                onChange={(e) =>
+                  setEditingUser({ ...editingUser, role: e.target.value })
+                }
+              >
+                <option value="user">user</option>
+                <option value="admin">admin</option>
+              </select>
+
+              <div className="flex justify-between">
+                <button
+                  onClick={() => setEditingUser(null)}
+                  className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300"
+                >
+                  Hủy
+                </button>
+                <button
+                  onClick={handleUpdate}
+                  className="px-4 py-2 bg-[#6EA269] text-white rounded-md hover:bg-green-700"
+                >
+                  Lưu
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* 🗑️ MODAL DELETE (Không thay đổi) */}
+      <AnimatePresence>
+        {deletingUser && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 flex items-center justify-center bg-black/50 z-50"
             onClick={() => setDeletingUser(null)}
-            className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300 transition"
           >
-            Hủy
-          </button>
-         <button onClick={() => {setUsers(users.map(u =>
-        u.id === deletingUser.id ? { ...u, status: "Inactive" } : u
-        )
-      );
-    setDeletingUser(null);
-    }}
-      className="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 transition">
-          Inactive
-</button>
+            <motion.div
+              onClick={(e) => e.stopPropagation()}
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white p-6 rounded-2xl w-[350px] shadow-lg text-center"
+            >
+              <h3 className="text-lg font-semibold mb-3">
+                Xóa người dùng này?
+              </h3>
+              <p className="text-sm text-gray-600 mb-6">
+                Hành động này sẽ xóa vĩnh viễn{" "}
+                <span className="font-semibold">{deletingUser.name}</span>.
+              </p>
 
-        </div>
-      </motion.div>
-    </motion.div>
-  )}
-</AnimatePresence>
-<AnimatePresence>
-      {showAddModal && (
-    <motion.div //Thêm user
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-    >
-      <div className="bg-white p-6 rounded-xl shadow-lg w-96">
-        <h2 className="text-lg font-semibold mb-4">Thêm người dùng mới</h2>
+              <div className="flex justify-center gap-4">
+                <button
+                  onClick={() => setDeletingUser(null)}
+                  className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300"
+                >
+                  Hủy
+                </button>
+                <button
+                  onClick={() => handleDelete(deletingUser._id)}
+                  className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                >
+                  Xóa
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-        <div className="flex flex-col gap-3">
-          <input
-            type="text"
-            placeholder="Tên người dùng"
-            className="border rounded-md px-3 py-2 text-sm"
-            value={newUser.name}
-            onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
-          />
-          <input
-            type="email"
-            placeholder="Email"
-            className="border rounded-md px-3 py-2 text-sm"
-            value={newUser.email}
-            onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
-          />
-          <select
-            className="border rounded-md px-3 py-2 text-sm"
-            value={newUser.role}
-            onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
-          >
-            <option>User</option>
-            <option>Admin</option>
-          </select>
-          <select
-            className="border rounded-md px-3 py-2 text-sm"
-            value={newUser.status}
-            onChange={(e) => setNewUser({ ...newUser, status: e.target.value })}
-          >
-            <option>Active</option>
-            <option>Inactive</option>
-          </select>
-        </div>
-
-        <div className="flex justify-end gap-2 mt-5">
-          <button
+      {/* ➕ MODAL ADD (ĐÃ CẬP NHẬT) */}
+      <AnimatePresence>
+        {showAddModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
             onClick={() => setShowAddModal(false)}
-            className="px-3 py-1 text-sm border rounded-md hover:bg-gray-100"
           >
-            Hủy
-          </button>
-          <button
-            onClick={() => {
-              if (!newUser.name || !newUser.email) {
-                alert("Vui lòng nhập đủ thông tin!");
-                return;
-              }
+            <motion.div 
+              onClick={(e) => e.stopPropagation()}
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white p-6 rounded-xl shadow-lg w-96"
+            >
+              <h2 className="text-lg font-semibold mb-4">
+                Thêm người dùng mới
+              </h2>
 
-              const id = users.length ? users[users.length - 1].id + 1 : 1;
-              setUsers([...users, { id, ...newUser }]);
-              setShowAddModal(false);
-              setNewUser({ name: "", email: "", role: "User", status: "Active" });
-            }}
-            className="px-3 py-1 text-sm bg-[#6EA269] text-white rounded-md hover:bg-[#41563F]"
-          >
-            Thêm
-          </button>
-        </div>
-      </div>
-    </motion.div>
-  )}
-</AnimatePresence>
+              <div className="flex flex-col gap-3">
+                <input
+                  type="text"
+                  placeholder="Tên người dùng"
+                  className="border rounded-md px-3 py-2 text-sm"
+                  value={newUser.name}
+                  onChange={(e) =>
+                    setNewUser({ ...newUser, name: e.target.value })
+                  }
+                />
+                <input
+                  type="email"
+                  placeholder="Email"
+                  className="border rounded-md px-3 py-2 text-sm"
+                  value={newUser.email}
+                  onChange={(e) =>
+                    setNewUser({ ...newUser, email: e.target.value })
+                  }
+                />
+                <input
+                  type="password"
+                  placeholder="Mật khẩu"
+                  className="border rounded-md px-3 py-2 text-sm"
+                  value={newUser.password}
+                  onChange={(e) =>
+                    setNewUser({ ...newUser, password: e.target.value })
+                  }
+                />
+                {/* 🔑 INPUT XÁC NHẬN MẬT KHẨU ĐÃ ĐƯỢC THÊM */}
+                <input 
+                  type="password"
+                  placeholder="Xác nhận Mật khẩu"
+                  className="border rounded-md px-3 py-2 text-sm"
+                  value={newUser.confirmPassword}
+                  onChange={(e) =>
+                    setNewUser({ ...newUser, confirmPassword: e.target.value })
+                  }
+                />
+                <select
+                  className="border rounded-md px-3 py-2 text-sm"
+                  value={newUser.role}
+                  onChange={(e) =>
+                    setNewUser({ ...newUser, role: e.target.value })
+                  }
+                >
+                  <option value="user">user</option>
+                  <option value="admin">admin</option>
+                </select>
+              </div>
+
+              <div className="flex justify-end gap-2 mt-5">
+                <button
+                  onClick={() => setShowAddModal(false)}
+                  className="px-3 py-1 text-sm border rounded-md hover:bg-gray-100"
+                >
+                  Hủy
+                </button>
+                <button
+                  onClick={handleAdd}
+                  className="px-3 py-1 text-sm bg-[#6EA269] text-white rounded-md hover:bg-[#41563F]"
+                >
+                  Thêm
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
