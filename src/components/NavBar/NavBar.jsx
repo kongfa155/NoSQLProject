@@ -1,7 +1,8 @@
 import './NavBar.css';
-import { useNavigate } from 'react-router-dom';
 import webLogo from '../../quizLogo_green.svg';
 import { useSelector } from 'react-redux';
+import { Link, useNavigate } from "react-router-dom"; // thêm Link
+import { FaUserCircle } from "react-icons/fa"; // thêm icon user
 
 
 export default function NavBar({selected="trangchu", isAdmin}){
@@ -85,22 +86,25 @@ export default function NavBar({selected="trangchu", isAdmin}){
           <p className="my-2">ĐÓNG GÓP ĐỀ</p>
         </div>
         <div className="col-span-3"></div>
-        <div
-          className={`${
-            selected == "dangnhap" && "text-[#6ea269]"
-          } cursor-pointer duration-500
-            transform transition ease-in-out  hover:scale-[1.15]`}
-          onClick={() => {
-            handleItemOnClick("canhan");
-          }}
-        >
-          {isAuthenticated ? (
-            <input type="dropbox">
-            </input>
-          ) : (
-            <p className="my-2">ĐĂNG NHẬP</p>
-          )}
-        </div>
+    <div
+  className={`${
+    selected == "dangnhap" && "text-[#6ea269]"
+  } cursor-pointer duration-500 transform transition ease-in-out hover:scale-[1.15] flex justify-center items-center`}
+>
+  {isAuthenticated ? (
+    <Link
+      to="/login"
+      className="my-2 text-white font-semibold hover:text-[#6ea269]"
+    >
+      ĐĂNG NHẬP
+    </Link>
+  ) : (
+  
+    <Link to="/setting" className="flex items-center justify-center">
+      <FaUserCircle className="text-2xl text-white hover:text-gray-300" />
+    </Link>
+  )}
+</div>
       </div>
     );
 
