@@ -8,7 +8,7 @@ import DefaultAlert from "../AlertBoxes/DefaultAlert"
 
 
 
-export default function CreateQuizModal({subjectid, showCreateQuiz, setShowCreateQuiz}){
+export default function CreateQuizModal({subjectId, showCreateQuiz, setShowCreateQuiz}){
     const questionsRefs = useRef([]);   
     const [showAlert, setShowAlert] = useState(false);
     const [quizName, setQuizName] = useState("");
@@ -28,7 +28,7 @@ export default function CreateQuizModal({subjectid, showCreateQuiz, setShowCreat
     }
 
     useEffect(()=>{
-        axios.get(`/api/chapters/subject/${subjectid}`)
+        axios.get(`/api/chapters/subject/${subjectId}`)
         .then(res=>{
             setChapters(res.data);
 
@@ -48,7 +48,7 @@ export default function CreateQuizModal({subjectid, showCreateQuiz, setShowCreat
     if (!selectedChapter) {
       const chapterRes = await axios.post("/api/chapters", {
         name: chapterName,
-        subjectId: subjectid,
+        subjectId: subjectId,
         order: chapters?.length,
         description: chapterDesc,
         availability: true,
@@ -67,7 +67,7 @@ export default function CreateQuizModal({subjectid, showCreateQuiz, setShowCreat
 
     const quizRes = await axios.post("/api/quizzes", {
       name: quizName,
-      subjectId: subjectid,
+      subjectId: subjectId,
       chapterId: chapterId,
       questionNum: questionCount,
       timeLimit: timeLimit,

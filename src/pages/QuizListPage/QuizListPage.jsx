@@ -6,13 +6,16 @@ import ModalOptionQuiz from "../../components/ModalOptionQuiz/ModalOptionQuiz";
 import UserStats from "../../components/UserStats/UserStats";
 import { MdExpandMore as ExpandButton } from "react-icons/md";
 import CreateQuizModal from "../../components/CreateQuizModal/CreateQuizModal";
-import ConfirmModal from "../../components/ConfirmModal/ConfirmModal"; // ✅ import đúng
+import ConfirmModal from "../../components/ConfirmModal/ConfirmModal";
 import { useSelector } from "react-redux";
 
 export default function QuizListPage() {
-  const { subjectid, type } = useParams();
+  const { subjectId } = useParams();
+  const navigate = useNavigate();
+
   const [subject, setSubject] = useState();
   const [chapters, setChapters] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // Modal trạng thái
   const [showModal, setShowModal] = useState(false);
@@ -23,15 +26,14 @@ export default function QuizListPage() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [quizToReview, setQuizToReview] = useState(null);
 
-  const navigate = useNavigate();
-
-  // lấy thông tin user từ Redux
-  const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
+  // Redux
   const account = useSelector((state) => state.user.account);
-    console.log("Test data của Redux: ", account, "Test is Authenticated: ", isAuthenticated);
-  // Xác định role
-  const role = account?.role || "User"; // mặc định là User nếu chưa đăng nhập
+  const role = account?.role || "User";
   const isAdmin = role === "Admin";
+
+  // Xác định chế độ hiển thị: edit cho admin, view cho user
+  const type = isAdmin ? "edit" : "view";
+
   // --- HANDLERS ---
   const handleCreateNewQuiz = () => setShowCreateQuiz(true);
 
@@ -76,21 +78,48 @@ export default function QuizListPage() {
   };
 
   // --- DATA FETCHING ---
+  //Đem luôn cái fetch bài làm lên đây để truyền cho stats luôn
   useEffect(() => {
-    axios
-      .get(`/api/subjects/${subjectid}`)
-      .then((res) => setSubject(res.data[0]))
-      .catch((err) => console.log("Lỗi khi lấy subject:", err));
-  }, [subjectid]);
+    if (!subjectId) return;
 
-  useEffect(() => {
-    axios
-      .get(`/api/chapters/subject/${subjectid}`)
-      .then((res) => setChapters(res.data))
-      .catch((err) => console.log("không lấy được chapters:", err));
-  }, [subjectid]);
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+
+        // Fetch subject
+        const subjectRes = await axios.get(`/api/subjects/${subjectId}`);
+        setSubject(subjectRes.data);
+
+        // Fetch chapters
+        const chaptersRes = await axios.get(
+          `/api/chapters/subject/${subjectId}`
+        );
+        const chaptersData = chaptersRes.data;
+
+        // Fetch quizzes cho từng chapter
+        const chaptersWithQuizzes = await Promise.all(
+          chaptersData.map(async (chapter) => {
+            const quizRes = await axios.get(
+              `/api/quizzes/chapter/${chapter._id}`
+            );
+            return { ...chapter, quizzes: quizRes.data };
+          })
+        );
+
+        setChapters(chaptersWithQuizzes);
+      } catch (err) {
+        console.error("Lỗi khi fetch subject/chapters/quizzes:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [subjectId]);
 
   // --- RENDER ---
+  if (loading) return <p className="p-6 text-lg">Đang tải dữ liệu...</p>;
+
   return (
     <div className="w-full pb-24 bg-white">
       {type === "edit" && (
@@ -103,7 +132,7 @@ export default function QuizListPage() {
           type !== "edit" ? "pt-14" : "pt-2"
         } text-[#3D763A]`}
       >
-        {subject?.name}
+        {subject?.name || "Đang tải môn học..."}
       </p>
 
       {type === "edit" && (
@@ -120,12 +149,15 @@ export default function QuizListPage() {
         </div>
       )}
 
-      {type !== "edit" && (
+      {type !== "edit" && chapters.length > 0 && (
         <div
           id="phantichdulieu"
           className="mt-4 p-10 rounded-[8px] border-1 w-[90%] min-h-[250px] h-[40%] mx-auto"
         >
-          <UserStats />
+          <UserStats
+            userId={account?.id} // Redux user ID
+            chapters={chapters} // chapters đã kèm quizzes
+          />
         </div>
       )}
 
@@ -133,13 +165,13 @@ export default function QuizListPage() {
         <ChapterBox
           key={`chapter_${i}`}
           chapter={chapter}
-          setSelectedQuiz={setSelectedQuiz}
+          setSelectedQuiz={handleOpenModal}
           setShowModal={setShowModal}
           onReview={handleReviewQuiz}
+          type={type}
         />
       ))}
 
-      {/* Modal làm bài */}
       <ModalOptionQuiz
         show={showModal}
         quiz={selectedQuiz}
@@ -147,21 +179,19 @@ export default function QuizListPage() {
         onStart={handleStartQuiz}
       />
 
-      {/* Modal tạo đề */}
       <CreateQuizModal
-        subjectid={subjectid}
+        subjectId={subjectId}
         showCreateQuiz={showCreateQuiz}
         setShowCreateQuiz={setShowCreateQuiz}
       />
 
-      {/* ✅ Modal xác nhận review */}
       <ConfirmModal
         show={showConfirm}
         onClose={() => setShowConfirm(false)}
         title="Review"
         message="Bạn muốn xem lại lần làm bài gần nhất hay toàn bộ câu hỏi?"
         yesText="Lần gần nhất"
-        noText="Nah, mình sẽ xem toàn bộ câu hỏi"
+        noText="Xem toàn bộ câu hỏi"
         onYes={handleYes}
         onNo={handleNo}
       />
@@ -170,23 +200,11 @@ export default function QuizListPage() {
 }
 
 // ---------------- CHAPTER BOX ----------------
-function ChapterBox({ chapter, setSelectedQuiz, setShowModal, onReview }) {
-  const [quizList, setQuizList] = useState([]);
+function ChapterBox({ chapter, setSelectedQuiz, onReview, type }) {
   const [expandChapterBox, setExpandChapterBox] = useState(false);
-
-  const getQuizList = async () => {
-    if (quizList.length >= 1) return;
-    try {
-      const res = await axios.get(`/api/quizzes/chapter/${chapter._id}`);
-      setQuizList(res.data);
-    } catch (err) {
-      console.log("Lỗi lấy quiz:", err);
-    }
-  };
 
   const handleOpenModal = (quiz) => {
     setSelectedQuiz(quiz);
-    setShowModal(true);
   };
 
   return (
@@ -194,12 +212,9 @@ function ChapterBox({ chapter, setSelectedQuiz, setShowModal, onReview }) {
       <div className="flex flex-row justify-between">
         <p className="text-4xl pt-4 px-8 text-[#3D763A]">{chapter.name}</p>
         <ExpandButton
-          onClick={() => {
-            getQuizList();
-            setExpandChapterBox((prev) => !prev);
-          }}
+          onClick={() => setExpandChapterBox((prev) => !prev)}
           className={`text-4xl hover:scale-110 transition-all duration-500 ${
-            expandChapterBox && "rotate-180"
+            expandChapterBox ? "rotate-180" : ""
           }`}
         />
       </div>
@@ -209,12 +224,13 @@ function ChapterBox({ chapter, setSelectedQuiz, setShowModal, onReview }) {
         } transition-all duration-500 overflow-hidden`}
       >
         <div className="w-full h-full pb-8 overflow-scroll">
-          {quizList.map((quiz, i) => (
+          {chapter.quizzes.map((quiz, i) => (
             <QuizBox
               key={`quiz_chapter_${i}`}
               quiz={quiz}
               onOpenModal={handleOpenModal}
               onReview={onReview}
+              type={type}
             />
           ))}
         </div>
@@ -224,9 +240,7 @@ function ChapterBox({ chapter, setSelectedQuiz, setShowModal, onReview }) {
 }
 
 // ---------------- QUIZ BOX ----------------
-function QuizBox({ quiz, onOpenModal, onReview }) {
-  const { type } = useParams();
-
+function QuizBox({ quiz, onOpenModal, onReview, type }) {
   return (
     <div className="mt-4 rounded-[8px] border border-gray-300 w-[95%] pt-4 pb-2 px-8 mx-auto flex justify-between items-center hover:shadow-md transition-all">
       <div>

@@ -54,8 +54,17 @@ const getLatestSubmission = async (req, res) => {
   try {
     const { quizId, userId } = req.params;
 
+    // Kiểm tra 24 ký tự hex
     if (!quizId || !userId) {
       return res.status(400).json({ message: "Thiếu quizId hoặc userId." });
+    }
+    if (
+      !/^[0-9a-fA-F]{24}$/.test(quizId) ||
+      !/^[0-9a-fA-F]{24}$/.test(userId)
+    ) {
+      return res
+        .status(400)
+        .json({ message: "quizId hoặc userId không hợp lệ." });
     }
 
     const latest = await Submission.findOne({
@@ -78,6 +87,7 @@ const getLatestSubmission = async (req, res) => {
   }
 };
 
+
 // 🟢 Lấy toàn bộ submission của user
 const getUserSubmissions = async (req, res) => {
   try {
@@ -93,8 +103,55 @@ const getUserSubmissions = async (req, res) => {
   }
 };
 
+const getAllSubmissionFromSubject = async (req, res) => {
+  const { userId, subjectId } = req.params;
+
+  try {
+    const submissions = await Submission.find({ userId, subjectId })
+      .populate("quizId") // để lấy thông tin quiz
+      .populate("chapterId"); // để lấy thông tin chapter nếu cần
+
+    res.json(submissions);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Lỗi khi lấy submissions theo môn" });
+  }
+};
+const getBestSubmission = async (req, res) => {
+  try {
+    const { quizId, userId } = req.params;
+
+    if (!quizId || !userId)
+      return res.status(400).json({ message: "Thiếu quizId hoặc userId" });
+
+    if (
+      !/^[0-9a-fA-F]{24}$/.test(quizId) ||
+      !/^[0-9a-fA-F]{24}$/.test(userId)
+    ) {
+      return res
+        .status(400)
+        .json({ message: "quizId hoặc userId không hợp lệ" });
+    }
+
+    const bestSubmission = await Submission.findOne({
+      quizId: new mongoose.Types.ObjectId(quizId),
+      userId: new mongoose.Types.ObjectId(userId),
+    })
+      .sort({ bestScore: -1 })
+      .lean();
+
+    res.status(200).json(bestSubmission || null);
+  } catch (err) {
+    console.error(err);
+    res
+      .status(500)
+      .json({ message: "Lỗi khi lấy best submission", error: err.message });
+  }
+};
 module.exports = {
   addSubmission,
   getUserSubmissions,
   getLatestSubmission,
+  getAllSubmissionFromSubject,
+  getBestSubmission,
 };

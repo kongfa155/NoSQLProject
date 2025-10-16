@@ -1,11 +1,10 @@
-import { useState } from 'react';
-import { Modal, Button, Form } from 'react-bootstrap';
-import { IoClose } from 'react-icons/io5';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import styles from './ModalOptionQuiz.module.css';
+import { useState } from "react";
+import { Modal, Button, Form } from "react-bootstrap";
+import { IoClose } from "react-icons/io5";
+import "bootstrap/dist/css/bootstrap.min.css";
+import styles from "./ModalOptionQuiz.module.css";
 
 export default function ModalOptionQuiz({ show, quiz, onClose, onStart }) {
-  //Này set mặc định mấy option
   const [options, setOptions] = useState({
     shuffleQuestions: true,
     showAnswers: true,
@@ -16,15 +15,12 @@ export default function ModalOptionQuiz({ show, quiz, onClose, onStart }) {
   });
 
   if (!quiz) return null;
-//Xử lý khi một thằng thay đổi nè
+
   const handleToggle = (key) => {
-    // Nếu mà vô thằng chế độ làm bài tính điểm
     if (key === "scoreMode") {
       setOptions((prev) => {
         const next = !prev.scoreMode;
-
         if (next) {
-          // Set tất cả về trạng thái mình muốn khi có bật chế độ tính điểm
           return {
             ...prev,
             scoreMode: true,
@@ -35,21 +31,17 @@ export default function ModalOptionQuiz({ show, quiz, onClose, onStart }) {
             rotationalPractice: false,
           };
         } else {
-          // ScoreMode là nó không cho mất thằng khác cập nahajt
           return { ...prev, scoreMode: false };
         }
       });
       return;
     }
 
-    //chế độ tính điểm thì không cho đổi các option khác
     if (options.scoreMode) return;
 
-    // Đổi option mấy thằng khác nè
     setOptions((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-  //Này dùng để format lại thời gian hiển thị cho đẹp
   const formatTime = (minutes) => {
     if (!minutes) return "00:00";
     const hours = Math.floor(minutes / 60);
@@ -58,7 +50,6 @@ export default function ModalOptionQuiz({ show, quiz, onClose, onStart }) {
   };
 
   return (
-    //Modal ở giữa, lớn và hiển thị thông qua biến Show
     <Modal
       show={show}
       onHide={onClose}
@@ -66,7 +57,6 @@ export default function ModalOptionQuiz({ show, quiz, onClose, onStart }) {
       size="xl"
       className={styles.customModal}
     >
-        {/* Này là tiêu đề chỉ chứa mỗi nút tắt thôi */}
       <Modal.Header className={styles.modalHeader}>
         <Button
           variant="light"
@@ -76,9 +66,8 @@ export default function ModalOptionQuiz({ show, quiz, onClose, onStart }) {
           <IoClose size={20} />
         </Button>
       </Modal.Header>
-    {/* Thân nè */}
+
       <Modal.Body className={styles.modalBody}>
-        {/* Phần thân trên */}
         <div className={styles.lessonHeaderWrapper}>
           <div>
             <span className={styles.sectionTitleLabel}>Bài học</span>
@@ -89,9 +78,7 @@ export default function ModalOptionQuiz({ show, quiz, onClose, onStart }) {
             <div className={styles.timeValue}>{formatTime(quiz.timeLimit)}</div>
           </div>
         </div>
-        {/* Thanh chia 2 phần */}
         <hr className={styles.sectionDivider} />
-        {/* Phần thân dưới nè */}
         <div className={styles.quizPracticeOptions}>
           {[
             { label: "Đảo câu hỏi", key: "shuffleQuestions" },
@@ -101,12 +88,9 @@ export default function ModalOptionQuiz({ show, quiz, onClose, onStart }) {
             { label: "Tính thời gian", key: "timeLimit" },
             { label: "Làm bài có tính điểm", key: "scoreMode" },
           ].map(({ label, key }) => {
-            //Thằng này để kiểm tra trạng thái Scoremode
             const isScoreMode = options.scoreMode && key !== "scoreMode";
             return (
-                //Gán key với class
               <div className={styles.optionRow} key={key}>
-                {/* Nếu mà scoreMode thì làm mờ tụi này */}
                 <span className={isScoreMode ? styles.disabledLabel : ""}>
                   {label}
                 </span>
@@ -116,7 +100,7 @@ export default function ModalOptionQuiz({ show, quiz, onClose, onStart }) {
                   checked={options[key]}
                   onChange={() => handleToggle(key)}
                   className={styles.customToggle}
-                  disabled={isScoreMode} // ScoreMode thì disable không cho đổi
+                  disabled={isScoreMode}
                 />
               </div>
             );

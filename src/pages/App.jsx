@@ -64,15 +64,15 @@ function App() {
           />
           <Route path="/" element={<AboutUs />} />
           <Route path="/subject/:type" element={<SubjectPage />} />
-          <Route path="/subject/:type/:subjectid" element={<QuizListPage />} />
+          <Route path="/subject/:type/:subjectId" element={<QuizListPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route
             path="/admin/settings"
             element={<SettingPage></SettingPage>}
           ></Route>
-          <Route path="/quizzes/:quizid" element={<QuizPage />} />
+          <Route path="/quizzes/:quizId" element={<QuizPage />} />
           <Route
-            path="/quizzes/review/:quizid"
+            path="/quizzes/review/:quizId"
             element={<ReviewQuizPage />}
           ></Route>
           <Route path="/user" element={<UserPage />} />

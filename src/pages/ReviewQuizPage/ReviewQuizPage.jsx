@@ -4,16 +4,16 @@ import axios from "axios";
 import styles from "./ReviewQuizPage.module.css";
 import ReviewDrawer from "../../components/ReviewDrawer/ReviewDrawer";
 import { useSelector } from "react-redux";
+
 const ReviewQuizPage = () => {
-    //Lấy dữ liệu từ Redux
-    const isAuthenticated = useSelector(data => data.user.isAuthenticated);
-    const account = useSelector((data) => data.user.account);
+  // ✅ Redux
+  const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
+  const account = useSelector((state) => state.user.account);
+  const userId = account?.id; // Redux lưu id là string
 
-    console.log(account, 'is Authenticated ' , isAuthenticated);
-
-  const { quizid } = useParams();
+  const { quizId } = useParams();
   const location = useLocation();
-  const initialMode = location.state?.mode || "latest"; // nhận từ QuizListPage
+  const initialMode = location.state?.mode || "latest";
   const [mode, setMode] = useState(initialMode);
 
   const [quizInfo, setQuizInfo] = useState(null);
@@ -21,31 +21,32 @@ const ReviewQuizPage = () => {
   const [submission, setSubmission] = useState(null);
   const [loading, setLoading] = useState(true);
 
-
-
+  // ✅ Fetch quiz + latest submission
   useEffect(() => {
-    const fetchQuizAndSubmission = async () => {
-      try {
-        const userId = localStorage.getItem("userId") || "demoUser"; // tạm gán user giả
+    if (!userId) return;
 
-        // 1️⃣ Lấy thông tin quiz
+    const fetchQuizAndSubmission = async () => {
+      setLoading(true);
+      try {
+        // 1️⃣ Quiz info
         const quizRes = await axios.get(
-          `http://localhost:5000/api/quizzes/${quizid}`
+          `http://localhost:5000/api/quizzes/${quizId}`
         );
         setQuizInfo(quizRes.data);
         setQuestions(quizRes.data.questions || []);
 
-        // 2️⃣ Lấy submission gần nhất
-        // const subRes = await axios.get(
-        //   `http://localhost:5000/api/submissions/latest/${quizid}/${userId}`
-        // );
+        // 2️⃣ Latest submission
+        const subRes = await axios.get(
+          `http://localhost:5000/api/submissions/latest/${quizId}/${userId}`
+        );
 
-        // if (!subRes.data) {
-        //   alert("Cậu chưa từng làm bài thì sao có lần gần nhất ^^");
-        //   setMode("full");
-        // } else {
-        //   setSubmission(subRes.data);
-        // }
+        if (!subRes.data) {
+          // User chưa làm bài → mode full
+          setSubmission(null);
+          setMode("full");
+        } else {
+          setSubmission(subRes.data);
+        }
       } catch (err) {
         console.error("❌ Lỗi khi tải dữ liệu:", err);
       } finally {
@@ -54,16 +55,16 @@ const ReviewQuizPage = () => {
     };
 
     fetchQuizAndSubmission();
-  }, [quizid]);
+  }, [quizId, userId]);
 
-
+  if (!isAuthenticated) return <div>Vui lòng đăng nhập để xem bài làm.</div>;
   if (loading) return <div>Đang tải dữ liệu bài kiểm tra...</div>;
   if (!quizInfo) return <div>Không tìm thấy bài kiểm tra.</div>;
 
-  // 🧠 Dữ liệu answers được lưu trong submission.answers (mảng)
+  // ✅ Chuyển mảng answers thành object để lookup nhanh
   const userAnswers =
     submission?.answers?.reduce((acc, ans) => {
-      acc[ans.questionId] = ans.selectedOption;
+      acc[ans.questionId.toString()] = ans.selectedOption;
       return acc;
     }, {}) || {};
 
@@ -71,6 +72,7 @@ const ReviewQuizPage = () => {
     <div className={styles.reviewContainer}>
       <h2 className={styles.quizTitle}>Xem lại: {quizInfo.name}</h2>
 
+      {/* Hiển thị điểm nếu xem lần làm gần nhất */}
       {submission && mode === "latest" && (
         <div className={styles.scoreBox}>
           <p>🎯 Điểm lần này: {submission.score}%</p>
@@ -84,32 +86,29 @@ const ReviewQuizPage = () => {
         </div>
       )}
 
-      {/* Duyệt qua câu hỏi */}
+      {/* Duyệt câu hỏi */}
       {questions.map((q, idx) => {
-        const userChoice = userAnswers[q._id];
-        const isCorrect = userChoice === q.answer;
+        const questionIdStr = q._id.toString(); // convert ObjectId sang string
+        const userChoice = userAnswers[questionIdStr];
 
-        // Nếu ở chế độ "full" thì không tô màu gì
-        const userOptionClass = (opt) => {
-          // Nếu có submission thì tô như cũ
+        // Hàm xác định class cho option
+        const getOptionClass = (opt) => {
           if (mode === "latest") {
-            if (opt === q.answer) return styles.correctOption;
+            if (opt === q.answer) return styles.correctOption; // đáp án đúng
             if (opt === userChoice && opt !== q.answer)
-              return styles.incorrectOption;
+              return styles.incorrectOption; // user chọn sai
             return "";
           }
-
-          // Nếu là "full" (xem toàn bộ câu hỏi) thì chỉ highlight đáp án đúng
           if (mode === "full") {
             if (opt === q.answer) return styles.correctOption;
+            return "";
           }
-
           return "";
         };
 
         return (
           <div
-            key={q._id}
+            key={questionIdStr}
             id={`question-${idx + 1}`}
             className={styles.questionBlock}
           >
@@ -135,7 +134,7 @@ const ReviewQuizPage = () => {
               {q.options.map((opt, i) => (
                 <li
                   key={i}
-                  className={`${styles.optionItem} ${userOptionClass(opt)} ${
+                  className={`${styles.optionItem} ${getOptionClass(opt)} ${
                     userChoice === opt && mode === "latest"
                       ? styles.userChoice
                       : ""
