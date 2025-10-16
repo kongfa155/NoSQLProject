@@ -37,3 +37,17 @@ export const loginUser = (credentials) => {
     }
   };
 };
+
+
+export const handleLogout = (dispatch) => {
+  // 1️⃣ Xóa dữ liệu trong localStorage
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("refreshToken");
+  localStorage.removeItem("role");
+  localStorage.removeItem("email");
+  localStorage.removeItem("name");
+  localStorage.removeItem("id");
+
+  // 2️⃣ Reset state user trong redux
+  dispatch({ type: FETCH_USER_LOGIN_FAIL });
+};
