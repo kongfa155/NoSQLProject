@@ -14,7 +14,7 @@ import SmokeTrail from "../components/Effect/SmokeTrail";
 import ReviewQuizPage from "./ReviewQuizPage/ReviewQuizPage";
 import ProtectedRoute from "../components/Users/ProtectedRoute";
 import UserPage from "./UserPage/UserPage";
-import LoginPage_ReduxTest from "./LoginPage/LoginPage_ReduxTest";
+import LoginPage_ReduxTest from "./LoginPage/LoginPage";
 
 
 
