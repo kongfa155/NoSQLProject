@@ -62,6 +62,7 @@ exports.login = async (req, res) => {
       role: user.role,
       email: user.email,
       name: user.username,
+      id: user._id,
     });
   } catch (err) {
     console.error("Lỗi đăng nhập:", err);

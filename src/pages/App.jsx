@@ -14,6 +14,9 @@ import SmokeTrail from "../components/Effect/SmokeTrail";
 import ReviewQuizPage from "./ReviewQuizPage/ReviewQuizPage";
 import ProtectedRoute from "../components/Users/ProtectedRoute";
 import UserPage from "./UserPage/UserPage";
+import LoginPage_ReduxTest from "./LoginPage/LoginPage_ReduxTest";
+
+
 
 function App() {
   const [selected, setSelected] = useState("trangchu");
@@ -59,11 +62,11 @@ function App() {
               </ProtectedRoute>
             }
           />
-          
           <Route path="/" element={<AboutUs />} />
           <Route path="/subject/:type" element={<SubjectPage />} />
           <Route path="/subject/:type/:subjectid" element={<QuizListPage />} />
-          <Route path="/login" element={<LoginPage />} /><Route
+          <Route path="/login" element={<LoginPage />} />
+          <Route
             path="/admin/settings"
             element={<SettingPage></SettingPage>}
           ></Route>
@@ -73,7 +76,7 @@ function App() {
             element={<ReviewQuizPage />}
           ></Route>
           <Route path="/user" element={<UserPage />} />
-
+          <Route path="/login-test" element={<LoginPage_ReduxTest />} />;
           <Route path="*" element={<NotFoundPage></NotFoundPage>}></Route>
         </Routes>
       </div>

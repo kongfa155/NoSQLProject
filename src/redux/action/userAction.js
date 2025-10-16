@@ -1,0 +1,39 @@
+import axios from "axios";
+
+export const FETCH_USER_LOGIN_SUCCESS = "FETCH_USER_LOGIN_SUCCESS";
+export const FETCH_USER_LOGIN_FAIL = "FETCH_USER_LOGIN_FAIL";
+
+export const loginUser = (credentials) => {
+  return async (dispatch) => {
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/auth/login",
+        credentials
+      );
+
+      if (res.status === 200) {
+        const data = res.data;
+
+        dispatch({
+          type: FETCH_USER_LOGIN_SUCCESS,
+          payload: data,
+        });
+
+        // Lưu localStorage
+        localStorage.setItem("accessToken", data.accessToken);
+        localStorage.setItem("refreshToken", data.refreshToken);
+        localStorage.setItem("role", data.role);
+        localStorage.setItem("email", data.email);
+        localStorage.setItem("name", data.name);
+        localStorage.setItem("id", data.id);
+
+        // ✅ Trả lại data để component có thể await
+        return data;
+      }
+    } catch (error) {
+      console.error("Login failed:", error);
+      dispatch({ type: FETCH_USER_LOGIN_FAIL });
+      throw error;
+    }
+  };
+};

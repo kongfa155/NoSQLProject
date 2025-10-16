@@ -3,8 +3,14 @@ import { useLocation, useParams } from "react-router-dom";
 import axios from "axios";
 import styles from "./ReviewQuizPage.module.css";
 import ReviewDrawer from "../../components/ReviewDrawer/ReviewDrawer";
-
+import { useSelector } from "react-redux";
 const ReviewQuizPage = () => {
+    //Lấy dữ liệu từ Redux
+    const isAuthenticated = useSelector(data => data.user.isAuthenticated);
+    const account = useSelector((data) => data.user.account);
+
+    console.log(account, 'is Authenticated ' , isAuthenticated);
+
   const { quizid } = useParams();
   const location = useLocation();
   const initialMode = location.state?.mode || "latest"; // nhận từ QuizListPage

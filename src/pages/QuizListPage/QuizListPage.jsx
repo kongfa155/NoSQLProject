@@ -7,6 +7,7 @@ import UserStats from "../../components/UserStats/UserStats";
 import { MdExpandMore as ExpandButton } from "react-icons/md";
 import CreateQuizModal from "../../components/CreateQuizModal/CreateQuizModal";
 import ConfirmModal from "../../components/ConfirmModal/ConfirmModal"; // ✅ import đúng
+import { useSelector } from "react-redux";
 
 export default function QuizListPage() {
   const { subjectid, type } = useParams();
@@ -24,6 +25,13 @@ export default function QuizListPage() {
 
   const navigate = useNavigate();
 
+  // lấy thông tin user từ Redux
+  const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
+  const account = useSelector((state) => state.user.account);
+    console.log("Test data của Redux: ", account, "Test is Authenticated: ", isAuthenticated);
+  // Xác định role
+  const role = account?.role || "User"; // mặc định là User nếu chưa đăng nhập
+  const isAdmin = role === "Admin";
   // --- HANDLERS ---
   const handleCreateNewQuiz = () => setShowCreateQuiz(true);
 
