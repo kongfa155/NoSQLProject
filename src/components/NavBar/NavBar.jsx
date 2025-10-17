@@ -3,7 +3,8 @@ import webLogo from '../../quizLogo_green.svg';
 import { useSelector } from 'react-redux';
 import { Link, useNavigate } from "react-router-dom"; // thêm Link
 import { FaUserCircle } from "react-icons/fa"; // thêm icon user
-
+import { useDispatch } from "react-redux";
+import { handleLogout } from "../../redux/action/userAction";
 
 export default function NavBar({selected="trangchu"}){
 
@@ -13,7 +14,7 @@ export default function NavBar({selected="trangchu"}){
         (state) => state.user.isAuthenticated
       );
 
-
+      const dispatch = useDispatch();
     const map = {
         "trangchu":"",
         "monhoc":"subject/view",
@@ -91,21 +92,24 @@ export default function NavBar({selected="trangchu"}){
     selected == "dangnhap" && "text-[#6ea269]"
   } cursor-pointer duration-500 transform transition ease-in-out hover:scale-[1.15] flex justify-center items-center`}
 >
-  {!isAuthenticated ? (
-    <Link
-      to="/login"
-      className="my-2 text-black font-semibold hover:text-[#6ea269]"
-    >
-      ĐĂNG NHẬP
-    </Link>
-  ) : (
-  
-    <Link to="/settings" className="flex items-center justify-center">
-      <FaUserCircle className="text-2xl text-black hover:text-[#6ea269] mr-2 " />
-        HỒ SƠ
-    </Link>
-    
-  )}
+  {isAuthenticated ? (
+          <div>
+            {" "}
+            <button onClick={() => handleLogout(dispatch)}>Đăng xuất</button>
+          </div>
+        ) : (
+          <div
+            className={`${
+              selected == "dangnhap" && "text-[#6ea269]"
+            } cursor-pointer duration-500
+            transform transition ease-in-out  hover:scale-[1.15]`}
+            onClick={() => {
+              handleItemOnClick("canhan");
+            }}
+          >
+            <p className="my-2">ĐĂNG NHẬP</p>
+          </div>
+        )}
 </div>
       </div>
     );
