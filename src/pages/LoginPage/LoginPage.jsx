@@ -1,9 +1,8 @@
 import "./LoginPage.css";
-
 import quizLogo from "../../quizLogo_green.svg";
 import { FaEye as EyeLogo } from "react-icons/fa";
 import { RiEyeOffFill as CloseEye } from "react-icons/ri";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../../redux/action/userAction";
 import { useNavigate } from "react-router-dom";
@@ -18,9 +17,11 @@ export default function     () {
 
   const account = useSelector((state) => state.user.account);
   const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
-  if(isAuthenticated){
+  useEffect(()=>{
+    if(isAuthenticated){
     navigate("/");
   }
+  },[]);
   const handleLogin = async () => {
     try {
       setError("");
