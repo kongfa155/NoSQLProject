@@ -1,21 +1,16 @@
 import { Home, Users, Settings, LogOut } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-
+import { useDispatch } from "react-redux";
+import { handleLogout } from "../../redux/action/userAction";
 export default function SidebarAdmin() {
   const navigate = useNavigate();
 
   // src/components/User/SidebarAdmin.jsx
 
-  const handleLogout = () => {
-    // 🧹 Xóa DỮ LIỆU ĐĂNG NHẬP
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("role");
-    localStorage.removeItem("email");
-    localStorage.removeItem("name");
+ const dispatch = useDispatch();
 
-    navigate("/"); //
-  }
+  //navigate("/"); //
+  
 
   return (
     <aside className="w-60 bg-[#6EA269] text-white flex flex-col justify-between">
@@ -51,7 +46,7 @@ export default function SidebarAdmin() {
 
       <div className="p-4 border-t border-green-700">
         <button
-          onClick={handleLogout}
+          onClick={() => handleLogout(dispatch)}
           className="flex items-center gap-2 w-full hover:bg-[#41563F] p-2 transition-colors hover:text-white"
         >
           <LogOut size={18} />

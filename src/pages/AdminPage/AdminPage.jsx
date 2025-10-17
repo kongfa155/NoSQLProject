@@ -4,21 +4,20 @@ import NavbarAdmin from "../../components/Users/NavbarAdmin";
 import UserTable from "../../components/Users/UserTable";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import api from "../../api/axiosInstance";
+import axios from "axios";
 
 function AdminDashboard() {
 const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const res = await api.get("/users");
-        setUsers(res.data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchUsers();
+    axios.get(`/api/users`) // xai GET o route /api/users
+    .then(res=>{ // res la response tu phia backend
+      console.log("Thong tin users: ", res.data); 
+      setUsers(res.data);
+    })
+    .catch(err=>{ // err la loi
+      console.log("err: ",err);
+    });
   }, []);
 
   return (

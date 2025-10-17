@@ -4,6 +4,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 
+import ConfirmAlert from '../../components/AlertBoxes/ConfirmAlert';
+
 export default function SubjectPage(){
 
     const [subjects, setSubjects] = useState([]);
@@ -15,15 +17,29 @@ export default function SubjectPage(){
         axios.get(`/api/subjects/`)
         .then(res=>{
             setSubjects(res.data);
-            console.log("Data cua ong ne: ", res.data);
+ 
         })
         .catch(err=>{
             console.log("Gap loi khi lay subject: ",err);
         })
 
     },[]);
+    const reFetchSubjects = async ()=>{
+        try{
+            axios.get(`/api/subjects/`)
+        .then(res=>{
+            setSubjects(res.data);
+ 
+        })
+        .catch(err=>{
+            console.log("Gap loi khi lay subject: ",err);
+        })
+        }catch(err){
+            console.log("Gap loi khi lay subject: ",err);
+        }
 
-
+    }
+    
 
 
 
@@ -38,8 +54,8 @@ export default function SubjectPage(){
 
 
                 <div className="w-[90%] mx-auto my-12 grid grid-cols-3 gap-18">
-                    {subjects.map((subject,i)=>{
-                        return <SubjectBox key={`subject_${i}`} navigate={navigate} subject={subject} type={type}></SubjectBox>
+                    {subjects.length>0&&subjects.map((subject,i)=>{
+                        return <SubjectBox key={`subject_${i}`} navigate={navigate} subject={subject} type={type} reFetchSubjects={reFetchSubjects}></SubjectBox>
 
                     })}
                 </div>
@@ -52,10 +68,8 @@ export default function SubjectPage(){
     );
 }
 
-function SubjectBox({subject, navigate, type}){
-    useEffect(()=>{
-        console.log(subject.image)
-    },[])
+function SubjectBox({subject, navigate, type, reFetchSubjects}){
+    const [showConfirm, setShowConfirm] = useState(false);
     return (
         <div className="relative h-[300px] w-[100%] shadow-sm shadow-black justify-items-center overflow-hidden rounded-xl">
             <div className="h-[40%] w-full ">
@@ -80,12 +94,41 @@ function SubjectBox({subject, navigate, type}){
                 Vào học → 
             </div>    
             :
+            <div className="grid grid-cols-2 justify-items-center  mx-8 gap-4 my-2"> 
             <div 
             onClick={()=>{
                 navigate(`/subject/edit/${subject._id}`)
             }}
-            className=" transition-colors duration-500 absolute w-[50%] h-[2rem] bg-[#6ea269] hover:bg-[#568651] bottom-2 left-1/2 -translate-x-1/2 rounded-xl flex justify-center items-center text-white cursor-pointer">
+            className=" transition-colors duration-500 w-full h-[2rem] bg-[#6ea269] hover:bg-[#568651] rounded-xl flex justify-center items-center text-white cursor-pointer">
                 Chỉnh sửa → 
+            </div>
+            <div 
+            onClick={()=>{
+                setShowConfirm(true);
+            }}
+            className=" transition-colors duration-500 w-full h-[2rem] bg-[#ff6b6b] hover:bg-[#dd3f3f] rounded-xl flex justify-center items-center text-white cursor-pointer">
+                Xóa ✘ 
+            </div>
+
+            {showConfirm&&
+            <ConfirmAlert title="Xác nhận xóa môn học"
+            information ="Bạn có chắc chắn muốn xóa môn học này không?"
+            isNegative ={true}
+            confirmButton={async ()=>{
+                try{
+                    axios.delete(`/api/subjects/${subject._id}`)
+                    .then((res)=>{
+                        
+                        setShowConfirm(false);
+                        reFetchSubjects();
+                    })
+                }catch(err){
+                    console.log("Khong xoa duoc subject");
+                }
+
+            }}
+            closeButton={()=>{setShowConfirm(false)}}
+            ></ConfirmAlert>}
             </div>
         
         }

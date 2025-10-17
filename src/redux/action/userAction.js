@@ -19,13 +19,13 @@ export const loginUser = (credentials) => {
           payload: data,
         });
 
-        // Lưu localStorage
-        localStorage.setItem("accessToken", data.accessToken);
-        localStorage.setItem("refreshToken", data.refreshToken);
-        localStorage.setItem("role", data.role);
-        localStorage.setItem("email", data.email);
-        localStorage.setItem("name", data.name);
-        localStorage.setItem("id", data.id);
+        // // Lưu localStorage cái này bị thừa vì mình dùng persist lưu vô local rồi m
+        // localStorage.setItem("accessToken", data.accessToken);
+        // localStorage.setItem("refreshToken", data.refreshToken);
+        // localStorage.setItem("role", data.role);
+        // localStorage.setItem("email", data.email);
+        // localStorage.setItem("name", data.name);
+        // localStorage.setItem("id", data.id);
 
         // ✅ Trả lại data để component có thể await
         return data;
@@ -40,13 +40,14 @@ export const loginUser = (credentials) => {
 
 
 export const handleLogout = (dispatch) => {
-  // 1️⃣ Xóa dữ liệu trong localStorage
-  localStorage.removeItem("accessToken");
-  localStorage.removeItem("refreshToken");
-  localStorage.removeItem("role");
-  localStorage.removeItem("email");
-  localStorage.removeItem("name");
-  localStorage.removeItem("id");
+  
+  // // 1️⃣ Xóa dữ liệu trong localStorage bị dư vì cái dispatch ở dưới nó reset luôn rồi
+  // localStorage.removeItem("accessToken");
+  // localStorage.removeItem("refreshToken");
+  // localStorage.removeItem("role");
+  // localStorage.removeItem("email");
+  // localStorage.removeItem("name");
+  // localStorage.removeItem("id");
 
   // 2️⃣ Reset state user trong redux
   dispatch({ type: FETCH_USER_LOGIN_FAIL });

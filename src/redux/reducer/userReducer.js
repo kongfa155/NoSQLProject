@@ -36,7 +36,7 @@ const userReducer = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         account: INITIAL_STATE.account,
-        isAuthenticated: false,
+        isAuthenticated: false, 
       };
 
     default:

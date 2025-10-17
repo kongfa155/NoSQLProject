@@ -15,12 +15,12 @@ import ReviewQuizPage from "./ReviewQuizPage/ReviewQuizPage";
 import ProtectedRoute from "../components/Users/ProtectedRoute";
 import UserPage from "./UserPage/UserPage";
 import LoginPage_ReduxTest from "./LoginPage/LoginPage";
+import SubjectPermissionHandler from "./SubjectPage/SubjectPermissionHandler";
 
 
 
 function App() {
   const [selected, setSelected] = useState("trangchu");
-  const [isAdmin, setIsAdmin] = useState(true);
   const location = useLocation();
 
   useEffect(() => {
@@ -48,7 +48,7 @@ function App() {
 
       {!location.pathname.startsWith("/quizzes/") && selected != "admin" && (
         <div className="h-[5%] w-full my-1">
-          <NavBar selected={selected} isAdmin={isAdmin} />
+          <NavBar selected={selected} />
         </div>
       )}
 
@@ -63,19 +63,23 @@ function App() {
             }
           />
           <Route path="/" element={<AboutUs />} />
-          <Route path="/subject/:type" element={<SubjectPage />} />
-          <Route path="/subject/:type/:subjectId" element={<QuizListPage />} />
+          <Route path="/subject/:type" element={<ProtectedRoute><SubjectPermissionHandler></SubjectPermissionHandler></ProtectedRoute>}>
+            <Route index element={<SubjectPage></SubjectPage>}></Route>
+            <Route path=":subjectId" element={<QuizListPage></QuizListPage>}></Route>
+          
+          </Route>
+          <Route path="/subject/:type/:subjectId" element={<ProtectedRoute><QuizListPage /></ProtectedRoute>} />
           <Route path="/login" element={<LoginPage />} />
           <Route
             path="/admin/settings"
-            element={<SettingPage></SettingPage>}
+            element={<ProtectedRoute><SettingPage></SettingPage></ProtectedRoute>}
           ></Route>
-          <Route path="/quizzes/:quizId" element={<QuizPage />} />
+          <Route path="/quizzes/:quizId" element={<ProtectedRoute><QuizPage /></ProtectedRoute>} />
           <Route
             path="/quizzes/review/:quizId"
-            element={<ReviewQuizPage />}
+            element={<ProtectedRoute><ReviewQuizPage /></ProtectedRoute>}
           ></Route>
-          <Route path="/user" element={<UserPage />} />
+          <Route path="/user" element={<ProtectedRoute><UserPage /></ProtectedRoute>} />
           <Route path="/login-test" element={<LoginPage_ReduxTest />} />;
           <Route path="*" element={<NotFoundPage></NotFoundPage>}></Route>
         </Routes>

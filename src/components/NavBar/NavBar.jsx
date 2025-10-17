@@ -1,19 +1,20 @@
 import './NavBar.css';
-import { useNavigate } from 'react-router-dom';
 import webLogo from '../../quizLogo_green.svg';
 import { useSelector } from 'react-redux';
+import { Link, useNavigate } from "react-router-dom"; // thêm Link
+import { FaUserCircle } from "react-icons/fa"; // thêm icon user
 import { useDispatch } from "react-redux";
 import { handleLogout } from "../../redux/action/userAction";
 
-export default function NavBar({selected="trangchu", isAdmin}){
-const dispatch = useDispatch();
+export default function NavBar({selected="trangchu"}){
+
 
       const account = useSelector((state) => state.user.account);
       const isAuthenticated = useSelector(
         (state) => state.user.isAuthenticated
       );
 
-
+      const dispatch = useDispatch();
     const map = {
         "trangchu":"",
         "monhoc":"subject/view",
@@ -52,7 +53,7 @@ const dispatch = useDispatch();
         >
           <p className="my-2">TRANG CHỦ</p>
         </div>
-        {!isAdmin ? (
+        {(account.role!="Admin") ? (
           <div
             className={`${
               selected == "monhoc" && "text-[#6ea269]"
@@ -86,7 +87,12 @@ const dispatch = useDispatch();
           <p className="my-2">ĐÓNG GÓP ĐỀ</p>
         </div>
         <div className="col-span-3"></div>
-        {isAuthenticated ? (
+    <div
+  className={`${
+    selected == "dangnhap" && "text-[#6ea269]"
+  } cursor-pointer duration-500 transform transition ease-in-out hover:scale-[1.15] flex justify-center items-center`}
+>
+  {isAuthenticated ? (
           <div>
             {" "}
             <button onClick={() => handleLogout(dispatch)}>Đăng xuất</button>
@@ -104,6 +110,7 @@ const dispatch = useDispatch();
             <p className="my-2">ĐĂNG NHẬP</p>
           </div>
         )}
+</div>
       </div>
     );
 
