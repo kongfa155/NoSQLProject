@@ -1,11 +1,26 @@
 //backend/src/routes/UserRoutes.js
+// const express = require("express");
+// const router = express.Router();
+// const userController = require("../controllers/userController");
+
+
+// router.get("/", userController.getUsers);
+// router.post("/",  userController.createUser);
+// router.patch("/:id/toggle", userController.toggleUserStatus);
+// router.delete("/:id",  userController.deleteUser);
+
+// module.exports = router;
+
 const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/userController");
-const { verifyAdmin } = require("../middlewares/verifyToken"); // 👈 Chuẩn với export ở trên
+const { verifyToken, verifyAdmin } = require("../middlewares/verifyToken");
 
-router.get("/", verifyAdmin, userController.getUsers);
+// Chỉ admin mới có thể tạo user
 router.post("/", verifyAdmin, userController.createUser);
+
+// Các route khác vẫn bình thường
+router.get("/", verifyAdmin, userController.getUsers);
 router.patch("/:id/toggle", verifyAdmin, userController.toggleUserStatus);
 router.delete("/:id", verifyAdmin, userController.deleteUser);
 

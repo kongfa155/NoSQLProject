@@ -4,7 +4,6 @@ const User = require("../models/User");
 // Lấy tất cả user
 exports.getUsers = async (req, res) => {
   try {
-    // Không trả về password trong danh sách user
     const users = await User.find().select('-password'); 
     res.json(users);
   } catch (err) {
@@ -15,17 +14,18 @@ exports.getUsers = async (req, res) => {
 // Thêm user mới (Sử dụng pre-save hook trong models/User.js để tự động băm mật khẩu)
 exports.createUser = async (req, res) => {
   try {
-    const user = new User(req.body);
-    // Mongoose hook sẽ tự động băm mật khẩu trước khi save
-    await user.save(); 
-    // Trả về user mà không bao gồm password
+    const userData = { ...req.body };
+    if (userData.active === undefined) userData.active = true; // ✅ Mặc định active
+
+    const user = new User(userData);
+    await user.save();
+
     const userResponse = user.toObject();
     delete userResponse.password;
     res.status(201).json(userResponse);
   } catch (err) {
-    // Đảm bảo thông báo lỗi thân thiện hơn
     if (err.code === 11000) {
-        return res.status(400).json({ message: "Email đã tồn tại" });
+      return res.status(400).json({ message: "Email đã tồn tại" });
     }
     res.status(400).json({ message: err.message });
   }

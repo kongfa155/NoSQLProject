@@ -2,24 +2,25 @@
 import SidebarAdmin from "../../components/Users/SidebarAdmin";
 import NavbarAdmin from "../../components/Users/NavbarAdmin";
 import UserTable from "../../components/Users/UserTable";
-import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import api from "../../api/axiosInstance";
+import api from "../../api/axiosInstance"; // axios đã có token
 
 function AdminDashboard() {
-const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState([]);
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await api.get("/users");
-        setUsers(res.data);
+        const { data } = await api.get("/users"); // gọi API /users
+        setUsers(data); // set vào state
+        console.log("Thông tin users: ", data);
       } catch (err) {
-        console.error(err);
+        console.error("Lỗi khi load danh sách user:", err);
       }
     };
-    fetchUsers();
-  }, []);
+
+    fetchUsers(); // gọi khi component mount
+  }, []); // [] = chỉ chạy 1 lần khi mount
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -28,7 +29,7 @@ const [users, setUsers] = useState([]);
 
       {/* Main Content */}
       <div className="flex flex-col flex-1">
-        <NavbarAdmin username="Lệ Tổ"  />
+        <NavbarAdmin username="Lệ Tổ" />
 
         <main className="flex-1 p-6">
           <UserTable users={users} setUsers={setUsers} />

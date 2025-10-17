@@ -1,0 +1,5 @@
+question,option1,option2,option3,option4,answer,explain
+Hàm số y = x^2 có đồ thị là gì?,Đường thẳng,Parabol,Nửa đường tròn,Đường hyperbol,Parabol,Đây là hàm bậc hai cơ bản nên có đồ thị là parabol.
+Nghiệm của phương trình x^2 - 4 = 0 là gì?,x = 2,x = -2,x = ±2,Không có nghiệm,x = ±2,Giải x^2 = 4 ta được x = ±2.
+Giá trị nhỏ nhất của hàm y = (x - 1)^2 + 3 là bao nhiêu?,1,3,0,2,3,Đỉnh parabol tại (1, 3) nên giá trị nhỏ nhất là 3.
+Nếu a > 0 thì đồ thị y = ax^2 + bx + c hướng như thế nào?,Lên trên,Xuống dưới,Ngang,Không xác định,Lên trên,Khi a > 0 thì parabol mở lên.

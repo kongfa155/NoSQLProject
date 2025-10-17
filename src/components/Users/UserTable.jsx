@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Trash2, Pencil } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "../../api/axiosInstance"; // ✅ axios có token sẵn
+import { useDispatch, useSelector } from "react-redux";
 
 // 🧩 Hàm chia trang
 function Paginate(items, currentPage, itemsPerPage) {
@@ -10,6 +11,7 @@ function Paginate(items, currentPage, itemsPerPage) {
   const start = (currentPage - 1) * itemsPerPage;
   const slicedItems = items.slice(start, start + itemsPerPage);
   return { currentPage, totalPages, slicedItems };
+  
 }
 
 export default function UserTable({ users, setUsers }) {
@@ -19,20 +21,20 @@ export default function UserTable({ users, setUsers }) {
   const [deletingUser, setDeletingUser] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [newUser, setNewUser] = useState({
-    name: "",
+    username: "",
     email: "",
     password: "", 
     confirmPassword: "", // 🔑 ĐÃ THÊM XÁC NHẬN MẬT KHẨU
-    role: "user",
-    status: "Active",
+    role: "User",
+    active:true,
   });
-
+const account = useSelector((state) => state.user.account);
   const itemsPerPage = 8;
 
   // Lọc user theo tên/email
   const filtered = users.filter(
     (u) =>
-      u.name?.toLowerCase().includes(search.toLowerCase()) ||
+      u.username?.toLowerCase().includes(search.toLowerCase()) ||
       u.email?.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -44,66 +46,114 @@ export default function UserTable({ users, setUsers }) {
 
   // 🗑️ Xóa user
   const handleDelete = async (id) => {
-    try {
-      await api.delete(`/users/${id}`);
-      setUsers((prev) => prev.filter((u) => u._id !== id));
-      setDeletingUser(null);
-    } catch (err) {
-      console.error(err);
-      alert("Lỗi khi xóa user!");
-    }
-  };
+  try {
+    await api.patch(`/users/${id}/toggle`, { status: "Inactive" });
+    setUsers((prev) =>
+      prev.map((u) => (u._id === id ? { ...u, status: "Inactive" } : u))
+    );
+    setDeletingUser(null);
+  } catch (err) {
+    console.error(err);
+    alert("Lỗi khi đổi trạng thái user!");
+  }
+};
 
   // ✏️ Cập nhật user
-  const handleUpdate = async () => {
-    try {
-      const { data } = await api.put(`/users/${editingUser._id}`, editingUser);
-      setUsers((prev) =>
-        prev.map((u) => (u._id === editingUser._id ? data : u))
-      );
-      setEditingUser(null);
-    } catch (err) {
-      console.error(err);
-      alert("Không thể cập nhật user!");
-    }
-  };
+ const handleUpdate = async () => {
+  try {
+    const payload = {
+      username: editingUser.username,
+      email: editingUser.email,
+      role: editingUser.role,
+      active: editingUser.active,
+    };
+    if (editingUser.password) payload.password = editingUser.password;
+
+    const { data } = await api.put(`/users/${editingUser._id}`, payload);
+
+    setUsers((prev) =>
+      prev.map((u) => (u._id === editingUser._id ? data : u))
+    );
+    setEditingUser(null);
+    alert("Cập nhật user thành công!");
+  } catch (err) {
+    console.error(err);
+    alert("Không thể cập nhật user!");
+  }
+};
 
   // ➕ Thêm user
-  const handleAdd = async () => {
-    const { name, email, password, confirmPassword } = newUser;
+ // src/components/User/UserTable.jsx
+const handleAdd = async () => {
+  const { 
+    username,
+     email, 
+     password, 
+     confirmPassword, 
+     role, 
+     active 
+    } = newUser;
 
-    // 1. Kiểm tra đủ thông tin
-    if (!name || !email || !password || !confirmPassword) { 
-      alert("Vui lòng nhập đủ Tên, Email, Mật khẩu và Xác nhận Mật khẩu!");
-      return;
-    }
+  // 1️⃣ Kiểm tra đủ thông tin
+  if (!username || !email || !password || !confirmPassword) {
+    alert("Vui lòng nhập đủ Tên, Email, Mật khẩu và Xác nhận Mật khẩu!");
+    return;
+  }
 
-    // 2. Kiểm tra khớp mật khẩu
-    if (password !== confirmPassword) {
-      alert("Mật khẩu và Xác nhận Mật khẩu không khớp!");
-      return;
-    }
+  // 2️⃣ Kiểm tra khớp mật khẩu
+  if (password !== confirmPassword) {
+    alert("Mật khẩu và Xác nhận Mật khẩu không khớp!");
+    return;
+  }
 
-    // Tạo payload chỉ bao gồm các trường cần gửi đi
-    const payload = {
-      name,
-      email,
-      password,
-      role: newUser.role,
-      status: newUser.status,
-    };
-
-    try {
-      const { data } = await api.post("/users", payload);
-      setUsers((prev) => [...prev, data]);
-      setShowAddModal(false);
-      // Reset state newUser về giá trị mặc định
-      setNewUser({ name: "", email: "", password: "", confirmPassword: "", role: "user", status: "Active" });
-    } catch (err) {
-      console.error(err);
-      alert("Không thể thêm user mới!");
-    }
+  // 3️⃣ Payload gửi backend
+  const payload = {
+    username,
+    email,
+    password,
+    role,
+    active:true,
   };
+
+  try {
+    // 4️⃣ Gọi API với token admin tự động từ axios interceptor
+    const { data } = await api.post("/users", payload);
+
+    // 5️⃣ Thêm user mới vào state để render bảng
+    setUsers((prev) => [...prev, data]);
+
+    // 6️⃣ Đóng modal và reset form
+    setShowAddModal(false);
+    setNewUser({
+      username: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      role: "user",
+      active: true,
+    });
+
+    // 7️⃣ Thông báo thành công
+    alert("Thêm user thành công!");
+  } catch (err) {
+    console.error(err);
+
+    // 8️⃣ Xử lý lỗi từ backend
+    if (err.response) {
+      // lỗi từ server
+      if (err.response.status === 403) {
+        alert("Bạn không có quyền thực hiện hành động này!");
+      } else if (err.response.data?.message) {
+        alert(err.response.data.message);
+      } else {
+        alert("Có lỗi xảy ra khi thêm user!");
+      }
+    } else {
+      alert("Không thể kết nối đến server!");
+    }
+  }
+};
+
 
   return (
     <div className="bg-white p-6 rounded-2xl shadow-md">
@@ -145,8 +195,20 @@ export default function UserTable({ users, setUsers }) {
         <tbody>
           {slicedItems.map((u) => (
             <tr key={u._id} className="border-b hover:bg-gray-50">
-              <td className="py-2">{u.name}</td>
-              <td>{u.status}</td>
+              <td className="py-2">{u.username}</td>
+              <td>
+              <span
+                className={`px-2 py-1 text-xs font-semibold rounded-full border
+                  ${
+                    u.active
+                      ?"text-green-700 bg-green-100 border-green-400"
+                     : "text-orange-700 bg-orange-100 border-orange-400"
+                  }`}
+              >
+                {u.active ? "Active" : "Inactive"}
+              </span>
+            </td>
+
               <td>{u.role}</td>
               <td>{u.email}</td>
               <td className="text-right space-x-2">
@@ -213,9 +275,10 @@ export default function UserTable({ users, setUsers }) {
 
               <input
                 className="border px-3 py-2 w-full rounded-md mb-3"
-                value={editingUser.name}
+                placeholder="Username mới"
+                value={editingUser.username}
                 onChange={(e) =>
-                  setEditingUser({ ...editingUser, name: e.target.value })
+                  setEditingUser({ ...editingUser, username: e.target.value })
                 }
               />
 
@@ -226,6 +289,26 @@ export default function UserTable({ users, setUsers }) {
                   setEditingUser({ ...editingUser, email: e.target.value })
                 }
               />
+              <input
+              type="password"
+              placeholder="Mật khẩu mới (nếu đổi)"
+              className="border px-3 py-2 w-full rounded-md mb-3"
+              value={editingUser.password || ""}
+              onChange={(e) =>
+                setEditingUser({ ...editingUser, password: e.target.value })
+              }
+            />
+
+            <select
+              className="border px-3 py-2 w-full rounded-md mb-4"
+              value={editingUser.active}
+              onChange={(e) =>
+                setEditingUser({ ...editingUser, active: e.target.value === "Active" })
+              }
+            >
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
 
               <select
                 className="border px-3 py-2 w-full rounded-md mb-4"
@@ -234,8 +317,8 @@ export default function UserTable({ users, setUsers }) {
                   setEditingUser({ ...editingUser, role: e.target.value })
                 }
               >
-                <option value="user">user</option>
-                <option value="admin">admin</option>
+                <option value="User">User</option>
+                <option value="Admin">Admin</option>
               </select>
 
               <div className="flex justify-between">
@@ -329,7 +412,7 @@ export default function UserTable({ users, setUsers }) {
                   className="border rounded-md px-3 py-2 text-sm"
                   value={newUser.name}
                   onChange={(e) =>
-                    setNewUser({ ...newUser, name: e.target.value })
+                    setNewUser({ ...newUser, username: e.target.value })
                   }
                 />
                 <input
@@ -367,8 +450,8 @@ export default function UserTable({ users, setUsers }) {
                     setNewUser({ ...newUser, role: e.target.value })
                   }
                 >
-                  <option value="user">user</option>
-                  <option value="admin">admin</option>
+                  <option value="User">User</option>
+                  <option value="Admin">Admin</option>
                 </select>
               </div>
 
@@ -392,4 +475,5 @@ export default function UserTable({ users, setUsers }) {
       </AnimatePresence>
     </div>
   );
+  
 }

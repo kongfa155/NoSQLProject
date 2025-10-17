@@ -12,6 +12,7 @@ const INITIAL_STATE = {
     email: "",
     role: "",
     id: "",
+    active : true,//
   },
   isAuthenticated: false,
 };
@@ -19,15 +20,17 @@ const INITIAL_STATE = {
 const userReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case FETCH_USER_LOGIN_SUCCESS:
+      //  const userData = action.payload.user || {};// thaygpt/gimi chỉ hoặc hại t
       return {
         ...state,
         account: {
-          access_token: action.payload.accessToken,
-          refresh_token: action.payload.refreshToken,
+          accessToken: action.payload.accessToken,
+          refreshToken: action.payload.refreshToken,
           username: action.payload.name,
           email: action.payload.email,
           role: action.payload.role,
           id: action.payload.id || action.payload._id || "", // nếu backend có trả id
+          active: action.payload.active ,//
         },
         isAuthenticated: true,
       };

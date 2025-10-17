@@ -3,7 +3,8 @@ import webLogo from '../../quizLogo_green.svg';
 import { useSelector } from 'react-redux';
 import { Link, useNavigate } from "react-router-dom"; // thêm Link
 import { FaUserCircle } from "react-icons/fa"; // thêm icon user
-
+import { useDispatch } from "react-redux";
+import { handleLogout } from "../../redux/action/userAction";
 
 export default function NavBar({selected="trangchu"}){
 
@@ -13,14 +14,14 @@ export default function NavBar({selected="trangchu"}){
         (state) => state.user.isAuthenticated
       );
 
-
+      const dispatch = useDispatch();
     const map = {
-        "trangchu":"",
-        "monhoc":"subject/view",
-        "donggopde":"",
-        "canhan":"login",
-        "chinhsuamonhoc":"subject/edit"
-    }
+      trangchu: "",
+      monhoc: "subject/view",
+      donggopde: "donggopde",
+      canhan: "login",
+      chinhsuamonhoc: "subject/edit",
+    };
     
     const navigate = useNavigate();
     
@@ -86,25 +87,37 @@ export default function NavBar({selected="trangchu"}){
           <p className="my-2">ĐÓNG GÓP ĐỀ</p>
         </div>
         <div className="col-span-3"></div>
-    <div
+   <div
   className={`${
     selected == "dangnhap" && "text-[#6ea269]"
   } cursor-pointer duration-500 transform transition ease-in-out hover:scale-[1.15] flex justify-center items-center`}
 >
-  {!isAuthenticated ? (
-    <Link
-      to="/login"
-      className="my-2 text-black font-semibold hover:text-[#6ea269]"
-    >
-      ĐĂNG NHẬP
-    </Link>
+  {isAuthenticated ? (
+    <div>
+      <button
+        onClick={() => handleLogout(dispatch)}
+        className="px-4 py-2 font-semibold border-2 border-[#41563F] bg-[#41563F] text-white rounded-xl 
+                   transition-all duration-300 ease-in-out hover:bg-gray-200 hover:text-black hover:scale-110"
+      >
+        ĐĂNG XUẤT
+      </button>
+    </div>
   ) : (
-  
-    <Link to="/settings" className="flex items-center justify-center">
-      <FaUserCircle className="text-2xl text-black hover:text-[#6ea269] mr-2 " />
-        HỒ SƠ
-    </Link>
-    
+    <div
+      className={`${
+        selected == "dangnhap" && "text-[#6ea269]"
+      } cursor-pointer duration-500 transform transition ease-in-out hover:scale-[1.15]`}
+      onClick={() => {
+        handleItemOnClick("canhan");
+      }}
+    >
+      <p
+        className="px-4 py-2 font-semibold border-2 border-black bg-gray-200 text-black rounded-xl 
+                   transition-all duration-300 ease-in-out hover:bg-[#41563F] hover:text-white hover:scale-110"
+      >
+        ĐĂNG NHẬP
+      </p>
+    </div>
   )}
 </div>
       </div>

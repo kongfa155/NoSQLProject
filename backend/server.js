@@ -21,7 +21,7 @@ app.use("/api/chapters", require("./routes/chapterRoutes.js"));
 
 app.use("/api/users", require("./routes/userRoutes.js"));
 app.use("/api/auth", require("./routes/authRoutes.js")); 
-
+app.use("/api/contributed", require("./routes/contributeRoutes.js"));
 
 
 //Lắng nghe port backend, mặc định là 5000

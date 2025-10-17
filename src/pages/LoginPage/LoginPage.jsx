@@ -1,9 +1,8 @@
 import "./LoginPage.css";
-
 import quizLogo from "../../quizLogo_green.svg";
 import { FaEye as EyeLogo } from "react-icons/fa";
 import { RiEyeOffFill as CloseEye } from "react-icons/ri";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../../redux/action/userAction";
 import { useNavigate } from "react-router-dom";
@@ -18,7 +17,11 @@ export default function     () {
 
   const account = useSelector((state) => state.user.account);
   const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
- 
+  useEffect(()=>{
+    if(isAuthenticated){
+    navigate("/");
+  }
+  },[]);
   const handleLogin = async () => {
     try {
       setError("");
@@ -113,7 +116,7 @@ export default function     () {
             className="w-[70%] h-[3rem] flex justify-center items-center 
             bg-[#41563F] text-white font-semibold rounded-[8px] cursor-pointer 
             hover:bg-[#6EA269] transition-all duration-500 select-none drop-shadow-md transform 
-             ease-in-out hover:scale-[1.15]"
+             ease-in-out hover:scale-[1.05]"
           >
             Đăng nhập
           </div>
