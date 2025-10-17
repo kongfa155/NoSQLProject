@@ -4,7 +4,8 @@ const router = express.Router();
 
 //Nhận các hàm từ controller
 const {
-  getSubjects, addSubject, getSubjectById
+  getSubjects, addSubject, getSubjectById,
+  deleteSubject
 } = require("../controllers/subjectController");
 
 
@@ -12,5 +13,5 @@ const {
 router.get("/", getSubjects);
 router.get("/:id", getSubjectById);
 router.post("/", addSubject);
-
+router.delete("/:id", deleteSubject);
 module.exports = router;

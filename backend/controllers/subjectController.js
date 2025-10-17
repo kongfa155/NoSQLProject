@@ -17,6 +17,18 @@ const addSubject = async (req, res) => {
   }
 };
 
+const deleteSubject = async (req, res) =>{
+  try{
+    const subject = await Subject.findByIdAndDelete(req.params.id);
+    if(!subject){
+      return res.status(404).json({message: "Not found subject"});
+    }
+    res.json({ message: "Xóa môn học thành công", deletedSubject: subject });
+  }catch(err){
+    console.error(err);
+    res.status(500).json({ message: "Lỗi server khi xóa môn học" });
+  }
+}
 
 
 const getSubjectById = async (req, res) => {
@@ -32,5 +44,5 @@ const getSubjectById = async (req, res) => {
 };
 
 module.exports={
-    getSubjects, addSubject, getSubjectById
+    getSubjects, addSubject, getSubjectById, deleteSubject
 }

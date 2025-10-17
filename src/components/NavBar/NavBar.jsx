@@ -91,18 +91,20 @@ export default function NavBar({selected="trangchu"}){
     selected == "dangnhap" && "text-[#6ea269]"
   } cursor-pointer duration-500 transform transition ease-in-out hover:scale-[1.15] flex justify-center items-center`}
 >
-  {isAuthenticated ? (
+  {!isAuthenticated ? (
     <Link
       to="/login"
-      className="my-2 text-white font-semibold hover:text-[#6ea269]"
+      className="my-2 text-black font-semibold hover:text-[#6ea269]"
     >
       ĐĂNG NHẬP
     </Link>
   ) : (
   
-    <Link to="/setting" className="flex items-center justify-center">
-      <FaUserCircle className="text-2xl text-white hover:text-gray-300" />
+    <Link to="/settings" className="flex items-center justify-center">
+      <FaUserCircle className="text-2xl text-black hover:text-[#6ea269] mr-2 " />
+        HỒ SƠ
     </Link>
+    
   )}
 </div>
       </div>

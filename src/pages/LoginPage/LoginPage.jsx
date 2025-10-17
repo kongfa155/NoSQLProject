@@ -1,4 +1,5 @@
 import "./LoginPage.css";
+
 import quizLogo from "../../quizLogo_green.svg";
 import { FaEye as EyeLogo } from "react-icons/fa";
 import { RiEyeOffFill as CloseEye } from "react-icons/ri";
