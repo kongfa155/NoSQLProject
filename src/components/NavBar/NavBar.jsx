@@ -16,12 +16,12 @@ export default function NavBar({selected="trangchu"}){
 
       const dispatch = useDispatch();
     const map = {
-        "trangchu":"",
-        "monhoc":"subject/view",
-        "donggopde":"",
-        "canhan":"login",
-        "chinhsuamonhoc":"subject/edit"
-    }
+      trangchu: "",
+      monhoc: "subject/view",
+      donggopde: "donggopde",
+      canhan: "login",
+      chinhsuamonhoc: "subject/edit",
+    };
     
     const navigate = useNavigate();
     

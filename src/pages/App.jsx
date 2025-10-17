@@ -16,6 +16,8 @@ import ProtectedRoute from "../components/Users/ProtectedRoute";
 import UserPage from "./UserPage/UserPage";
 import LoginPage_ReduxTest from "./LoginPage/LoginPage";
 import SubjectPermissionHandler from "./SubjectPage/SubjectPermissionHandler";
+import ContributedQuizPage from "./ContributedQuizPage/ContributedQuizPage";
+import AdminReviewContributed from "./AdminReviewContributed/AdminReviewContributed";
 
 
 
@@ -63,23 +65,77 @@ function App() {
             }
           />
           <Route path="/" element={<AboutUs />} />
-          <Route path="/subject/:type" element={<ProtectedRoute><SubjectPermissionHandler></SubjectPermissionHandler></ProtectedRoute>}>
+          <Route
+            path="/subject/:type"
+            element={
+              <ProtectedRoute>
+                <SubjectPermissionHandler></SubjectPermissionHandler>
+              </ProtectedRoute>
+            }
+          >
             <Route index element={<SubjectPage></SubjectPage>}></Route>
-            <Route path=":subjectId" element={<QuizListPage></QuizListPage>}></Route>
-          
+            <Route
+              path=":subjectId"
+              element={<QuizListPage></QuizListPage>}
+            ></Route>
           </Route>
-          <Route path="/subject/:type/:subjectId" element={<ProtectedRoute><QuizListPage /></ProtectedRoute>} />
+          <Route
+            path="/subject/:type/:subjectId"
+            element={
+              <ProtectedRoute>
+                <QuizListPage />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/login" element={<LoginPage />} />
           <Route
             path="/admin/settings"
-            element={<ProtectedRoute><SettingPage></SettingPage></ProtectedRoute>}
+            element={
+              <ProtectedRoute>
+                <SettingPage></SettingPage>
+              </ProtectedRoute>
+            }
           ></Route>
-          <Route path="/quizzes/:quizId" element={<ProtectedRoute><QuizPage /></ProtectedRoute>} />
+          <Route
+            path="/quizzes/:quizId"
+            element={
+              <ProtectedRoute>
+                <QuizPage />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/quizzes/review/:quizId"
-            element={<ProtectedRoute><ReviewQuizPage /></ProtectedRoute>}
+            element={
+              <ProtectedRoute>
+                <ReviewQuizPage />
+              </ProtectedRoute>
+            }
           ></Route>
-          <Route path="/user" element={<ProtectedRoute><UserPage /></ProtectedRoute>} />
+          <Route
+            path="/user"
+            element={
+              <ProtectedRoute>
+                <UserPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/donggopde"
+            element={
+              <ProtectedRoute>
+                <ContributedQuizPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/review-contributed/:id"
+            element={
+              <ProtectedRoute requireAdmin={true}>
+                <AdminReviewContributed />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/login-test" element={<LoginPage_ReduxTest />} />;
           <Route path="*" element={<NotFoundPage></NotFoundPage>}></Route>
         </Routes>

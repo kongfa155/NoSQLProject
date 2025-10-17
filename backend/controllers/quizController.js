@@ -49,6 +49,8 @@ const getQuizBySubject = async (req, res) => {
     res.status(500).json({ message: "Lỗi khi lấy quiz theo subject", error });
   }
 };
+
+
 module.exports = {
   getQuiz,
   addQuiz,

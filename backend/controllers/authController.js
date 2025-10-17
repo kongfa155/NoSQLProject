@@ -8,15 +8,14 @@ const User = require("../models/User");
 // Xử lý đăng nhập
 // -------------------------
 exports.login = async (req, res) => { 
-  try {
-    const { username, email, password } = req.body;
-    
-    const searchEmail = (email || '').toLowerCase().trim();
-    const searchUsername = (username || '').toLowerCase().trim();
+try {
+const { username, email, password } = req.body;
+const searchEmail = (email || '').toLowerCase().trim();
+const searchUsername = (username || '').toLowerCase().trim();
     
-    if (!(searchEmail || searchUsername) || !password) {
-      return res.status(400).json({ message: "Vui lòng gửi email và mật khẩu" });
-    }
+if (!(searchEmail || searchUsername) || !password) {
+return res.status(400).json({ message: "Vui lòng gửi email và mật khẩu" });
+}
 
     // ✅ BƯỚC MỚI: Xây dựng mảng điều kiện $or động
     const orConditions = [];
@@ -35,10 +34,10 @@ exports.login = async (req, res) => {
         return res.status(400).json({ message: "Vui lòng gửi email hoặc username" });
     }
 
-    // Tìm kiếm user bằng $or
-    const user = await User.findOne({ $or: orConditions });
+// Tìm kiếm user bằng $or
+const user = await User.findOne({ $or: orConditions });
 
-    if (!user) return res.status(400).json({ message: "Email không tồn tại" });
+if (!user) return res.status(400).json({ message: "Email không tồn tại" });
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ message: "Sai mật khẩu" });

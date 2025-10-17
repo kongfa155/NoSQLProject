@@ -1,0 +1,179 @@
+// controllers/contributeController.js
+const Quiz = require("../models/quiz");
+const QuestionText = require("../models/questionText");
+const QuestionImage = require("../models/questionImage");
+const ContributedQuiz = require("../models/contributedQuiz");
+const Subject = require("../models/subject");
+const Chapter = require("../models/chapter");
+const fs = require("fs");
+const csv = require("csv-parser");
+
+const approveContribution = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const contrib = await ContributedQuiz.findById(id);
+    if (!contrib)
+      return res.status(404).json({ message: "Không tìm thấy đóng góp" });
+
+    const subject = await Subject.findById(contrib.subjectId);
+    if (!subject)
+      return res.status(400).json({ message: "Môn học không hợp lệ" });
+
+    const chapter = await Chapter.findById(contrib.chapterId);
+    if (!chapter)
+      return res.status(400).json({ message: "Chương không hợp lệ" });
+
+    // 1. Tạo Quiz mới
+    const quiz = await Quiz.create({
+      name: contrib.name,
+      subjectId: contrib.subjectId,
+      chapterId: contrib.chapterId,
+      questionNum: contrib.questions.length,
+      timeLimit: contrib.timeLimit || 0,
+      availability: true,
+    });
+
+    // 2. Tạo câu hỏi text & image
+    const questionsText = contrib.questions
+      .filter((q) => !q.image)
+      .map((q) => ({
+        quizId: quiz._id,
+        question: q.question,
+        options: q.options,
+        answer: q.answer,
+        explain: q.explain || "",
+      }));
+    if (questionsText.length > 0) await QuestionText.insertMany(questionsText);
+
+    const questionsImage = contrib.questions
+      .filter((q) => q.image)
+      .map((q) => ({
+        quizId: quiz._id,
+        question: q.question,
+        image: q.image,
+        options: q.options,
+        answer: q.answer,
+        explain: q.explain || "",
+      }));
+    if (questionsImage.length > 0)
+      await QuestionImage.insertMany(questionsImage);
+
+    // Cập nhật trạng thái contributed
+    contrib.status = "approved";
+    contrib.approvedAt = new Date();
+    contrib.approvedBy = req.user?._id || null;
+    await contrib.save();
+
+    res.json({
+      message: "✅ Đã duyệt và tạo quiz thành công!",
+      quizId: quiz._id,
+    });
+  } catch (err) {
+    console.error("Lỗi duyệt đóng góp:", err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+const getAllContributedQuizzes = async (req, res) => {
+  try {
+    const quizzes = await ContributedQuiz.find()
+      .populate("contributorId", "username email")
+      .populate("subjectId", "name")
+      .populate("chapterId", "name")
+      .sort({ createdAt: -1 });
+    res.json(quizzes);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Lỗi khi lấy danh sách đề đóng góp" });
+  }
+};
+const handleCSVUpload = async (req, res) => {
+  try {
+    if (!req.file)
+      return res.status(400).json({ message: "Chưa tải lên file CSV nào!" });
+
+    const filePath = req.file.path;
+    const results = [];
+
+    fs.createReadStream(filePath)
+      .pipe(csv())
+      .on("data", (row) => results.push(row))
+      .on("end", async () => {
+        try {
+          const questions = results.map((r) => ({
+            question: r.question,
+            options: [r.option1, r.option2, r.option3, r.option4],
+            answer: r.answer,
+            explain: r.explain || "",
+          }));
+
+          await ContributedQuiz.create({
+            contributorId: req.user.id, // ✅ Lấy từ token middleware
+            name: req.body.name || "Đề đóng góp từ CSV",
+            subjectId: req.body.subjectId,
+            chapterId: req.body.chapterId,
+            questionNum: questions.length,
+            timeLimit: req.body.timeLimit || 45,
+            questions,
+          });
+
+          fs.unlinkSync(filePath);
+          res.json({ message: "✅ Tải lên và lưu đề đóng góp thành công!" });
+        } catch (err) {
+          console.error("Lỗi khi lưu đề:", err);
+          res.status(500).json({ message: "Lỗi khi lưu đề đóng góp!" });
+        }
+      });
+  } catch (err) {
+    console.error("Lỗi CSV Upload:", err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+const rejectContribution = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const contrib = await ContributedQuiz.findById(id);
+    if (!contrib) {
+      return res.status(404).json({ message: "Không tìm thấy đóng góp" });
+    }
+
+    contrib.status = "rejected";
+    contrib.rejectedAt = new Date();
+    contrib.rejectedBy = req.user?._id || null;
+    await contrib.save();
+
+    res.json({ message: `❌ Đã từ chối đề "${contrib.name}".` });
+  } catch (err) {
+    console.error("Lỗi khi từ chối đề:", err);
+    res.status(500).json({ message: "Lỗi khi từ chối đề đóng góp!" });
+  }
+};
+
+const getDetailContributedQuiz = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const contrib = await ContributedQuiz.findById(id)
+      .populate("contributorId", "username email")
+      .populate("subjectId", "name")
+      .populate("chapterId", "name");
+
+    if (!contrib) {
+      return res.status(404).json({ message: "Không tìm thấy đề đóng góp." });
+    }
+
+    res.json(contrib);
+  } catch (err) {
+    console.error("❌ Lỗi khi lấy đề đóng góp:", err);
+    res.status(500).json({ message: "Lỗi khi lấy đề đóng góp." });
+  }
+};
+
+module.exports = {
+  handleCSVUpload,
+  approveContribution,
+  getAllContributedQuizzes,
+  rejectContribution,
+  getDetailContributedQuiz,
+};

@@ -22,8 +22,8 @@ const userReducer = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         account: {
-          access_token: action.payload.accessToken,
-          refresh_token: action.payload.refreshToken,
+          accessToken: action.payload.accessToken,
+          refreshToken: action.payload.refreshToken,
           username: action.payload.name,
           email: action.payload.email,
           role: action.payload.role,

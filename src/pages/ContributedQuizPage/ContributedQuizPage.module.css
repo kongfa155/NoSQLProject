@@ -1,0 +1,123 @@
+.container {
+    width: 95%;
+    margin: 1rem auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.introBox {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    padding: 2rem;
+    text-align: center;
+}
+
+.title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #3d763a;
+}
+
+.description {
+    margin-top: 1rem;
+    color: #555;
+    font-size: 1.1rem;
+}
+
+.contentBox {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+    padding: 2rem;
+    min-height: 400px;
+}
+
+.formArea {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.dropdownRow {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.label {
+    width: 25%;
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: #3d763a;
+}
+
+.dropdownContainer {
+    display: flex;
+    align-items: center;
+    width: 75%;
+    position: relative;
+}
+
+.dropdownInput {
+    width: 100%;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    background-color: #fafafa;
+}
+
+.expandButton {
+    position: absolute;
+    right: 0.5rem;
+    font-size: 1.8rem;
+    color: #3d763a;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.rotate {
+    transform: rotate(180deg);
+}
+
+.dropdownList {
+    max-height: 0;
+    overflow-y: hidden;
+    background: #f5f5f5;
+    border-radius: 8px;
+    transition: max-height 0.4s ease;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+}
+
+.showList {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.dropdownItem {
+    padding: 0.8rem 1rem;
+    font-size: 1rem;
+    background: white;
+    margin: 0.3rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.dropdownItem:hover {
+    background: #6ea269;
+    color: white;
+}
+
+.addQuizBox {
+    margin-top: 1.5rem;
+    background: #f9faf9;
+    border: 2px dashed #6ea269;
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    color: #333;
+    font-size: 1.1rem;
+}

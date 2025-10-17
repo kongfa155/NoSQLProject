@@ -9,6 +9,7 @@ const {
   getQuizFromChapter,
   getQuizById,
   getQuizBySubject,
+  uploadQuizCSV, 
 } = require("../controllers/quizController.js");
 
 //Gọi các hàm theo nhánh ví dụ question/ mà phương thức get sẽ gọi hàm 1,...
@@ -17,5 +18,4 @@ router.get("/subject/:subjectid", getQuizBySubject);
 router.get("/:id", getQuizById);
 router.post("/", addQuiz);
 router.get("/", getQuiz);
-
 module.exports = router;
