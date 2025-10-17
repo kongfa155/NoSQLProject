@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom"; // thêm Link
 import { FaUserCircle } from "react-icons/fa"; // thêm icon user
 
 
-export default function NavBar({selected="trangchu", isAdmin}){
+export default function NavBar({selected="trangchu"}){
 
 
       const account = useSelector((state) => state.user.account);
@@ -52,7 +52,7 @@ export default function NavBar({selected="trangchu", isAdmin}){
         >
           <p className="my-2">TRANG CHỦ</p>
         </div>
-        {!isAdmin ? (
+        {(account.role!="Admin") ? (
           <div
             className={`${
               selected == "monhoc" && "text-[#6ea269]"

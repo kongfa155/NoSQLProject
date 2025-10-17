@@ -17,7 +17,9 @@ export default function     () {
 
   const account = useSelector((state) => state.user.account);
   const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
-
+  if(isAuthenticated){
+    navigate("/");
+  }
   const handleLogin = async () => {
     try {
       setError("");
@@ -32,7 +34,7 @@ export default function     () {
 
       if (result?.accessToken) {
         console.log("✅ Đăng nhập thành công, điều hướng...");
-        navigate("/subject/view/68eb37b1199055b25477d6f0");
+        navigate("/");
       } else {
         setError("Đăng nhập thất bại.");
       }

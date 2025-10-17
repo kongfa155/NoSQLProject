@@ -1,9 +1,11 @@
 
 import { IoMdCheckmarkCircleOutline as CheckIcon} from "react-icons/io";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 export default function AboutUs(){
     const navigate = useNavigate();
+    const {isAuthenticated} = useSelector((state)=>state.user);
     return (
         
         <div className=" w-[95%] mx-auto mt-2 rounded-xl shadow-md shadow-gray-500 pb-8">
@@ -43,6 +45,7 @@ export default function AboutUs(){
             </div>
 
 
+            {!(isAuthenticated)?
             <div className="my-8 pb-12 w-[90%] mx-auto shadow-md shadow-gray-500 rounded-xl font-thin flex flex-col justify-center items-center ">
                 <p className="mt-8 font-black text-4xl ">Sẵn Sàng Tham Gia?</p>
                 <p className="py-4 text-gray-700 ">Tham gia cùng những người khác để tạo trải nghiệm làm bài kiểm tra ngay trong
@@ -61,6 +64,27 @@ export default function AboutUs(){
                     Tạo Tài Khoản Ngay 
                 </div>
             </div>
+            :
+            <div className="my-8 pb-12 w-[90%] mx-auto shadow-md shadow-gray-500 rounded-xl font-thin flex flex-col justify-center items-center ">
+                <p className="mt-8 font-black text-4xl ">Sẵn Sàng Tham Gia?</p>
+                <p className="py-4 text-gray-700 ">Tham gia cùng những người khác để tạo trải nghiệm làm bài kiểm tra ngay trong
+                    hôm nay. Hoàn toàn miễn phí cho việc khởi tạo!
+                </p>
+                <div 
+                className="rounded-2xl text-xl font-black 
+                mx-auto px-6 py-2 text-gray-400 bg-[#dfdfdf] flex items-center
+                 
+                cursor-pointer select-none
+                "
+               
+                >
+                
+                
+                    Bạn đã đăng nhập rồi 
+                </div>
+            </div>
+
+        }
 
         </div>
 
