@@ -1,18 +1,19 @@
-//src/components/User/ProtectedRoute.jsx
-import { useSelector } from "react-redux";
-import { Navigate } from "react-router-dom";
+// import { useSelector } from "react-redux";
+// import { Navigate } from "react-router-dom";
 
-export default function ProtectedRoute({ children, requireAdmin = false}) {
+// export default function ProtectedRoute({ children, requireAdmin = false }) {
+//   const user = useSelector((state) => state.user);
 
-  const {isAuthenticated, account} = useSelector((state)=> state.user);
+//   if (!user.isAuthenticated) {
+//     return <Navigate to="/login" replace />;
+//   }
 
+//   if (requireAdmin && user.role?.toLowerCase() !== "admin") {
+//     return <Navigate to="/" replace />;
+//   }
 
-  if(!isAuthenticated){
-    return <Navigate to="/login" replace/>;
-  }
-
-  if (requireAdmin && account.role !== "Admin") {
-    return <Navigate to="/login" replace />;
-  }
+//   return children;
+// }
+export default function ProtectedRoute({ children }) {
   return children;
 }

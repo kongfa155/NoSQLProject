@@ -18,9 +18,7 @@ export default function     () {
 
   const account = useSelector((state) => state.user.account);
   const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
-  if(isAuthenticated){
-    navigate("/");
-  }
+ 
   const handleLogin = async () => {
     try {
       setError("");

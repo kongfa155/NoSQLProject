@@ -14,13 +14,9 @@ import SmokeTrail from "../components/Effect/SmokeTrail";
 import ReviewQuizPage from "./ReviewQuizPage/ReviewQuizPage";
 import ProtectedRoute from "../components/Users/ProtectedRoute";
 import UserPage from "./UserPage/UserPage";
-import LoginPage_ReduxTest from "./LoginPage/LoginPage";
-import SubjectPermissionHandler from "./SubjectPage/SubjectPermissionHandler";
-
-
-
 function App() {
   const [selected, setSelected] = useState("trangchu");
+  const [isAdmin, setIsAdmin] = useState(true);
   const location = useLocation();
 
   useEffect(() => {
@@ -48,7 +44,7 @@ function App() {
 
       {!location.pathname.startsWith("/quizzes/") && selected != "admin" && (
         <div className="h-[5%] w-full my-1">
-          <NavBar selected={selected} />
+          <NavBar selected={selected} isAdmin={isAdmin} />
         </div>
       )}
 
@@ -62,25 +58,21 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="/" element={<AboutUs />} />
-          <Route path="/subject/:type" element={<ProtectedRoute><SubjectPermissionHandler></SubjectPermissionHandler></ProtectedRoute>}>
-            <Route index element={<SubjectPage></SubjectPage>}></Route>
-            <Route path=":subjectId" element={<QuizListPage></QuizListPage>}></Route>
           
-          </Route>
-          <Route path="/subject/:type/:subjectId" element={<ProtectedRoute><QuizListPage /></ProtectedRoute>} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route
-            path="/admin/settings"
-            element={<ProtectedRoute><SettingPage></SettingPage></ProtectedRoute>}
+          <Route path="/" element={<AboutUs />} />
+          <Route path="/subject/:type" element={<SubjectPage />} />
+          <Route path="/subject/:type/:subjectid" element={<QuizListPage />} />
+          <Route path="/login" element={<LoginPage />} /><Route
+            path="/settings"
+            element={<SettingPage></SettingPage>}
           ></Route>
-          <Route path="/quizzes/:quizId" element={<ProtectedRoute><QuizPage /></ProtectedRoute>} />
+          <Route path="/quizzes/:quizid" element={<QuizPage />} />
           <Route
-            path="/quizzes/review/:quizId"
-            element={<ProtectedRoute><ReviewQuizPage /></ProtectedRoute>}
+            path="/quizzes/review/:quizid"
+            element={<ReviewQuizPage />}
           ></Route>
-          <Route path="/user" element={<ProtectedRoute><UserPage /></ProtectedRoute>} />
-          <Route path="/login-test" element={<LoginPage_ReduxTest />} />;
+          <Route path="/user" element={<UserPage />} />
+
           <Route path="*" element={<NotFoundPage></NotFoundPage>}></Route>
         </Routes>
       </div>
