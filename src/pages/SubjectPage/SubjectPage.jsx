@@ -6,6 +6,7 @@ import { useParams } from 'react-router-dom';
 
 import ConfirmAlert from '../../components/AlertBoxes/ConfirmAlert';
 import CreateSubjectModal from '../../components/CreateSubJectModal/CreateSubjectModal';
+import DefaultAlert from '../../components/AlertBoxes/DefaultAlert';
 
 export default function SubjectPage(){
     const [showCreateSubjectModal, setShowCreateSubjectModal] = useState(false);
@@ -80,7 +81,7 @@ export default function SubjectPage(){
 }
 
 function SubjectBox({subject, navigate, type, reFetchSubjects}){
-    const [showConfirm, setShowConfirm] = useState(false);
+    const [showConfirm, setShowConfirm] = useState(0);
     return (
         <div className="relative h-[300px] w-[100%] shadow-sm shadow-black justify-items-center overflow-hidden rounded-xl">
             <div className="h-[40%] w-full ">
@@ -138,8 +139,10 @@ function SubjectBox({subject, navigate, type, reFetchSubjects}){
                 }
 
             }}
-            closeButton={()=>{setShowConfirm(false)}}
+            closeButton={()=>{setShowConfirm(0)}}
             ></ConfirmAlert>}
+
+           
             </div>
         
         }

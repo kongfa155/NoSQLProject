@@ -8,6 +8,8 @@ import { MdExpandMore as ExpandButton } from "react-icons/md";
 import CreateQuizModal from "../../components/CreateQuizModal/CreateQuizModal";
 import ConfirmModal from "../../components/ConfirmModal/ConfirmModal";
 import { useSelector } from "react-redux";
+import ConfirmAlert from "../../components/AlertBoxes/ConfirmAlert";
+import DefaultAlert from "../../components/AlertBoxes/DefaultAlert";
 
 export default function QuizListPage() {
   const { subjectId } = useParams();
@@ -201,6 +203,7 @@ export default function QuizListPage() {
 
 // ---------------- CHAPTER BOX ----------------
 function ChapterBox({ chapter, setSelectedQuiz, onReview, type }) {
+  
   const [expandChapterBox, setExpandChapterBox] = useState(false);
 
   const handleOpenModal = (quiz) => {
@@ -224,7 +227,9 @@ function ChapterBox({ chapter, setSelectedQuiz, onReview, type }) {
         } transition-all duration-500 overflow-hidden`}
       >
         <div className="w-full h-full pb-8 overflow-scroll">
-          {chapter.quizzes.map((quiz, i) => (
+          {chapter.quizzes.map((quiz, i) => {
+            if(quiz.availability){
+              return (
             <QuizBox
               key={`quiz_chapter_${i}`}
               quiz={quiz}
@@ -232,7 +237,9 @@ function ChapterBox({ chapter, setSelectedQuiz, onReview, type }) {
               onReview={onReview}
               type={type}
             />
-          ))}
+          )
+            }
+          })}
         </div>
       </div>
     </div>
@@ -241,6 +248,20 @@ function ChapterBox({ chapter, setSelectedQuiz, onReview, type }) {
 
 // ---------------- QUIZ BOX ----------------
 function QuizBox({ quiz, onOpenModal, onReview, type }) {
+
+  async function handleDeleteQuiz(){
+    try{
+      axios.put(`/api/quizzes/${quiz._id}`,{
+        availability:  false
+      })
+      .then(res=>{setShowConfirm(2)})
+    .catch((err)=>setShowConfirm(3));
+    }catch(err){
+      setShowConfirm(3);
+    }
+  }
+
+  const [showConfirm, setShowConfirm] = useState(0);
   return (
     <div className="mt-4 rounded-[8px] border border-gray-300 w-[95%] pt-4 pb-2 px-8 mx-auto flex justify-between items-center hover:shadow-md transition-all">
       <div>
@@ -265,11 +286,15 @@ function QuizBox({ quiz, onOpenModal, onReview, type }) {
         )}
         {type === "edit" && (
           <>
-            <button className="bg-[#EF4444] text-white px-6 py-2 rounded-xl shadow-sm shadow-black hover:scale-105 transition-all duration-400">
+            <button 
+            onClick={()=>{
+              setShowConfirm(1);
+            }}
+            className="bg-[#EF4444] text-white border-none px-6 py-2 shadow-black shadow-sm rounded-xl  hover:scale-105 transition-all duration-400">
               Xóa bài
             </button>
             <button
-              className="text-[#3D763A] bg-white border-none px-6 py-2 rounded-xl shadow-sm shadow-black hover:scale-105 transition-all duration-400"
+              className="text-[#3D763A] bg-white border-none px-6 py-2 shadow-black shadow-sm rounded-xl  hover:scale-105 transition-all duration-400"
               onClick={() => onOpenModal(quiz)}
             >
               Chỉnh sửa
@@ -277,6 +302,17 @@ function QuizBox({ quiz, onOpenModal, onReview, type }) {
           </>
         )}
       </div>
+        {showConfirm==2&&
+            <DefaultAlert
+            title="Xóa bộ đề thành công" information="Đã xóa thành công bộ đề!" closeButton={()=>{window.location.reload()}}
+            ></DefaultAlert>
+            }
+             {showConfirm==3&&
+            <DefaultAlert
+            title="Xóa bộ đề thất bại" information="Không thể xóa bộ đề này, hãy thử lại sau" closeButton={()=>{setShowAlert(0)}}
+            ></DefaultAlert>
+            }
+        {showConfirm==1&&<ConfirmAlert confirmButton={()=>{handleDeleteQuiz()}} title="Xóa môn học" information={`Bạn có chắc chắc muốn xóa bài "${quiz.name}" không?`}isNegative={true} closeButton={()=>{setShowAlert(0)}}></ConfirmAlert>}
     </div>
   );
 }

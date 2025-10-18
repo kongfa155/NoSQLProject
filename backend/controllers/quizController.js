@@ -10,7 +10,25 @@ const addQuiz = async (req, res) => {
   await newQuiz.save();
   res.json(newQuiz);
 };
+const updateQuizAvailability = async (req, res) => {
+  try {
+    const { availability } = req.body; // chỉ lấy trường cần update
+    const quiz = await Quiz.findByIdAndUpdate(
+      req.params.id,
+      { availability },             // chỉ update trường này
+      { new: true }         // trả về document sau khi update
+    );
 
+    if (!quiz) {
+      return res.status(404).json({ message: "Không tìm thấy quiz" });
+    }
+
+    res.json({ message: "Cập nhật thành công", updatedQuiz: quiz });
+  } catch (error) {
+    console.error("Lỗi khi cập nhật quiz:", error);
+    res.status(500).json({ message: "Lỗi server khi cập nhật quiz" });
+  }
+};
 const getQuiz = async (req, res) => {
   const quizzes = await Quiz.find();
   res.json(quizzes);
@@ -20,6 +38,20 @@ const getQuizFromChapter = async (req, res) => {
   const quiz = await Quiz.find({ chapterId: req.params.id });
   res.json(quiz);
 };
+
+const deleteQuiz = async (req, res) =>{
+  try{
+    const quiz = await Quiz.findByIdAndDelete(req.params.id);
+    if(!quiz){
+      return res.status(404).json({message: "Not found quiz"});
+    }
+    res.json({ message: "Xóa quiz thành công", deletedSubject: quiz });
+  }catch(err){
+    console.error(err);
+    res.status(500).json({ message: "Lỗi server khi xóa quiz "});
+  }
+}
+
 
 const getQuizById = async (req, res) => {
   try {
@@ -52,9 +84,11 @@ const getQuizBySubject = async (req, res) => {
 
 
 module.exports = {
+  updateQuizAvailability,
   getQuiz,
   addQuiz,
   getQuizById,
   getQuizFromChapter,
-  getQuizBySubject,
+  getQuizBySubject, 
+  deleteQuiz,
 };
