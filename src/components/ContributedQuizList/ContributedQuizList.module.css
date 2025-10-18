@@ -1,71 +1,190 @@
 .wrapper {
-    padding: 20px;
-    background: #fafafa;
-    border-radius: 10px;
+    width: 95%;
+    margin: 1rem auto;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
 }
 
+h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #3d763a;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.loading {
+    text-align: center;
+    margin-top: 40px;
+    font-size: 1.2rem;
+    color: #3d763a;
+}
+
+.overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    color: #3d763a;
+    z-index: 10;
+    backdrop-filter: blur(3px);
+    border-radius: 8px;
+}
+
+/* --- Bảng dữ liệu --- */
 .table {
     width: 100%;
     border-collapse: collapse;
-    background: white;
-    border-radius: 8px;
+    border-radius: 12px;
     overflow: hidden;
+    background: #fafafa;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 .table th,
 .table td {
-    border: 1px solid #eee;
-    padding: 10px;
-    text-align: left;
+    padding: 12px 14px;
+    border-bottom: 1px solid #e8e8e8;
+    text-align: center;
+    font-size: 1rem;
 }
 
 .table th {
-    background: #f5f5f5;
-    font-weight: 600;
+    background: #f0f7ef;
+    color: #3d763a;
+    font-weight: 700;
 }
 
+.table tr:hover {
+    background: #f7fdf7;
+    transition: background 0.2s;
+}
+
+.rowRejected {
+    opacity: 0.6;
+}
+
+/* --- Trạng thái --- */
 .pending {
-    color: #d99a00;
+    color: #d6a700;
     font-weight: 600;
 }
 
 .approved {
-    color: #2b8a3e;
+    color: #3d763a;
     font-weight: 600;
 }
 
 .rejected {
-    color: #cc0000;
+    color: #c24a4a;
     font-weight: 600;
 }
 
-.actions button {
-    margin-right: 6px;
-    padding: 4px 8px;
-    border-radius: 6px;
-    cursor: pointer;
-    border: none;
-}
-
+/* --- Nút thao tác --- */
 .reviewButton {
-    background: #007bff;
+    background: #6ea269;
     color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
 }
 
-.approveBtn {
-    background: #28a745;
-    color: white;
-}
-
-.rejectBtn {
-    background: #dc3545;
-    color: white;
-}
-
-.rowRejected {
-    opacity: 0.5;
+.reviewButton:hover {
+    background: #3d763a;
+    transform: translateY(-1px);
 }
 
 .dimmedAction {
     color: #bbb;
+}
+
+.dimmedAction.faded {
+    opacity: 0.7;
+}
+
+/* --- Pagination --- */
+/* --- Pagination --- */
+
+/* Thẻ bao ngoài của pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 24px;
+    list-style: none;
+    gap: 8px;
+    padding: 0;
+}
+
+/* Các item trong pagination */
+.pagination li {
+    display: inline-block;
+}
+
+/* Link/button của từng trang */
+.pagination .page-link {
+    display: block;
+    padding: 8px 14px;
+    border: 1px solid #d1e3d0;
+    /* Viền màu xanh nhạt */
+    border-radius: 8px;
+    background-color: white;
+    cursor: pointer;
+    color: #3d763a;
+    /* Màu chữ chính */
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+/* Hiệu ứng khi hover */
+.pagination .page-link:hover {
+    background-color: #6ea269;
+    /* Nền xanh lá nhạt */
+    color: white;
+    border-color: #6ea269;
+}
+
+/* Trang đang được chọn */
+.pagination .active .page-link {
+    background-color: #3d763a;
+    /* Nền xanh lá đậm - Màu chủ đạo */
+    color: white;
+    border-color: #3d763a;
+}
+
+/* Trang bị disabled (vd: next/previous ở trang đầu/cuối) */
+.pagination .disabled .page-link {
+    color: #b0b0b0;
+    /* Màu xám mờ */
+    pointer-events: none;
+    /* Không cho click */
+    background-color: #f7f7f7;
+    border-color: #e8e8e8;
+}
+
+/* Thêm style cho nút "previous" và "next" để chúng đồng bộ hơn */
+.pagination .previous .page-link,
+.pagination .next .page-link {
+    font-weight: 600;
+}
+
+/* Style cho dấu ba chấm (breakLabel) */
+.pagination .break .page-link {
+    background-color: transparent;
+    border-color: transparent;
+    cursor: default;
+    color: #3d763a;
+}
+
+.pagination .break .page-link:hover {
+    background-color: transparent;
+    color: #3d763a;
+    border-color: transparent;
 }

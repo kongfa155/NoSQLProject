@@ -170,10 +170,62 @@ const getDetailContributedQuiz = async (req, res) => {
   }
 };
 
+const getContributedQuizzesPaginated = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+    const skip = (page - 1) * limit;
+
+    const total = await ContributedQuiz.countDocuments();
+
+    // ⚡ Sử dụng aggregation pipeline để sort theo thứ tự tùy ý
+    const quizzes = await ContributedQuiz.aggregate([
+      {
+        $addFields: {
+          statusOrder: {
+            $switch: {
+              branches: [
+                { case: { $eq: ["$status", "pending"] }, then: 1 },
+                { case: { $eq: ["$status", "approved"] }, then: 2 },
+                { case: { $eq: ["$status", "rejected"] }, then: 3 },
+              ],
+              default: 4,
+            },
+          },
+        },
+      },
+      { $sort: { statusOrder: 1, createdAt: -1 } }, // pending → approved → rejected
+      { $skip: skip },
+      { $limit: limit },
+    ]);
+
+    // ⚠️ populate thủ công vì aggregation không tự populate
+    await ContributedQuiz.populate(quizzes, [
+      { path: "contributorId", select: "username email" },
+      { path: "subjectId", select: "name" },
+      { path: "chapterId", select: "name" },
+    ]);
+
+    res.json({
+      data: quizzes,
+      total,
+      pageCount: Math.ceil(total / limit),
+      currentPage: page,
+    });
+  } catch (err) {
+    console.error("❌ Lỗi khi phân trang đề đóng góp:", err);
+    res
+      .status(500)
+      .json({ message: "Lỗi khi lấy danh sách đóng góp có phân trang." });
+  }
+};
+
+
 module.exports = {
   handleCSVUpload,
   approveContribution,
   getAllContributedQuizzes,
   rejectContribution,
   getDetailContributedQuiz,
+  getContributedQuizzesPaginated,
 };

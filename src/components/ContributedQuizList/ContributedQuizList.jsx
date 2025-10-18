@@ -2,50 +2,62 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import ReactPaginate from "react-paginate";
 import styles from "./ContributedQuizList.module.css";
 
 export default function ContributedQuizList() {
   const { account } = useSelector((state) => state.user);
   const navigate = useNavigate();
 
-  const [allItems, setAllItems] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [quizzes, setQuizzes] = useState([]);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [pageLoading, setPageLoading] = useState(false);
 
-  // ✅ Hàm sắp xếp theo status
-  const sortItems = (items) => {
-    const priority = { pending: 1, approved: 2, rejected: 3 };
-    return [...items].sort((a, b) => priority[a.status] - priority[b.status]);
-  };
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageCount, setPageCount] = useState(0);
+  const itemsPerPage = 5;
 
-  // ✅ Fetch danh sách đề
-  const fetchQuizzes = async () => {
-    setLoading(true);
+  // Fetch danh sách đề với pagination
+  const fetchQuizzes = async (page = 1, isPageChange = false) => {
+    if (isPageChange) setPageLoading(true);
+    else setInitialLoading(true);
+
     try {
-      const res = await axios.get("http://localhost:5000/api/contributed", {
-        headers: { Authorization: `Bearer ${account.accessToken}` },
-      });
-      const data = Array.isArray(res.data) ? res.data : [];
-      setAllItems(sortItems(data)); // sort ngay khi fetch
+      const res = await axios.get(
+        `http://localhost:5000/api/contributed/paginated?page=${page}&limit=${itemsPerPage}`,
+        { headers: { Authorization: `Bearer ${account.accessToken}` } }
+      );
+
+      const data = Array.isArray(res.data.data) ? res.data.data : [];
+      setQuizzes(data);
+      setPageCount(res.data.pageCount || 0);
     } catch (err) {
       console.error("❌ Lỗi khi tải danh sách đóng góp:", err);
       alert("Không thể tải danh sách đề đóng góp!");
-      setAllItems([]);
+      setQuizzes([]);
     } finally {
-      setLoading(false);
+      setInitialLoading(false);
+      setPageLoading(false);
     }
   };
 
+  // Chuyển trang
+  const handlePageClick = (event) => {
+    const selectedPage = event.selected + 1;
+    setCurrentPage(selectedPage);
+    fetchQuizzes(selectedPage, true);
+  };
+
   useEffect(() => {
-    fetchQuizzes();
+    fetchQuizzes(currentPage);
   }, [account.accessToken]);
 
-
-
-  if (loading)
+  if (initialLoading)
     return <div className={styles.loading}>Đang tải danh sách...</div>;
 
   return (
     <div className={styles.wrapper}>
+      {pageLoading && <div className={styles.overlay}>Đang tải trang...</div>}
       <h2>Danh sách đề người dùng đóng góp</h2>
 
       <table className={styles.table}>
@@ -61,15 +73,13 @@ export default function ContributedQuizList() {
           </tr>
         </thead>
         <tbody>
-          {allItems && allItems.length > 0 ? (
-            allItems.map((quiz, idx) => (
+          {quizzes.length > 0 ? (
+            quizzes.map((quiz, idx) => (
               <tr
                 key={quiz._id || idx}
-                className={
-                  quiz.status === "rejected" ? styles.rowRejected : undefined
-                }
+                className={quiz.status === "rejected" ? styles.rowRejected : ""}
               >
-                <td>{idx + 1}</td>
+                <td>{(currentPage - 1) * itemsPerPage + idx + 1}</td>
                 <td>{quiz.title || "—"}</td>
                 <td>{quiz.contributorId?.username || "Ẩn danh"}</td>
                 <td>{quiz.subjectId?.name || "—"}</td>
@@ -91,17 +101,14 @@ export default function ContributedQuizList() {
                 </td>
                 <td className={styles.actions}>
                   {quiz.status === "pending" ? (
-                    <>
-                      <button
-                        className={styles.reviewButton}
-                        onClick={() =>
-                          navigate(`/review-contributed/${quiz._id}`)
-                        }
-                      >
-                        Xem
-                      </button>
-                    
-                    </>
+                    <button
+                      className={styles.reviewButton}
+                      onClick={() =>
+                        navigate(`/review-contributed/${quiz._id}`)
+                      }
+                    >
+                      Xem
+                    </button>
                   ) : (
                     <span
                       className={`${styles.dimmedAction} ${
@@ -123,6 +130,36 @@ export default function ContributedQuizList() {
           )}
         </tbody>
       </table>
+
+      {/* Pagination */}
+      {pageCount > 1 && (
+        <div className="d-flex justify-content-center mt-3">
+          <ReactPaginate
+            // ... (các thuộc tính khác)
+            onPageChange={handlePageClick}
+            pageRangeDisplayed={3}
+            marginPagesDisplayed={2}
+            pageCount={pageCount}
+            // CHỈNH SỬA TẠI ĐÂY: Sử dụng styles.className
+            pageClassName={styles["page-item"]}
+            pageLinkClassName={styles["page-link"]}
+            previousClassName={styles["page-item"]} // Hoặc tạo class riêng nếu cần style khác
+            previousLinkClassName={styles["page-link"]} // Hoặc tạo class riêng
+            nextClassName={styles["page-item"]} // Hoặc tạo class riêng
+            nextLinkClassName={styles["page-link"]} // Hoặc tạo class riêng
+            breakClassName={styles["break-item"] || styles["page-item"]} // Nếu có break-item
+            breakLinkClassName={styles.breakLink || styles["page-link"]} // Nếu có breakLink
+            // Thuộc tính quan trọng nhất: containerClassName và activeClassName
+            containerClassName={styles.pagination}
+            activeClassName={styles.active}
+            // Lưu ý: Đối với các class như `previousClassName`, nếu bạn muốn sử dụng `page-item`
+            // đã scoped, bạn cần dùng `styles['page-item']`.
+            // Nếu bạn muốn tạo class riêng, bạn phải định nghĩa nó trong file CSS module.
+
+            forcePage={currentPage - 1}
+          />
+        </div>
+      )}
     </div>
   );
 }
