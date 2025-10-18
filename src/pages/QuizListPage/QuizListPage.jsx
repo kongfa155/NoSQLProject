@@ -309,10 +309,10 @@ function QuizBox({ quiz, onOpenModal, onReview, type }) {
             }
              {showConfirm==3&&
             <DefaultAlert
-            title="Xóa bộ đề thất bại" information="Không thể xóa bộ đề này, hãy thử lại sau" closeButton={()=>{setShowAlert(0)}}
+            title="Xóa bộ đề thất bại" information="Không thể xóa bộ đề này, hãy thử lại sau" closeButton={()=>{setShowConfirm(0)}}
             ></DefaultAlert>
             }
-        {showConfirm==1&&<ConfirmAlert confirmButton={()=>{handleDeleteQuiz()}} title="Xóa môn học" information={`Bạn có chắc chắc muốn xóa bài "${quiz.name}" không?`}isNegative={true} closeButton={()=>{setShowAlert(0)}}></ConfirmAlert>}
+        {showConfirm==1&&<ConfirmAlert confirmButton={()=>{handleDeleteQuiz()}} title="Xóa môn học" information={`Bạn có chắc chắc muốn xóa bài "${quiz.name}" không?`}isNegative={true} closeButton={()=>{setShowConfirm(0)}}></ConfirmAlert>}
     </div>
   );
 }
