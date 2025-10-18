@@ -7,26 +7,32 @@ const contributedQuizSchema = new mongoose.Schema({
     required: true,
   },
   name: { type: String, required: true },
+
+  // ✅ Cho phép null khi chọn "Khác"
   subjectId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Subject",
-    required: true,
+    required: false,
+    default: null,
   },
-  chapterId: { type: mongoose.Schema.Types.ObjectId, ref: "Chapter" },
+
+  chapterId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Chapter",
+    default: null,
+  },
+
   questionNum: { type: Number },
   timeLimit: { type: Number },
 
-  // 🔹 Trạng thái duyệt
   status: {
     type: String,
     enum: ["pending", "approved", "rejected"],
     default: "pending",
   },
 
-  // 🔹 Ghi chú quản trị viên (lý do từ chối, feedback)
   adminNote: { type: String },
 
-  // 🔹 Dữ liệu câu hỏi đóng góp
   questions: [
     {
       question: { type: String, required: true },
@@ -37,11 +43,9 @@ const contributedQuizSchema = new mongoose.Schema({
     },
   ],
 
-  // 🔹 Ghi nhận ai duyệt và khi nào
   approvedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   approvedAt: { type: Date },
 
-  // 🔹 Tự động ghi ngày gửi
   createdAt: { type: Date, default: Date.now },
 });
 

@@ -15,19 +15,25 @@ const approveContribution = async (req, res) => {
     if (!contrib)
       return res.status(404).json({ message: "Không tìm thấy đóng góp" });
 
-    const subject = await Subject.findById(contrib.subjectId);
-    if (!subject)
-      return res.status(400).json({ message: "Môn học không hợp lệ" });
+    let subject = null;
+    if (contrib.subjectId) {
+      subject = await Subject.findById(contrib.subjectId);
+      if (!subject)
+        return res.status(400).json({ message: "Môn học không hợp lệ" });
+    }
 
-    const chapter = await Chapter.findById(contrib.chapterId);
-    if (!chapter)
-      return res.status(400).json({ message: "Chương không hợp lệ" });
+    let chapter = null;
+    if (contrib.chapterId) {
+      chapter = await Chapter.findById(contrib.chapterId);
+      if (!chapter)
+        return res.status(400).json({ message: "Chương không hợp lệ" });
+    }
 
     // 1. Tạo Quiz mới
     const quiz = await Quiz.create({
       name: contrib.name,
-      subjectId: contrib.subjectId,
-      chapterId: contrib.chapterId,
+      subjectId: contrib.subjectId || null,
+      chapterId: contrib.chapterId || null,
       questionNum: contrib.questions.length,
       timeLimit: contrib.timeLimit || 0,
       availability: true,
@@ -107,11 +113,21 @@ const handleCSVUpload = async (req, res) => {
             explain: r.explain || "",
           }));
 
+          // Map subjectId/chapterId: nếu client gửi "" => để null
+          const subjectId =
+            req.body.subjectId && req.body.subjectId !== ""
+              ? req.body.subjectId
+              : null;
+          const chapterId =
+            req.body.chapterId && req.body.chapterId !== ""
+              ? req.body.chapterId
+              : null;
+
           await ContributedQuiz.create({
-            contributorId: req.user.id, // ✅ Lấy từ token middleware
+            contributorId: req.user.id, // Lấy từ token middleware
             name: req.body.name || "Đề đóng góp từ CSV",
-            subjectId: req.body.subjectId,
-            chapterId: req.body.chapterId,
+            subjectId: subjectId, // có thể là null
+            chapterId: chapterId, // có thể là null
             questionNum: questions.length,
             timeLimit: req.body.timeLimit || 45,
             questions,
@@ -219,7 +235,6 @@ const getContributedQuizzesPaginated = async (req, res) => {
       .json({ message: "Lỗi khi lấy danh sách đóng góp có phân trang." });
   }
 };
-
 
 module.exports = {
   handleCSVUpload,

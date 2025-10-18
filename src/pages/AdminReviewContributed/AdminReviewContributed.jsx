@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -8,59 +8,50 @@ const AdminReviewContributed = () => {
   const { id } = useParams();
   const { account } = useSelector((state) => state.user);
   const [quiz, setQuiz] = useState(null);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  const headers = { Authorization: `Bearer ${account.accessToken}` };
+
+  // 🟢 Hàm gọi API chung
+  const apiRequest = useCallback(
+    async (method, endpoint, successMsg, errorMsg) => {
+      try {
+        await axios({ method, url: `/api/contributed/${endpoint}`, headers });
+        alert(successMsg);
+        navigate("/donggopde");
+      } catch (err) {
+        console.error(err);
+        alert(errorMsg || "Đã xảy ra lỗi!");
+      }
+    },
+    [headers, navigate]
+  );
 
   // 🟢 Lấy đề đóng góp
   useEffect(() => {
     const fetchQuiz = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:5000/api/contributed/${id}`,
-          {
-            headers: { Authorization: `Bearer ${account.accessToken}` },
-          }
-        );
-        setQuiz(res.data);
+        const { data } = await axios.get(`/api/contributed/${id}`, { headers });
+        setQuiz(data);
       } catch (err) {
         console.error("❌ Lỗi khi tải đề:", err);
+      } finally {
+        setLoading(false);
       }
     };
     fetchQuiz();
-  }, [id, account]);
+  }, [id, headers]);
 
-  // 🟢 Duyệt
-  const handleApprove = async () => {
-    try {
-      await axios.put(
-        `http://localhost:5000/api/contributed/approve/${id}`,
-        {},
-        { headers: { Authorization: `Bearer ${account.accessToken}` } }
-      );
-      alert("✅ Đã duyệt đề!");
-      navigate("/donggopde");
-    } catch (err) {
-      console.error(err);
-      alert("Lỗi khi duyệt!");
-    }
-  };
+  const handleApprove = () =>
+    apiRequest("put", `approve/${id}`, "✅ Đã duyệt đề!", "Lỗi khi duyệt!");
 
-  // 🟢 Từ chối
-  const handleReject = async () => {
-    try {
-      await axios.put(
-        `http://localhost:5000/api/contributed/reject/${id}`,
-        {},
-        { headers: { Authorization: `Bearer ${account.accessToken}` } }
-      );
-      alert("❌ Đã từ chối đề!");
-      navigate("/donggopde");
-    } catch (err) {
-      console.error(err);
-      alert("Lỗi khi từ chối!");
-    }
-  };
+  const handleReject = () =>
+    apiRequest("put", `reject/${id}`, "❌ Đã từ chối đề!", "Lỗi khi từ chối!");
 
-  if (!quiz) return <div>Đang tải đề...</div>;
+  if (loading) return <div className={styles.loading}>⏳ Đang tải đề...</div>;
+  if (!quiz)
+    return <div className={styles.error}>Không tìm thấy đề đóng góp.</div>;
 
   return (
     <div className={styles.container}>
@@ -89,12 +80,8 @@ const AdminReviewContributed = () => {
             {q.image && (
               <div className={styles.imageWrapper}>
                 <img
-                  src={
-                    q.image.startsWith("http")
-                      ? q.image
-                      : `http://localhost:5000/${q.image}`
-                  }
-                  alt="Question"
+                  src={q.image.startsWith("http") ? q.image : `/${q.image}`}
+                  alt={`Question ${i + 1}`}
                   className={styles.questionImage}
                 />
               </div>
@@ -113,10 +100,12 @@ const AdminReviewContributed = () => {
               ))}
             </ul>
 
-            <div className={styles.explainBox}>
-              <span className={styles.explainLabel}>💡 Giải thích:</span>
-              <p className={styles.explainText}>{q.explain}</p>
-            </div>
+            {q.explain && (
+              <div className={styles.explainBox}>
+                <span className={styles.explainLabel}>💡 Giải thích:</span>
+                <p className={styles.explainText}>{q.explain}</p>
+              </div>
+            )}
           </div>
         ))}
       </div>

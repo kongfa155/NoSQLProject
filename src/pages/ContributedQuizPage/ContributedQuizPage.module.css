@@ -121,3 +121,145 @@
     color: #333;
     font-size: 1.1rem;
 }
+
+.uploadSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+    margin-top: 1rem;
+}
+
+.fileInput {
+    background: #f1f3f1;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 0.5rem;
+    cursor: pointer;
+}
+
+.fileName {
+    font-size: 0.95rem;
+    color: #3d763a;
+    font-weight: 500;
+}
+
+.uploadButton {
+    background: #3d763a;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.7rem 1.2rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.uploadButton:hover {
+    background: #2d5c2b;
+}
+
+.uploadStatus {
+    margin-top: 1rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.success {
+    color: #3d763a;
+}
+
+.error {
+    color: #c0392b;
+}
+
+.loading {
+    color: #e67e22;
+}
+
+.guideBox {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+    padding: 2rem;
+    line-height: 1.6;
+    color: #333;
+}
+
+.guideTitle {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #3d763a;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.guideDesc {
+    text-align: center;
+    font-size: 1.1rem;
+    color: #555;
+    margin-bottom: 1.5rem;
+}
+
+.guideList {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 1.5rem;
+}
+
+.guideList li {
+    background: #f7f9f7;
+    border-left: 5px solid #6ea269;
+    padding: 0.8rem 1rem;
+    margin-bottom: 0.6rem;
+    border-radius: 8px;
+    transition: background 0.2s ease;
+}
+
+.guideList li:hover {
+    background: #e8f2e8;
+}
+
+.guideNote {
+    background: #f9faf9;
+    border: 1px dashed #6ea269;
+    border-radius: 10px;
+    padding: 1rem;
+    font-weight: 500;
+    color: #3d763a;
+    text-align: center;
+}
+
+.exampleBox {
+    background: #f9faf9;
+    border: 1px solid #c9dec9;
+    border-radius: 12px;
+    padding: 1.2rem;
+    margin: 1.5rem 0;
+}
+
+.exampleTitle {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #3d763a;
+    margin-bottom: 0.8rem;
+}
+
+.exampleCode {
+    background: #f3f5f3;
+    border-radius: 8px;
+    padding: 1rem;
+    font-family: "Courier New", monospace;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #333;
+    white-space: pre-wrap;
+    overflow-x: auto;
+}
+
+.exampleNote {
+    margin-top: 0.6rem;
+    font-size: 0.95rem;
+    color: #555;
+    font-style: italic;
+}
