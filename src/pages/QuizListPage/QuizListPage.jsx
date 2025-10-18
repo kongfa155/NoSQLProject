@@ -163,7 +163,9 @@ export default function QuizListPage() {
         </div>
       )}
 
-      {chapters?.map((chapter, i) => (
+      {chapters?.map((chapter, i) => {
+        if(chapter.availability){
+          return (
         <ChapterBox
           key={`chapter_${i}`}
           chapter={chapter}
@@ -172,7 +174,9 @@ export default function QuizListPage() {
           onReview={handleReviewQuiz}
           type={type}
         />
-      ))}
+      )
+        }
+      })}
 
       <ModalOptionQuiz
         show={showModal}
@@ -204,14 +208,26 @@ export default function QuizListPage() {
 // ---------------- CHAPTER BOX ----------------
 function ChapterBox({ chapter, setSelectedQuiz, onReview, type }) {
   
+  const [showConfirm, setShowConfirm] = useState(0);
   const [expandChapterBox, setExpandChapterBox] = useState(false);
 
   const handleOpenModal = (quiz) => {
     setSelectedQuiz(quiz);
   };
-
+  async function handleDeleteChapter(){
+  
+    try{
+      axios.put(`/api/chapters/${chapter._id}`,{
+        availability:  false
+      })
+      .then(res=>{setShowConfirm(2)})
+    .catch((err)=>setShowConfirm(3));
+    }catch(err){
+      setShowConfirm(3);
+    }
+  }
   return (
-    <div className="mt-8 mx-auto w-[90%] pb-4 transition-all duration-500 shadow-black shadow-sm rounded-[8px]">
+    <div className="relative p mt-8 mx-auto w-[90%] pb-16 transition-all duration-500 shadow-black shadow-sm rounded-[8px]">
       <div className="flex flex-row justify-between">
         <p className="text-4xl pt-4 px-8 text-[#3D763A]">{chapter.name}</p>
         <ExpandButton
@@ -241,7 +257,28 @@ function ChapterBox({ chapter, setSelectedQuiz, onReview, type }) {
             }
           })}
         </div>
+        
       </div>
+      <button 
+            onClick={()=>{
+              setShowConfirm(1);
+            }}
+            className="absolute right-8 bg-[#EF4444] text-white border-none px-6 py-2 shadow-black shadow-sm rounded-xl  hover:scale-105 transition-all duration-400">
+              Xóa chương
+      </button>
+{showConfirm==2&&
+            <DefaultAlert
+            title="Xóa chương thành công" information="Đã xóa thành công chương!" closeButton={()=>{window.location.reload()}}
+            ></DefaultAlert>
+            }
+             {showConfirm==3&&
+            <DefaultAlert
+            title="Xóa bộ chương thất bại" information="Không thể xóa chương này, hãy thử lại sau" closeButton={()=>{setShowConfirm(0)}}
+            ></DefaultAlert>
+            }
+        {showConfirm==1&&<ConfirmAlert confirmButton={()=>{handleDeleteChapter()}} title="Xóa môn học" information={`Bạn có chắc chắc muốn xóa chương "${chapter.name}" không?`}isNegative={true} closeButton={()=>{setShowConfirm(0)}}></ConfirmAlert>}
+
+
     </div>
   );
 }
@@ -299,6 +336,7 @@ function QuizBox({ quiz, onOpenModal, onReview, type }) {
             >
               Chỉnh sửa
             </button>
+             
           </>
         )}
       </div>

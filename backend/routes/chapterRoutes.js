@@ -4,7 +4,8 @@ const router = express.Router();
 
 //Nhận các hàm từ controller
 const {
-  addChapter, getChapters, getChaptersFromSubject
+  addChapter, getChapters, getChaptersFromSubject,
+  updateChapterAvailability
 } = require("../controllers/chapterController");
 
 
@@ -12,5 +13,6 @@ const {
 router.get("/", getChapters);
 router.get("/subject/:id", getChaptersFromSubject);
 router.post("/", addChapter);
+router.put("/:id", updateChapterAvailability);
 
 module.exports = router;
