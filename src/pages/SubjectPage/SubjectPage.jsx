@@ -5,9 +5,10 @@ import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 
 import ConfirmAlert from '../../components/AlertBoxes/ConfirmAlert';
+import CreateSubjectModal from '../../components/CreateSubJectModal/CreateSubjectModal';
 
 export default function SubjectPage(){
-
+    const [showCreateSubjectModal, setShowCreateSubjectModal] = useState(false);
     const [subjects, setSubjects] = useState([]);
     const {type} = useParams();
     const navigate = useNavigate();
@@ -48,7 +49,17 @@ export default function SubjectPage(){
             <div className=" mx-24 my-32">
                 <div id="subjectPageTitle" className="text-[#272b41]">
                     {(type=="view")?<h1 className="text-[#00620B]">Làm Bài Trực Tuyến</h1>:<h1 className="text-[#00620B]">Chỉnh Sửa Môn Học</h1>}
-                    <p className="py-2">Danh sách các môn học sẵn có</p>
+                    <div className="flex flex-row justify-between">
+                        <p className="mx-8">Danh sách các môn học sẵn có</p>
+                        <div className="mr-24 rounded-[8px] text-2xl text-white  shadow-black px-8 py-4 select-none cursor-pointer
+                        bg-[#6ea269] transition-all duration-500 hover:scale-105 hover:bg-[#5a8d56]
+                        " onClick={()=>{
+                            setShowCreateSubjectModal(true);
+
+                        }}>
+                            Thêm môn học</div>
+                    </div>
+                    
 
                  </div>
 
@@ -61,7 +72,7 @@ export default function SubjectPage(){
                 </div>
                 
             </div>
-            
+            {showCreateSubjectModal&&<CreateSubjectModal setShowCreateSubjectModal={setShowCreateSubjectModal}></CreateSubjectModal>}
             
         </div>
 
