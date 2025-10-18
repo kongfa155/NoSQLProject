@@ -6,7 +6,7 @@ import { MdExpandMore as ExpandButton } from "react-icons/md";
 import ContributedQuizList from "../../components/ContributedQuizList/ContributedQuizList";
 
 export default function ContributedQuizPage() {
-  const { account } = useSelector((state) => state.user);
+  const { account, isAuthenticated } = useSelector((state) => state.user);
   const [subjects, setSubjects] = useState([]);
   const [chapters, setChapters] = useState([]);
 
@@ -19,9 +19,30 @@ export default function ContributedQuizPage() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploadStatus, setUploadStatus] = useState("");
 
-  // ref bọc cả input + list để click vào item được coi là "inside"
+  // Thêm state mới cho gợi ý
+  const [suggestedNote, setSuggestedNote] = useState("");
+  const [quizName, setQuizName] = useState("");
+  const [contributionStats, setContributionStats] = useState(null);
+
   const subjectRef = useRef(null);
   const chapterRef = useRef(null);
+
+  //Kiểm tra số bài đã tạo
+    useEffect(() => {
+        if(!isAuthenticated) return;
+      const fetchStats = async () => {
+        if (!account?.accessToken) return;
+        try {
+          const res = await axios.get("/api/contributed/stats", {
+            headers: { Authorization: `Bearer ${account.accessToken}` },
+          });
+          setContributionStats(res.data);
+        } catch (err) {
+          console.error("Lỗi khi lấy thống kê:", err);
+        }
+      };
+      fetchStats();
+    }, [account]);
 
   // Tự đóng dropdown khi click ra ngoài
   useEffect(() => {
@@ -33,7 +54,6 @@ export default function ContributedQuizPage() {
         setExpandChapter(false);
       }
     };
-    // dùng 'click' để onClick của item chạy trước khi handler đóng dropdown
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
@@ -74,12 +94,17 @@ export default function ContributedQuizPage() {
       setUploadStatus("⚠️ Bạn cần đăng nhập trước khi tải lên!");
       return;
     }
+    if (!quizName.trim()) {
+      setUploadStatus("⚠️ Vui lòng nhập tên bộ đề trước khi tải lên!");
+      return;
+    }
 
     const formData = new FormData();
     formData.append("file", selectedFile);
-    // nếu là "Khác" thì _id sẽ null -> gửi "" (backend sẽ map "" => null)
+    formData.append("name", quizName);
     formData.append("subjectId", selectedSubject._id ?? "");
     formData.append("chapterId", selectedChapter?._id ?? "");
+    formData.append("suggestedNote", suggestedNote); // thêm note gợi ý
 
     try {
       setUploadStatus("⏳ Đang tải lên...");
@@ -96,6 +121,8 @@ export default function ContributedQuizPage() {
       setSelectedFile(null);
       setSelectedSubject(null);
       setSelectedChapter(null);
+      setSuggestedNote("");
+      setQuizName("");
       const fileEl = document.getElementById("fileInput");
       if (fileEl) fileEl.value = "";
     } catch (err) {
@@ -124,7 +151,7 @@ export default function ContributedQuizPage() {
           <ContributedQuizList />
         ) : (
           <div className={styles.formArea}>
-            {/* Subject: ref bọc cả input + list */}
+            {/* Subject */}
             <div ref={subjectRef}>
               <div className={styles.dropdownRow}>
                 <p className={styles.label}>Chọn môn học:</p>
@@ -136,6 +163,8 @@ export default function ContributedQuizPage() {
                     value={
                       selectedSubject && selectedSubject._id !== null
                         ? selectedSubject.name
+                        : selectedSubject && selectedSubject._id === null
+                        ? "Khác"
                         : ""
                     }
                     placeholder="Chọn môn học..."
@@ -162,6 +191,7 @@ export default function ContributedQuizPage() {
                       setSelectedSubject(subject);
                       setExpandSubject(false);
                       setSelectedChapter(null);
+                      setSuggestedNote("");
                     }}
                   >
                     {subject.name}
@@ -173,11 +203,11 @@ export default function ContributedQuizPage() {
                   key="other-subject"
                   className={styles.dropdownItem}
                   onClick={() => {
-                    // set object with _id null — input sẽ hiển thị placeholder
                     setSelectedSubject({ _id: null, name: "Khác" });
                     setExpandSubject(false);
                     setSelectedChapter(null);
-                    setChapters([]); // reset chapters list
+                    setChapters([]);
+                    setSuggestedNote("");
                   }}
                 >
                   Khác
@@ -185,84 +215,116 @@ export default function ContributedQuizPage() {
               </div>
             </div>
 
-            {/* Chapter: ref bọc cả input + list */}
-            <div style={{ marginTop: 12 }} ref={chapterRef}>
-              {selectedSubject && selectedSubject._id !== null && (
-                <>
-                  <div className={styles.dropdownRow}>
-                    <p className={styles.label}>Chọn chương:</p>
-                    <div className={styles.dropdownContainer}>
-                      <input
-                        type="text"
-                        className={styles.dropdownInput}
-                        readOnly
-                        value={
-                          selectedChapter && selectedChapter._id !== null
-                            ? selectedChapter.name
-                            : ""
-                        }
-                        placeholder="Chọn chương..."
-                      />
-                      <ExpandButton
-                        className={`${styles.expandButton} ${
-                          expandChapter ? styles.rotate : ""
-                        }`}
-                        onClick={() => setExpandChapter((prev) => !prev)}
-                      />
-                    </div>
+            {/* Chapter — chỉ hiện khi subject có _id thực */}
+            {selectedSubject && selectedSubject._id !== null && (
+              <div style={{ marginTop: 12 }} ref={chapterRef}>
+                <div className={styles.dropdownRow}>
+                  <p className={styles.label}>Chọn chương:</p>
+                  <div className={styles.dropdownContainer}>
+                    <input
+                      type="text"
+                      className={styles.dropdownInput}
+                      readOnly
+                      value={
+                        selectedChapter && selectedChapter._id !== null
+                          ? selectedChapter.name
+                          : ""
+                      }
+                      placeholder="Chọn chương..."
+                    />
+                    <ExpandButton
+                      className={`${styles.expandButton} ${
+                        expandChapter ? styles.rotate : ""
+                      }`}
+                      onClick={() => setExpandChapter((prev) => !prev)}
+                    />
                   </div>
+                </div>
 
-                  <div
-                    className={`${styles.dropdownList} ${
-                      expandChapter ? styles.showList : ""
-                    }`}
-                  >
-                    {chapters.map((chapter) => (
-                      <div
-                        key={chapter._id}
-                        className={styles.dropdownItem}
-                        onClick={() => {
-                          setSelectedChapter(chapter);
-                          setExpandChapter(false);
-                        }}
-                      >
-                        {chapter.name}
-                      </div>
-                    ))}
-
+                <div
+                  className={`${styles.dropdownList} ${
+                    expandChapter ? styles.showList : ""
+                  }`}
+                >
+                  {chapters.map((chapter) => (
                     <div
-                      key="other-chapter"
+                      key={chapter._id}
                       className={styles.dropdownItem}
                       onClick={() => {
-                        setSelectedChapter({ _id: null, name: "Khác" });
+                        setSelectedChapter(chapter);
                         setExpandChapter(false);
                       }}
                     >
-                      Khác
+                      {chapter.name}
                     </div>
-                  </div>
-                </>
-              )}
+                  ))}
+                </div>
+              </div>
+            )}
+            {/* Quiz name input */}
+            <div className={styles.inputRow}>
+              <p className={styles.label}>Tên bộ đề:</p>
+              <input
+                type="text"
+                className={styles.textInput}
+                placeholder="Nhập tên bộ đề (VD: Đề ôn thi Giữa kỳ Toán 12)..."
+                value={quizName}
+                onChange={(e) => setQuizName(e.target.value)}
+              />
             </div>
 
-            {/* Nếu chọn "Khác" */}
+            {/* Nếu chọn "Khác" → hiện ô nhập gợi ý */}
             {selectedSubject && selectedSubject._id === null && (
-              <p style={{ color: "#3d763a", fontWeight: 600, marginTop: 10 }}>
-                Bạn đã chọn <strong>Khác</strong> — bạn có thể tải lên đề mà
-                không cần chọn chương. Admin sẽ phân loại sau khi kiểm duyệt.
-              </p>
+              <div className={styles.suggestBox}>
+                <p style={{ color: "#3d763a", fontWeight: 600 }}>
+                  Bạn đã chọn <strong>Khác</strong> — vui lòng nhập tên môn học
+                  và các chương bạn muốn gợi ý:
+                </p>
+                <textarea
+                  className={styles.suggestTextarea}
+                  placeholder="Ví dụ: Môn Lập trình Python – các chương: Cơ bản, OOP, Xử lý File..."
+                  value={suggestedNote}
+                  onChange={(e) => setSuggestedNote(e.target.value)}
+                  rows={3}
+                />
+                <p className={styles.suggestHint}>
+                  Gợi ý này sẽ được gửi cùng file CSV để admin xem xét và tạo
+                  môn học mới.
+                </p>
+              </div>
             )}
 
-            {/* Upload box */}
             <div className={styles.addQuizBox} style={{ marginTop: 16 }}>
               <p className={styles.infoText}>
                 {selectedSubject && selectedChapter
                   ? `📘 Bạn đang đóng góp đề cho chương "${selectedChapter.name}" thuộc môn "${selectedSubject.name}".`
                   : selectedSubject && selectedSubject._id === null
-                  ? "📦 Bạn đang đóng góp đề nhưng chọn 'Khác' cho môn — admin sẽ phân loại sau."
+                  ? "📦 Bạn đang đóng góp đề và gợi ý môn học mới."
                   : "Vui lòng chọn môn học (hoặc 'Khác') và file CSV để bắt đầu đóng góp đề."}
               </p>
-
+              {contributionStats && isAuthenticated && (
+                <div className={styles.statsBox}>
+                  <p>
+                    📊 Bạn đã đóng góp{" "}
+                    <strong>
+                      {contributionStats.used}/{contributionStats.limit}
+                    </strong>{" "}
+                    đề trong 7 ngày gần nhất.
+                  </p>
+                  {contributionStats.remaining === 0 ? (
+                    <p style={{ color: "red", fontWeight: "600" }}>
+                      🚫 Bạn đã đạt giới hạn 10 đề! Hãy thử lại sau vài ngày
+                      nhé.
+                    </p>
+                  ) : (
+                    <p style={{ color: "green" }}>
+                      ✅ Bạn còn có thể gửi thêm{" "}
+                      <strong>{contributionStats.remaining}</strong> đề.
+                    </p>
+                  )}
+                </div>
+              )}
+              {/* Upload box */}
               <div className={styles.uploadSection}>
                 <input
                   id="fileInput"
@@ -297,7 +359,8 @@ export default function ContributedQuizPage() {
                 </p>
               )}
             </div>
-            {/* Sau này t nghĩ sẽ gắn thêm link đến trang mà nó hướng dẫn hoặc mình làm tài liệu*/}
+
+            {/* Hướng dẫn */}
             <div className={styles.guideBox}>
               <h2 className={styles.guideTitle}>
                 📘 Hướng Dẫn Chuyển Đổi File Sang CSV
@@ -326,9 +389,8 @@ export default function ContributedQuizPage() {
                   <strong>Lưu dưới dạng → CSV (Comma delimited)</strong>.
                 </li>
                 <li>
-                  <strong>3️⃣ Excel (.xlsx) → CSV:</strong> Chỉ cần mở file trong
-                  Excel, chọn{" "}
-                  <strong>File → Save As → CSV (Comma delimited)</strong>.
+                  <strong>3️⃣ Excel (.xlsx) → CSV:</strong> Mở file trong Excel,
+                  chọn <strong>File → Save As → CSV (Comma delimited)</strong>.
                 </li>
                 <li>
                   <strong>4️⃣ TXT → CSV:</strong> Mở bằng Excel hoặc Google
@@ -336,6 +398,7 @@ export default function ContributedQuizPage() {
                   hỏi, rồi lưu lại thành CSV.
                 </li>
               </ul>
+
               <div className={styles.exampleBox}>
                 <p className={styles.exampleTitle}>
                   📄 Ví dụ mẫu file CSV chuẩn:

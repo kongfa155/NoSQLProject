@@ -17,7 +17,7 @@ export default function ContributedQuizList() {
   const [pageCount, setPageCount] = useState(0);
   const itemsPerPage = 5;
 
-  // Fetch danh sách đề với pagination
+  // Fetch danh sách đề có phân trang
   const fetchQuizzes = async (page = 1, isPageChange = false) => {
     if (isPageChange) setPageLoading(true);
     else setInitialLoading(true);
@@ -68,6 +68,7 @@ export default function ContributedQuizList() {
             <th>Người đóng góp</th>
             <th>Môn học</th>
             <th>Chương</th>
+            <th>Ghi chú / Gợi ý</th>
             <th>Trạng thái</th>
             <th>Thao tác</th>
           </tr>
@@ -80,10 +81,41 @@ export default function ContributedQuizList() {
                 className={quiz.status === "rejected" ? styles.rowRejected : ""}
               >
                 <td>{(currentPage - 1) * itemsPerPage + idx + 1}</td>
-                <td>{quiz.title || "—"}</td>
+
+                {/* Tên bộ đề */}
+                <td>{quiz.name || "—"}</td>
+
+                {/* Người đóng góp */}
                 <td>{quiz.contributorId?.username || "Ẩn danh"}</td>
-                <td>{quiz.subjectId?.name || "—"}</td>
-                <td>{quiz.chapterId?.name || "—"}</td>
+
+                {/* Môn học */}
+                <td>
+                  {quiz.subjectId
+                    ? quiz.subjectId.name
+                    : "Khác (chưa có trong hệ thống)"}
+                </td>
+
+                {/* Chương */}
+                <td>
+                  {quiz.chapterId
+                    ? quiz.chapterId.name
+                    : quiz.subjectId
+                    ? "—"
+                    : "Chưa có chương"}
+                </td>
+
+                {/* Ghi chú / Gợi ý */}
+                <td>
+                  {quiz.adminNote ? (
+                    <div className={styles.adminNote}>
+                      <span>{quiz.adminNote}</span>
+                    </div>
+                  ) : (
+                    "—"
+                  )}
+                </td>
+
+                {/* Trạng thái */}
                 <td
                   className={
                     quiz.status === "approved"
@@ -99,6 +131,8 @@ export default function ContributedQuizList() {
                     ? "Bị từ chối"
                     : "Chờ duyệt"}
                 </td>
+
+                {/* Thao tác */}
                 <td className={styles.actions}>
                   {quiz.status === "pending" ? (
                     <button
@@ -123,7 +157,7 @@ export default function ContributedQuizList() {
             ))
           ) : (
             <tr>
-              <td colSpan={7} style={{ textAlign: "center" }}>
+              <td colSpan={8} style={{ textAlign: "center" }}>
                 Không có dữ liệu
               </td>
             </tr>
@@ -135,27 +169,20 @@ export default function ContributedQuizList() {
       {pageCount > 1 && (
         <div className="d-flex justify-content-center mt-3">
           <ReactPaginate
-            // ... (các thuộc tính khác)
             onPageChange={handlePageClick}
             pageRangeDisplayed={3}
             marginPagesDisplayed={2}
             pageCount={pageCount}
-            // CHỈNH SỬA TẠI ĐÂY: Sử dụng styles.className
             pageClassName={styles["page-item"]}
             pageLinkClassName={styles["page-link"]}
-            previousClassName={styles["page-item"]} // Hoặc tạo class riêng nếu cần style khác
-            previousLinkClassName={styles["page-link"]} // Hoặc tạo class riêng
-            nextClassName={styles["page-item"]} // Hoặc tạo class riêng
-            nextLinkClassName={styles["page-link"]} // Hoặc tạo class riêng
-            breakClassName={styles["break-item"] || styles["page-item"]} // Nếu có break-item
-            breakLinkClassName={styles.breakLink || styles["page-link"]} // Nếu có breakLink
-            // Thuộc tính quan trọng nhất: containerClassName và activeClassName
+            previousClassName={styles["page-item"]}
+            previousLinkClassName={styles["page-link"]}
+            nextClassName={styles["page-item"]}
+            nextLinkClassName={styles["page-link"]}
+            breakClassName={styles["break-item"] || styles["page-item"]}
+            breakLinkClassName={styles.breakLink || styles["page-link"]}
             containerClassName={styles.pagination}
             activeClassName={styles.active}
-            // Lưu ý: Đối với các class như `previousClassName`, nếu bạn muốn sử dụng `page-item`
-            // đã scoped, bạn cần dùng `styles['page-item']`.
-            // Nếu bạn muốn tạo class riêng, bạn phải định nghĩa nó trong file CSS module.
-
             forcePage={currentPage - 1}
           />
         </div>

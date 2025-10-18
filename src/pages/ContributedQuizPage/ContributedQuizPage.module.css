@@ -263,3 +263,62 @@
     color: #555;
     font-style: italic;
 }
+
+.suggestBox {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+}
+
+.suggestTextarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    resize: vertical;
+    font-size: 15px;
+    line-height: 1.4;
+    outline: none;
+}
+
+.suggestTextarea:focus {
+    border-color: #3d763a;
+    box-shadow: 0 0 4px rgba(61, 118, 58, 0.25);
+}
+
+.suggestHint {
+    font-size: 13px;
+    color: #555;
+    margin-top: 6px;
+    font-style: italic;
+}
+.inputRow {
+    margin-bottom: 14px;
+    display: flex;
+    flex-direction: column;
+}
+
+.textInput {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 15px;
+    outline: none;
+    transition: 0.2s;
+}
+
+.textInput:focus {
+    border-color: #3d763a;
+    box-shadow: 0 0 4px rgba(61, 118, 58, 0.3);
+}
+
+.statsBox {
+    margin-bottom: 12px;
+    background: #f6f9ff;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border-left: 4px solid #3d8bfd;
+    font-size: 15px;
+    line-height: 1.6;
+}
