@@ -9,16 +9,15 @@ const {
   rejectContribution,
   getDetailContributedQuiz,
   getContributedQuizzesPaginated,
+  getContributionStats,
 } = require("../controllers/contributeController");
 
 router.post("/uploadCSV", verifyToken, upload.single("file"), handleCSVUpload);
 router.put("/approve/:id", verifyAdmin, approveContribution);
 router.get("/", verifyAdmin, getAllContributedQuizzes);
-router.get(
-  "/paginated",
-  verifyAdmin, // hoặc verifyToken nếu tất cả user cũng có quyền xem
-  getContributedQuizzesPaginated
-);
+router.get("/paginated", verifyAdmin, getContributedQuizzesPaginated);
+router.get("/stats", verifyToken, getContributionStats);
+
 router.put("/reject/:id", verifyAdmin, rejectContribution);
 router.get("/:id", verifyAdmin, getDetailContributedQuiz);
 

@@ -29,15 +29,21 @@ const approveContribution = async (req, res) => {
         return res.status(400).json({ message: "Chương không hợp lệ" });
     }
 
-    // 1. Tạo Quiz mới
-    const quiz = await Quiz.create({
+    // 1. Tạo Quiz mới (và nếu có adminNote thì thêm vào)
+    const quizData = {
       name: contrib.name,
       subjectId: contrib.subjectId || null,
       chapterId: contrib.chapterId || null,
       questionNum: contrib.questions.length,
       timeLimit: contrib.timeLimit || 0,
       availability: true,
-    });
+    };
+
+    if (contrib.adminNote) {
+      quizData.note = contrib.adminNote;
+    }
+
+    const quiz = await Quiz.create(quizData);
 
     // 2. Tạo câu hỏi text & image
     const questionsText = contrib.questions
@@ -93,6 +99,7 @@ const getAllContributedQuizzes = async (req, res) => {
     res.status(500).json({ message: "Lỗi khi lấy danh sách đề đóng góp" });
   }
 };
+
 const handleCSVUpload = async (req, res) => {
   try {
     if (!req.file)
@@ -113,7 +120,7 @@ const handleCSVUpload = async (req, res) => {
             explain: r.explain || "",
           }));
 
-          // Map subjectId/chapterId: nếu client gửi "" => để null
+          // Map subjectId/chapterId
           const subjectId =
             req.body.subjectId && req.body.subjectId !== ""
               ? req.body.subjectId
@@ -123,14 +130,37 @@ const handleCSVUpload = async (req, res) => {
               ? req.body.chapterId
               : null;
 
+          // ✅ Nếu chọn “Khác” => lưu suggestedNote vào adminNote
+          const adminNote =
+            (!subjectId || subjectId === "") && req.body.suggestedNote
+              ? `\n${req.body.suggestedNote}`
+              : "";
+
+          // 🔹 Kiểm tra số lượng đóng góp trong 7 ngày gần nhất
+          const oneWeekAgo = new Date();
+          oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+          const recentCount = await ContributedQuiz.countDocuments({
+            contributorId: req.user.id,
+            createdAt: { $gte: oneWeekAgo },
+          });
+
+          if (recentCount >= 10) {
+            return res.status(429).json({
+              message:
+                "🚫 Bạn đã đạt giới hạn 10 đề đóng góp trong 7 ngày gần nhất. Hãy thử lại sau!",
+            });
+          }
+
           await ContributedQuiz.create({
-            contributorId: req.user.id, // Lấy từ token middleware
+            contributorId: req.user.id,
             name: req.body.name || "Đề đóng góp từ CSV",
-            subjectId: subjectId, // có thể là null
-            chapterId: chapterId, // có thể là null
+            subjectId,
+            chapterId,
             questionNum: questions.length,
             timeLimit: req.body.timeLimit || 45,
             questions,
+            adminNote, // ✅ lưu tại đây
           });
 
           fs.unlinkSync(filePath);
@@ -236,6 +266,29 @@ const getContributedQuizzesPaginated = async (req, res) => {
   }
 };
 
+const getContributionStats = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+    const totalWeek = await ContributedQuiz.countDocuments({
+      contributorId: userId,
+      createdAt: { $gte: oneWeekAgo },
+    });
+
+    res.json({
+      limit: 10,
+      used: totalWeek,
+      remaining: Math.max(0, 10 - totalWeek),
+    });
+  } catch (err) {
+    console.error("❌ Lỗi khi lấy thống kê đóng góp:", err);
+    res.status(500).json({ message: "Lỗi khi lấy thống kê đóng góp!" });
+  }
+};
+
+
 module.exports = {
   handleCSVUpload,
   approveContribution,
@@ -243,4 +296,5 @@ module.exports = {
   rejectContribution,
   getDetailContributedQuiz,
   getContributedQuizzesPaginated,
+  getContributionStats,
 };
