@@ -95,7 +95,7 @@ export default function NavBar({selected="trangchu"}){
   {isAuthenticated ? (
     <div>
       <button
-        onClick={() => handleLogout(dispatch)}
+        onClick={() => {handleLogout(dispatch); navigate("/login")}}
         className="px-4 py-2 font-semibold border-2 border-[#41563F] bg-[#41563F] text-white rounded-xl 
                    transition-all duration-300 ease-in-out hover:bg-gray-200 hover:text-black hover:scale-110"
       >

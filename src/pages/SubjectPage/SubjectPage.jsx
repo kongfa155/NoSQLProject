@@ -121,8 +121,8 @@ function SubjectBox({subject, navigate, type, reFetchSubjects}){
             className=" transition-colors duration-500 w-full h-[2rem] bg-[#ff6b6b] hover:bg-[#dd3f3f] rounded-xl flex justify-center items-center text-white cursor-pointer">
                 Xóa ✘ 
             </div>
-
-            {showConfirm&&
+            
+            {showConfirm==1&&
             <ConfirmAlert title="Xác nhận xóa môn học"
             information ="Bạn có chắc chắn muốn xóa môn học này không?"
             isNegative ={true}

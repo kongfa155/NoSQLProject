@@ -10,6 +10,50 @@ const addQuiz = async (req, res) => {
   await newQuiz.save();
   res.json(newQuiz);
 };
+const updateQuizFull = async (req, res) => {
+  try {
+    const { name, questions, timeLimit ,chapterId} = req.body;
+    const quizId = req.params.id;
+
+    // 1️⃣ Cập nhật quiz
+    const quiz = await Quiz.findByIdAndUpdate(
+      quizId,
+      { name, timeLimit, chapterId },
+      { new: true }
+    );
+
+    if (!quiz) {
+      return res.status(404).json({ message: "Không tìm thấy quiz" });
+    }
+
+    // 2️⃣ Duyệt từng câu hỏi để cập nhật hoặc thêm mới
+    if (Array.isArray(questions)) {
+      for (const q of questions) {
+        if (q._id) {
+          // Cập nhật câu hỏi đã có
+          if (q.image && q.image.trim() !== "") {
+            await QuestionIMG.findByIdAndUpdate(q._id, q);
+          } else {
+            await Question.findByIdAndUpdate(q._id, q);
+          }
+        } else {
+          // ✅ Nếu là câu hỏi mới thì thêm vào DB
+          if (q.image && q.image.trim() !== "") {
+            await QuestionIMG.create({ ...q, quizId });
+          } else {
+            await Question.create({ ...q, quizId });
+          }
+        }
+      }
+    }
+
+    res.json({ message: "✅ Cập nhật quiz và câu hỏi thành công", updatedQuiz: quiz });
+  } catch (error) {
+    console.error("❌ Lỗi khi cập nhật quiz:", error);
+    res.status(500).json({ message: "Lỗi server khi cập nhật quiz" });
+  }
+};
+
 const updateQuizAvailability = async (req, res) => {
   try {
     const { availability } = req.body; // chỉ lấy trường cần update
@@ -91,4 +135,5 @@ module.exports = {
   getQuizFromChapter,
   getQuizBySubject, 
   deleteQuiz,
+  updateQuizFull,
 };

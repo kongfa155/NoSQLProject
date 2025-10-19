@@ -8,6 +8,7 @@ import LoginPage from "./LoginPage/LoginPage";
 import QuizListPage from "./QuizListPage/QuizListPage";
 import QuizPage from "./QuizPage/QuizPage";
 import NotFoundPage from "./NotFoundPage/NotFoundPage";
+import EditQuizPage from "./EditQuizPage/EditQuizPage";
 import AdminPage from "./AdminPage/AdminPage";
 import SettingPage from "./SettingPage/Setting";
 import SmokeTrail from "../components/Effect/SmokeTrail";
@@ -78,6 +79,8 @@ function App() {
               path=":subjectId"
               element={<QuizListPage></QuizListPage>}
             ></Route>
+
+            <Route path="quiz/:id" element={<EditQuizPage/>} />
           </Route>
           <Route
             path="/subject/:type/:subjectId"

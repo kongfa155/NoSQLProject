@@ -164,7 +164,9 @@ export default function QuizListPage() {
       )}
 
       {chapters?.map((chapter, i) => {
-        if(chapter.availability){
+        if(!chapter.availability&&type=="view"){
+          return <></>
+        }else if(type=="edit"||chapter.availability){
           return (
         <ChapterBox
           key={`chapter_${i}`}
@@ -218,7 +220,7 @@ function ChapterBox({ chapter, setSelectedQuiz, onReview, type }) {
   
     try{
       axios.put(`/api/chapters/${chapter._id}`,{
-        availability:  false
+        availability:  !(chapter.availability)
       })
       .then(res=>{setShowConfirm(2)})
     .catch((err)=>setShowConfirm(3));
@@ -244,7 +246,9 @@ function ChapterBox({ chapter, setSelectedQuiz, onReview, type }) {
       >
         <div className="w-full h-full pb-8 overflow-scroll">
           {chapter.quizzes.map((quiz, i) => {
-            if(quiz.availability){
+            if(!quiz.availability&&type=="view"){
+              return <></>
+            }else if(type=="edit"||quiz.availability){
               return (
             <QuizBox
               key={`quiz_chapter_${i}`}
@@ -259,24 +263,24 @@ function ChapterBox({ chapter, setSelectedQuiz, onReview, type }) {
         </div>
         
       </div>
-      <button 
+     {type=="edit"&& <button 
             onClick={()=>{
               setShowConfirm(1);
             }}
-            className="absolute right-8 bg-[#EF4444] text-white border-none px-6 py-2 shadow-black shadow-sm rounded-xl  hover:scale-105 transition-all duration-400">
-              Xóa chương
-      </button>
+            className={`absolute right-8 ${chapter.availability?"bg-red-600":"bg-green-700"}  text-white border-none px-6 py-2 shadow-black shadow-sm rounded-xl  hover:scale-105 transition-all duration-400`}>
+              {chapter.availability?"Ẩn chương":"Hiện chương"}
+      </button>}
 {showConfirm==2&&
             <DefaultAlert
-            title="Xóa chương thành công" information="Đã xóa thành công chương!" closeButton={()=>{window.location.reload()}}
+            title="Thay đổi chương thành công" information="Đã thay đổi thành công trạng thái của chương!" closeButton={()=>{window.location.reload()}}
             ></DefaultAlert>
             }
              {showConfirm==3&&
             <DefaultAlert
-            title="Xóa bộ chương thất bại" information="Không thể xóa chương này, hãy thử lại sau" closeButton={()=>{setShowConfirm(0)}}
+            title="Thay đổi chương thất bại" information="Không thể thay đổi trạng thái của này, hãy thử lại sau" closeButton={()=>{setShowConfirm(0)}}
             ></DefaultAlert>
             }
-        {showConfirm==1&&<ConfirmAlert confirmButton={()=>{handleDeleteChapter()}} title="Xóa môn học" information={`Bạn có chắc chắc muốn xóa chương "${chapter.name}" không?`}isNegative={true} closeButton={()=>{setShowConfirm(0)}}></ConfirmAlert>}
+        {showConfirm==1&&<ConfirmAlert confirmButton={()=>{handleDeleteChapter()}} title="Thay đổi chương" information={`Bạn có chắc chắc muốn thay đổi trạng thái của chương "${chapter.name}" không?`}isNegative={true} closeButton={()=>{setShowConfirm(0)}}></ConfirmAlert>}
 
 
     </div>
@@ -285,11 +289,11 @@ function ChapterBox({ chapter, setSelectedQuiz, onReview, type }) {
 
 // ---------------- QUIZ BOX ----------------
 function QuizBox({ quiz, onOpenModal, onReview, type }) {
-
+  const navigate = useNavigate();
   async function handleDeleteQuiz(){
     try{
-      axios.put(`/api/quizzes/${quiz._id}`,{
-        availability:  false
+      axios.put(`/api/quizzes/${quiz._id}/availability`,{
+        availability:  !(quiz.availability)
       })
       .then(res=>{setShowConfirm(2)})
     .catch((err)=>setShowConfirm(3));
@@ -327,12 +331,14 @@ function QuizBox({ quiz, onOpenModal, onReview, type }) {
             onClick={()=>{
               setShowConfirm(1);
             }}
-            className="bg-[#EF4444] text-white border-none px-6 py-2 shadow-black shadow-sm rounded-xl  hover:scale-105 transition-all duration-400">
-              Xóa bài
+            className={`${(quiz.availability)?"bg-red-500":"bg-green-600 "} text-white border-none px-6 py-2 shadow-black shadow-sm rounded-xl  hover:scale-105 transition-all duration-400`}>
+              {quiz.availability?"Ẩn bài":"Hiện bài"}
             </button>
             <button
               className="text-[#3D763A] bg-white border-none px-6 py-2 shadow-black shadow-sm rounded-xl  hover:scale-105 transition-all duration-400"
-              onClick={() => onOpenModal(quiz)}
+              onClick={() => {
+                navigate(`/subject/${type}/quiz/${quiz._id}`)
+              }}
             >
               Chỉnh sửa
             </button>
@@ -342,15 +348,15 @@ function QuizBox({ quiz, onOpenModal, onReview, type }) {
       </div>
         {showConfirm==2&&
             <DefaultAlert
-            title="Xóa bộ đề thành công" information="Đã xóa thành công bộ đề!" closeButton={()=>{window.location.reload()}}
+            title="Thay đổi bộ đề thành công" information="Đã thay đổi thành công trạng thái của bộ đề!" closeButton={()=>{window.location.reload()}}
             ></DefaultAlert>
             }
              {showConfirm==3&&
             <DefaultAlert
-            title="Xóa bộ đề thất bại" information="Không thể xóa bộ đề này, hãy thử lại sau" closeButton={()=>{setShowConfirm(0)}}
+            title="Thay đổi thất bại" information="Không thể thay đổi bộ đề này, hãy thử lại sau" closeButton={()=>{setShowConfirm(0)}}
             ></DefaultAlert>
             }
-        {showConfirm==1&&<ConfirmAlert confirmButton={()=>{handleDeleteQuiz()}} title="Xóa môn học" information={`Bạn có chắc chắc muốn xóa bài "${quiz.name}" không?`}isNegative={true} closeButton={()=>{setShowConfirm(0)}}></ConfirmAlert>}
+        {showConfirm==1&&<ConfirmAlert confirmButton={()=>{handleDeleteQuiz()}} title="Thay đổi bộ đề" information={`Bạn có chắc chắc muốn thay đổi trạng thái của "${quiz.name}" không?`}isNegative={true} closeButton={()=>{setShowConfirm(0)}}></ConfirmAlert>}
     </div>
   );
 }
