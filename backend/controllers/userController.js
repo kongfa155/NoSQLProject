@@ -55,3 +55,26 @@ exports.deleteUser = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+const bcrypt = require("bcryptjs");
+
+exports.updateUser = async (req, res) => {
+  try {
+    const { username, email, password, role, active } = req.body;
+
+    const updateData = { username, email, role, active };
+
+    if (password) {
+      const salt = await bcrypt.genSalt(10);
+      updateData.password = await bcrypt.hash(password, salt);
+    }
+
+    const user = await User.findByIdAndUpdate(req.params.id, updateData, { new: true });
+
+    if (!user) return res.status(404).json({ message: "Không tìm thấy user" });
+
+    res.json(user);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Lỗi khi cập nhật user" });
+  }
+};

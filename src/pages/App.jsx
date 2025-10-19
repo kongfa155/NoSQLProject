@@ -92,7 +92,7 @@ function App() {
           />
           <Route path="/login" element={<LoginPage />} />
           <Route
-            path="/admin/settings"
+            path="/settings"
             element={
               <ProtectedRoute>
                 <SettingPage></SettingPage>

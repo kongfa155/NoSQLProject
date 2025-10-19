@@ -35,7 +35,7 @@ export default function SidebarAdmin() {
           </Link>
 
           <Link
-            to="/admin/settings"
+            to="/settings"
             className="flex items-center gap-3 p-3 hover:bg-[#41563F] rounded-md transition-colors text-white hover:text-black"
           >
             <Settings size={18} />

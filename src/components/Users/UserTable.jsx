@@ -301,14 +301,15 @@ const handleAdd = async () => {
 
             <select
               className="border px-3 py-2 w-full rounded-md mb-4"
-              value={editingUser.active}
+              value={editingUser.active ? "true" : "false"}
               onChange={(e) =>
-                setEditingUser({ ...editingUser, active: e.target.value === "Active" })
+                setEditingUser({ ...editingUser, active: e.target.value === "true" })
               }
             >
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
+              <option value="true">Active</option>
+              <option value="false">Inactive</option>
             </select>
+
 
               <select
                 className="border px-3 py-2 w-full rounded-md mb-4"
