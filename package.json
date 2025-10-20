@@ -19,6 +19,7 @@
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.545.0",
     "multer": "^2.0.2",
+    "nodemailer": "^7.0.9",
     "react": "^19.1.1",
     "react-bootstrap": "^2.10.10",
     "react-dom": "^19.1.1",

@@ -34,15 +34,16 @@ export default function NavBar({ selected = "trangchu" }) {
 
   return (
     <div
-  className={`w-full h-full shadow-sm shadow-gray-400 flex items-center justify-between font-semibold select-none ${
+  className={`w-full h-16 shadow-sm shadow-gray-400 flex items-center justify-between font-semibold select-none ${
     selected !== "trangchu" && "bg-white"
+
   }`}
 >
   {/* Nhóm trái: Logo + Menu */}
   <div className="flex items-center ml-6">
     {/* Logo + tên */}
     <div
-      className="flex items-center cursor-pointer"
+      className="flex items-center cursor-pointer text-[20px]"
       onClick={() => handleItemOnClick("trangchu")}
     >
       <img className="w-[32px] h-[32px]" src={webLogo} alt="logo" />
@@ -50,7 +51,7 @@ export default function NavBar({ selected = "trangchu" }) {
     </div>
 
     {/* Menu trái */}
-    <div className="flex items-center gap-10 ml-6 text-[15px] tracking-[0.5px]">
+    <div className="flex items-center gap-10 ml-6 text-[20px] tracking-[0.5px]">
       <motion.p
         whileHover={{ scale: 1.1 }}
         transition={{ type: "spring", stiffness: 300, damping: 10 }}
@@ -148,7 +149,7 @@ export default function NavBar({ selected = "trangchu" }) {
         transition={{ type: "spring", stiffness: 200, damping: 10 }}
         className={`${
           selected === "dangnhap" && "text-[#6ea269]"
-        } cursor-pointer duration-500 transform transition ease-in-out hover:scale-[1.15]`}
+        } cursor-pointer duration-700 transform transition ease-in-out hover:scale-[1.05]`}
         onClick={() => handleItemOnClick("canhan")}
       >
         <p

@@ -110,7 +110,12 @@ export default function     () {
               {error}
             </div>
           )}
-
+          <div
+              className="w-[90%] text-left mb-2 text-sm text-[#9DE3A4] cursor-pointer hover:underline select-none"
+              onClick={() => navigate("/forgot-password")}
+            >
+              Quên mật khẩu?
+            </div>
           <div
             onClick={handleLogin}
             className="w-[70%] h-[3rem] flex justify-center items-center 
@@ -120,6 +125,15 @@ export default function     () {
           >
             Đăng nhập
           </div>
+            <div className="mt-4 text-white text-sm">
+              Chưa có tài khoản?{" "}
+              <span
+                onClick={() => navigate("/register")}
+                className="text-[#9DE3A4] font-semibold cursor-pointer hover:underline"
+              >
+                Đăng ký ngay
+              </span>
+            </div>
 
           {isAuthenticated && (
             <div className="mt-6 text-sm text-white">

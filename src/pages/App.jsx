@@ -19,6 +19,8 @@ import LoginPage_ReduxTest from "./LoginPage/LoginPage";
 import SubjectPermissionHandler from "./SubjectPage/SubjectPermissionHandler";
 import ContributedQuizPage from "./ContributedQuizPage/ContributedQuizPage";
 import AdminReviewContributed from "./AdminReviewContributed/AdminReviewContributed";
+import RegisterPage from "../pages/LoginPage/RegisterPage";
+import ForgotPassPage from "../pages/LoginPage/ForgotPassPage";
 
 
 
@@ -99,7 +101,22 @@ function App() {
               </ProtectedRoute>
             }
           ></Route>
+          <Route 
+          path="/register" 
+          element={
+           
+              <RegisterPage />
+            
+          } />
+            <Route 
+          path="/forgot-password" 
+          element={
+           
+              <ForgotPassPage />
+            
+          } />
           <Route
+          
             path="/quizzes/:quizId"
             element={
               <ProtectedRoute>

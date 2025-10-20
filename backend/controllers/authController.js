@@ -1,43 +1,33 @@
-//backend/src/controllers/authController.js
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs");
-const User = require("../models/User");
-
+//backend/controllers/authController
+import crypto from "crypto";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
+import User from "../models/User.js";
+import { sendVerificationEmail } from "../../src/api/sendEmail.js";
 
 // -------------------------
 // Xử lý đăng nhập
 // -------------------------
-exports.login = async (req, res) => { 
-try {
-const { username, email, password } = req.body;
-const searchEmail = (email || '').toLowerCase().trim();
-const searchUsername = (username || '').toLowerCase().trim();
+export const login = async (req, res) => { 
+  try {
+    const { username, email, password } = req.body;
+    const searchEmail = (email || '').toLowerCase().trim();
+    const searchUsername = (username || '').toLowerCase().trim();
     
-if (!(searchEmail || searchUsername) || !password) {
-return res.status(400).json({ message: "Vui lòng gửi email và mật khẩu" });
-}
+    if (!(searchEmail || searchUsername) || !password) {
+      return res.status(400).json({ message: "Vui lòng gửi email và mật khẩu" });
+    }
 
-    // ✅ BƯỚC MỚI: Xây dựng mảng điều kiện $or động
     const orConditions = [];
-
     if (searchEmail) {
-        // Tìm kiếm email không phân biệt chữ hoa/thường (i: case-insensitive)
-        orConditions.push({ email: { $regex: new RegExp('^' + searchEmail + '$', 'i') } });
+      orConditions.push({ email: { $regex: new RegExp('^' + searchEmail + '$', 'i') } });
     }
-    
     if (searchUsername) {
-        orConditions.push({ username: { $regex: new RegExp('^' + searchUsername + '$', 'i') } });
+      orConditions.push({ username: { $regex: new RegExp('^' + searchUsername + '$', 'i') } });
     }
 
-    // Đảm bảo có điều kiện tìm kiếm trước khi gọi findOne
-    if (orConditions.length === 0) {
-        return res.status(400).json({ message: "Vui lòng gửi email hoặc username" });
-    }
-
-// Tìm kiếm user bằng $or
-const user = await User.findOne({ $or: orConditions });
-
-if (!user) return res.status(400).json({ message: "Email không tồn tại" });
+    const user = await User.findOne({ $or: orConditions });
+    if (!user) return res.status(400).json({ message: "Email không tồn tại" });
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ message: "Sai mật khẩu" });
@@ -69,11 +59,9 @@ if (!user) return res.status(400).json({ message: "Email không tồn tại" });
     res.status(500).json({ message: "Lỗi Server Nội bộ" });
   }
 };
-// -------------------------
-// Làm mới token
-// -------------------------
-exports.refresh = (req, res) => { 
-  const { refreshToken } = req.body; // LẤY TỪ REQUEST BODY
+
+export const refresh = (req, res) => {
+  const { refreshToken } = req.body;
   if (!refreshToken)
     return res.status(401).json({ message: "No refresh token provided" });
 
@@ -91,13 +79,167 @@ exports.refresh = (req, res) => {
   });
 };
 
-// -------------------------
-// Kiểm tra token
-// -------------------------
-exports.checkToken = (req, res) => { // ✅ Export hàm checkToken
+export const checkToken = (req, res) => {
   res.status(200).json({
     message: "Token hợp lệ",
     user: req.user,
   });
 };
 
+
+// -------------------------
+// Register send OTP
+// -------------------------
+export const register = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) return res.status(400).json({ message: "Email và mật khẩu là bắt buộc" });
+
+    // Sinh OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpiry = Date.now() + 10 * 60 * 1000; // 10 phút
+
+    const existingUser = await User.findOne({ email });
+
+        if (existingUser) {
+          if (existingUser.active) {
+            // User đã active → báo lỗi
+            return res.status(400).json({ message: "Email đã tồn tại" });
+          } else {
+            // User chưa active → cập nhật OTP mới
+            existingUser.otp = otp;
+            existingUser.otpExpires = otpExpiry;
+            await existingUser.save();
+            await sendVerificationEmail(email, otp);
+            return res.status(200).json({
+              message: "Email chưa xác thực. Mã OTP mới đã được gửi.",
+              email,
+            });
+          }
+}
+
+    // Create new user
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = new User({
+      email,
+      username: email,
+      password: hashedPassword,
+      role: "User",
+      active: false,
+      otp,
+      otpExpires: otpExpiry
+    });
+
+    await newUser.save();
+    await sendVerificationEmail(email, otp);
+
+    res.status(200).json({
+      message: "Đã gửi mã OTP xác thực tới email của bạn.",
+      email,
+    });
+
+  } catch (error) {
+    console.error("Lỗi đăng ký:", error);
+    res.status(500).json({ message: "Lỗi đăng ký", error });
+  }
+};
+
+
+// -------------------------
+// Verify OTP
+// -------------------------
+export const verifyOTP = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    const user = await User.findOne({ email });
+    if (!user) return res.status(400).json({ message: "Không tìm thấy tài khoản" });
+
+    if (user.active) return res.status(400).json({ message: "Tài khoản đã được kích hoạt" });
+    if (user.otp !== otp) return res.status(400).json({ message: "Mã OTP không đúng" });
+    if (Date.now() > user.otpExpires) return res.status(400).json({ message: "Mã OTP đã hết hạn" });
+
+      user.otp = null;
+      user.otpExpires = null;
+
+    user.otp = null;
+    user.otpExpires = null;
+    user.active = true;
+
+    await user.save();
+
+    res.status(200).json({ message: "Xác thực thành công! Tài khoản đã được kích hoạt." });
+
+  } catch (error) {
+    console.error("Lỗi xác thực OTP:", error);
+    res.status(500).json({ message: "Lỗi xác thực OTP", error });
+  }
+};
+
+// -------------------------
+// Forgot pasword OTP
+// -------------------------
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ message: "Email là bắt buộc" });
+
+    const user = await User.findOne({ email });
+    if (!user) return res.status(400).json({ message: "Email không tồn tại" });
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpiry = Date.now() + 10 * 60 * 1000; // 10 phút
+
+    user.otp = otp;
+    user.otpExpires = otpExpiry;
+    await user.save();
+
+    await sendVerificationEmail(email, otp);
+
+    res.status(200).json({ message: "Mã OTP đã được gửi đến email của bạn." });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Lỗi server" });
+  }
+};
+// -------------------------
+// Verify forgot OTP
+// -------------------------
+  export const verifyForgotOtp = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) return res.status(400).json({ message: "Email không tồn tại" });
+
+    if (user.otp !== otp) return res.status(400).json({ message: "OTP không đúng" });
+    if (Date.now() > user.otpExpires) return res.status(400).json({ message: "OTP đã hết hạn" });
+
+    res.status(200).json({ message: "OTP hợp lệ, bạn có thể đặt lại mật khẩu" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Lỗi server" });
+  }
+};
+// -------------------------
+// Update OTP
+// -------------------------
+export const resetPassword = async (req, res) => {
+  try {
+    const { email, newPassword } = req.body;
+    if (!newPassword) return res.status(400).json({ message: "Mật khẩu mới không được để trống" });
+
+    const user = await User.findOne({ email });
+    if (!user) return res.status(400).json({ message: "Email không tồn tại" });
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    user.otp = null;
+    user.otpExpires = null;
+    await user.save();
+
+    res.status(200).json({ message: "Mật khẩu đã được cập nhật thành công." });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Lỗi server" });
+  }
+};
