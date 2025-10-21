@@ -211,20 +211,22 @@ const handleAdd = async () => {
 
               <td>{u.role}</td>
               <td>{u.email}</td>
-              <td className="text-right space-x-2">
-                <button
-                  onClick={() => setEditingUser(u)}
-                  className="text-[#6EA269] hover:text-green-900"
-                >
-                  <Pencil size={16} />
-                </button>
+              <td className="text-right">
+                <div className="flex justify-end items-center gap-2">
+                  <button
+                    onClick={() => setEditingUser(u)}
+                    className="w-8 h-8 flex items-center justify-center rounded-lg border border-[#6EA269] text-[#6EA269] bg-white hover:bg-[#6EA269]/10 transform hover:scale-110 transition-all duration-200"
+                  >
+                    <Pencil size={16} />
+                  </button>
 
-                <button
-                  onClick={() => setDeletingUser(u)}
-                  className="text-red-600 hover:text-red-800"
-                >
-                  <Trash2 size={16} />
-                </button>
+                  <button
+                    onClick={() => setDeletingUser(u)}
+                    className="w-8 h-8 flex items-center justify-center rounded-lg border border-red-500 text-red-500 bg-white hover:bg-red-500/10 transform hover:scale-110 transition-all duration-200"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
               </td>
             </tr>
           ))}

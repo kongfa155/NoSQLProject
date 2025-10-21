@@ -15,8 +15,9 @@ export default function SidebarAdmin() {
   return (
     <aside className="w-60 bg-[#6EA269] text-white flex flex-col justify-between">
       <div>
+          
         <div className="p-4 text-2xl font-bold tracking-wide">QUIZZES</div>
-
+          
         <nav className="mt-4 flex flex-col">
           <Link
             to="/"
@@ -44,10 +45,10 @@ export default function SidebarAdmin() {
         </nav>
       </div>
 
-      <div className="p-4 border-t border-green-700">
+      <div className="p-4 border-t border-[#41563F] ">
         <button
           onClick={() => handleLogout(dispatch)}
-          className="flex items-center gap-2 w-full hover:bg-[#41563F] p-2 transition-colors hover:text-white"
+          className="flex items-center gap-2 w-full hover:bg-[#41563F] p-2 transition-colors hover:text-white rounded-2xl"
         >
           <LogOut size={18} />
           Logout
