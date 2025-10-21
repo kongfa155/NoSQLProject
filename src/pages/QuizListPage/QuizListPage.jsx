@@ -314,24 +314,24 @@ function ChapterBox({ chapter, setSelectedQuiz, onReview, type }) {
 
 // ---------------- QUIZ BOX ----------------
 function QuizBox({ quiz, onOpenModal, onReview, type }) {
-  const [bestScore, setBestScore] = useState(69);
+  const [bestScore, setBestScore] = useState(0);
   const id = useSelector((state)=>state.user.account.id)
   const navigate = useNavigate();
-  // useEffect(()=>{ // Cái này bị bug, chưa có lấy được
-  //   if(type=="edit"){
-  //     return;
-  //   }
-  //   const fetchData = async ()=>{
-  //     try{
-  //       const res = await submissionService.getBest(quiz._id, id);
-  //       console.log("Lay duoc: ", res.data, quiz._id, id);
-  //       setBestScore(res.data);
-  //     }catch(err){
-  //       console.log("Loi khong lay duoc: ",err, quiz._id, id);
-  //     }
-  //   }
-  //   fetchData();
-  // },[id]);
+  useEffect(()=>{ // Cái này bị bug, chưa có lấy được
+    if(type=="edit"){
+      return;
+    }
+    const fetchData = async ()=>{
+      try{
+        const res = await submissionService.getBest(quiz._id, id);
+        console.log("Lay duoc: ", res.data, quiz._id, id);
+        (res.data&&setBestScore(res.data.score))
+      }catch(err){
+        console.log("Loi khong lay duoc: ",err, quiz._id, id);
+      }
+    }
+    fetchData();
+  },[id]);
 
 
   async function handleDeleteQuiz() {
@@ -361,7 +361,7 @@ function QuizBox({ quiz, onOpenModal, onReview, type }) {
         className="h-full bg-green-500 transition-all duration-500"
         style={{ width: `${bestScore}%` }}
       >
-        <p className="absolute w-full text-center text-white text-2xl">{bestScore}/100</p>
+        <p className="absolute w-full text-center text-gray-700 text-2xl">{bestScore}/100</p>
       </div>
     </div>
       <div className="flex gap-3 justify-self-end">
