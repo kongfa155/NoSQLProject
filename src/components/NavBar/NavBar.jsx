@@ -34,7 +34,7 @@ export default function NavBar({ selected = "about" }) {
 
   return (
     <div
-      className={`w-full h-16 shadow-sm shadow-gray-400 flex items-center justify-between font-semibold select-none ${
+      className={`w-full h-16 shadow-sm shadow-gray-400 pt-2 flex items-center justify-between font-semibold select-none ${
         selected !== "about" && "bg-white"
       }`}
     >
@@ -104,7 +104,8 @@ export default function NavBar({ selected = "about" }) {
                 : "hover:text-[#6ea269]"
             }`}
           >
-            ĐÓNG GÓP ĐỀ
+            {account.role=="Admin"&&"PHÊ DUYỆT ĐỀ"}
+            {account.role!="Admin"&&"ĐÓNG GÓP ĐỀ"}
           </motion.p>
         </div>
       </div>

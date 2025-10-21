@@ -24,7 +24,7 @@ export default function AboutUs() {
       <div className="h-[2px] w-[80%] mx-auto bg-gray-400"></div>
 
       <p className=" p-8 text-4xl font-black">Nơi Câu Chuyện Bắt Đầu</p>
-      <div className="w-[90%] mx-auto shadow-md shadow-gray-500 rounded-xl font-thin text-gray-700">
+      <div className="w-[90%] mx-auto shadow-md shadow-gray-500 rounded-xl  text-gray-700">
         <p className="p-8 ">
           Project-Quizzes được sinh ra để giải quyết một vấn đề thường gặp đó
           chính là việc thu thập tài liệu học tập dường như rất khó khăn và cũng
@@ -54,7 +54,7 @@ export default function AboutUs() {
       </div>
 
       {!isAuthenticated ? (
-        <div className="my-8 pb-12 w-[90%] mx-auto shadow-md shadow-gray-500 rounded-xl font-thin flex flex-col justify-center items-center ">
+        <div className="my-8 pb-12 w-[90%] mx-auto shadow-md shadow-gray-500 rounded-xl  flex flex-col justify-center items-center ">
           <p className="mt-8 font-black text-4xl ">Sẵn Sàng Tham Gia?</p>
           <p className="py-4 text-gray-700 ">
             Tham gia cùng những người khác để tạo trải nghiệm làm bài kiểm tra
@@ -74,7 +74,7 @@ export default function AboutUs() {
           </div>
         </div>
       ) : (
-        <div className="my-8 pb-12 w-[90%] mx-auto shadow-md shadow-gray-500 rounded-xl font-thin flex flex-col justify-center items-center ">
+        <div className="my-8 pb-12 w-[90%] mx-auto shadow-md shadow-gray-500 rounded-xl flex flex-col justify-center items-center ">
           <p className="mt-8 font-black text-4xl ">Sẵn Sàng Tham Gia?</p>
           <p className="py-4 text-gray-700 ">
             Tham gia cùng những người khác để tạo trải nghiệm làm bài kiểm tra

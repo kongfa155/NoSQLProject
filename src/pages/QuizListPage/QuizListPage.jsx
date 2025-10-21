@@ -356,6 +356,7 @@ function QuizBox({ quiz, onOpenModal, onReview, type }) {
 
         <p className="w-full text-[24px] text-gray-700 font-light">{quiz.name}</p>
       </div>
+      {type!="edit"&&
       <div className="relative w-full h-[2rem] bg-gray-200 rounded-4 overflow-hidden">
       <div
         className="h-full bg-green-500 transition-all duration-500"
@@ -364,7 +365,8 @@ function QuizBox({ quiz, onOpenModal, onReview, type }) {
         <p className="absolute w-full text-center text-gray-700 text-2xl">{bestScore}/100</p>
       </div>
     </div>
-      <div className="flex gap-3 justify-self-end">
+      }
+      <div className={`flex gap-3 justify-self-end ${type=="edit"?"col-span-2":""}`}>
         {type === "view" && (
           <>
             <button
