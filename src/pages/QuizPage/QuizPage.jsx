@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import styles from "./QuizPage.module.css";
 import QuestionDrawer from "../../components/QuestionDrawer/QuestionDrawer";
-import axios from "axios";
 import { useSelector } from "react-redux";
-
+import quizService from "../../services/quizService";
+import submissionService from "../../services/submissionService";
 export default function QuizPage() {
   const { quizId } = useParams();
   const location = useLocation();
@@ -41,9 +41,7 @@ export default function QuizPage() {
     if (!quizId) return;
     const fetchQuestions = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:5000/api/quizzes/${quizId}`
-        );
+        const res = await quizService.getById(quizId);
         let fetchQuestions = res.data.questions || [];
 
         if (options.shuffleQuestions)
@@ -108,7 +106,7 @@ export default function QuizPage() {
             isCorrect: answers[q._id] === q.answer,
           }));
 
-        const res = await fetch("http://localhost:5000/api/submissions", {
+        const res = await submissionService.createOrUpdate( {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

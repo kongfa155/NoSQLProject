@@ -1,9 +1,9 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import './EditQuizPage.css';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import DefaultAlert from '../../components/AlertBoxes/DefaultAlert';
-
+import quizService from '../../services/quizService';
+import chapterService from '../../services/chapterService';
 export default function EditQuizPage() {
   const { id } = useParams();
   const [quiz, setQuiz] = useState();
@@ -13,13 +13,14 @@ export default function EditQuizPage() {
   const [chapters, setChapters] = useState([]);
 
     const navigate = useNavigate();
-  useEffect(() => {
-    axios.get(`/api/quizzes/${id}`)
+  //Lấy quiz
+    useEffect(() => {
+    quizService.getById(id)
       .then(async res => {
         setQuiz(res.data);
         setQuestions(res.data.questions || []);
       
-         const chaptersRes = await axios.get(`/api/chapters/subject/${res.data.subjectId}`);
+         const chaptersRes = await chapterService.getBySubject(res.data.subjectId);
       setChapters(chaptersRes.data);
 
       })
@@ -60,7 +61,7 @@ export default function EditQuizPage() {
   const handleSave = async () => {
     setShowSaving(true);
     try {
-      await axios.put(`/api/quizzes/${id}/full`, {
+        await quizService.updateFull(id, {
         name: quiz.name,
         timeLimit: quiz.timeLimit,
         chapterId: quiz.chapterId,

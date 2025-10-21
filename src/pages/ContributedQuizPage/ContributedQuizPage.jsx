@@ -1,10 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import styles from "./ContributedQuizPage.module.css";
-import axios from "axios";
 import { MdExpandMore as ExpandButton } from "react-icons/md";
 import ContributedQuizList from "../../components/ContributedQuizList/ContributedQuizList";
-
+import contributedService from "../../services/contributedService";
+import subjectService from "../../services/subjectService";
+import chapterService from "../../services/chapterService";
 export default function ContributedQuizPage() {
   const { account, isAuthenticated } = useSelector((state) => state.user);
   const [subjects, setSubjects] = useState([]);
@@ -28,21 +29,13 @@ export default function ContributedQuizPage() {
   const chapterRef = useRef(null);
 
   //Kiểm tra số bài đã tạo
-    useEffect(() => {
-        if(!isAuthenticated) return;
-      const fetchStats = async () => {
-        if (!account?.accessToken) return;
-        try {
-          const res = await axios.get("/api/contributed/stats", {
-            headers: { Authorization: `Bearer ${account.accessToken}` },
-          });
-          setContributionStats(res.data);
-        } catch (err) {
-          console.error("Lỗi khi lấy thống kê:", err);
-        }
-      };
-      fetchStats();
-    }, [account]);
+  useEffect(() => {
+    if (!isAuthenticated || !account?.accessToken) return;
+    contributedService
+      .getStats()
+      .then((res) => setContributionStats(res.data))
+      .catch((err) => console.error("Lỗi khi lấy thống kê:", err));
+  }, [isAuthenticated]);
 
   // Tự đóng dropdown khi click ra ngoài
   useEffect(() => {
@@ -59,18 +52,26 @@ export default function ContributedQuizPage() {
   }, []);
 
   // Lấy danh sách môn học
-  useEffect(() => {
-    axios
-      .get("/api/subjects")
-      .then((res) => setSubjects(res.data || []))
-      .catch((err) => console.error("Lỗi khi lấy danh sách môn học:", err));
-  }, []);
+useEffect(() => {
+  const fetchSubjects = async () => {
+    try {
+      const res = await subjectService.getAll();
+      setSubjects(res.data || []);
+    } catch (err) {
+      console.error("Lỗi khi lấy danh sách môn học:", err);
+    }
+  };
+  fetchSubjects();
+}, []);
+
 
   // Lấy danh sách chương khi chọn môn (chỉ khi có _id thực)
   useEffect(() => {
     if (selectedSubject && selectedSubject._id) {
-      axios
-        .get(`/api/chapters/subject/${selectedSubject._id}`)
+      chapterService
+        .getBySubject(selectedSubject._id)
+        //   axios
+        //     .get(`/api/chapters/subject/${selectedSubject._id}`)
         .then((res) => setChapters(res.data || []))
         .catch((err) => console.error("Lỗi khi lấy chương:", err));
     } else {
@@ -108,12 +109,13 @@ export default function ContributedQuizPage() {
 
     try {
       setUploadStatus("⏳ Đang tải lên...");
-      const res = await axios.post("/api/contributed/uploadCSV", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${account.accessToken}`,
-        },
-      });
+      //   const res = await axios.post("/api/contributed/uploadCSV", formData, {
+      //     headers: {
+      //       "Content-Type": "multipart/form-data",
+      //       Authorization: `Bearer ${account.accessToken}`,
+      //     },
+      //   });
+      const res = await contributedService.uploadCSV(formData);
       setUploadStatus("✅ Tải lên thành công!");
       console.log("Upload thành công:", res.data);
 

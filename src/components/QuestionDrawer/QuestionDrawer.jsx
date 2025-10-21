@@ -14,7 +14,6 @@ export default function QuestionDrawer({
   showRetryButton = false,
 }) {
   const [open, setOpen] = useState(true);
-  const questionCount = 50; //Số ô câu hỏi tối đa hiển thị
 
   return (
     //Cập nhật trạng thái kéo lên hay xuống

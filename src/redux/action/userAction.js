@@ -1,25 +1,22 @@
-import axios from "axios";
 
+import authService from "../../services/authService";
 export const FETCH_USER_LOGIN_SUCCESS = "FETCH_USER_LOGIN_SUCCESS";
 export const FETCH_USER_LOGIN_FAIL = "FETCH_USER_LOGIN_FAIL";
 
 export const loginUser = (credentials) => {
   return async (dispatch) => {
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/auth/login",
-        credentials
-      );
+      const res = await authService.login(credentials);
 
-      if (res.status === 200) {
+      if (res.status === 200 && res?.data) {
         const data = res.data;
 
         dispatch({
           type: FETCH_USER_LOGIN_SUCCESS,
           payload: data,
         });
-          localStorage.setItem("accessToken", data.accessToken);
-          localStorage.setItem("refreshToken", data.refreshToken); // cần lưu
+        localStorage.setItem("accessToken", data.accessToken);
+        localStorage.setItem("refreshToken", data.refreshToken); // cần lưu
         // ✅ Trả lại data để component có thể await
         return data;
       }
@@ -43,4 +40,3 @@ export const handleLogout = (dispatch) => {
   // 2️⃣ Reset state user trong redux
   dispatch({ type: FETCH_USER_LOGIN_FAIL });
 };
-

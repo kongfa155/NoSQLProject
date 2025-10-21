@@ -1,10 +1,13 @@
 import { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 'react';
 import './CreateQuizModal.css';
-import axios from 'axios';
 import stringValidater from "../../api/stringValidater";
 import { MdExpandMore as ExpandButton } from "react-icons/md";
 import { ImCross as ExitIcon} from "react-icons/im";
 import DefaultAlert from "../AlertBoxes/DefaultAlert"
+import chapterService from '../../services/chapterService';
+import quizService from '../../services/quizService';
+import questionImageService from '../../services/questionImageService';
+import questionService from '../../services/questionService';
 
 
 
@@ -28,7 +31,8 @@ export default function CreateQuizModal({subjectId, showCreateQuiz, setShowCreat
     }
 
     useEffect(()=>{
-        axios.get(`/api/chapters/subject/${subjectId}`)
+        chapterService.getBySubject(
+subjectId)
         .then(res=>{
             setChapters(res.data);
 
@@ -46,7 +50,8 @@ export default function CreateQuizModal({subjectId, showCreateQuiz, setShowCreat
 
     let chapterId = null;
     if (!selectedChapter) {
-      const chapterRes = await axios.post("/api/chapters", {
+        
+      const chapterRes = await chapterService.create({
         name: chapterName,
         subjectId: subjectId,
         order: chapters?.length,
@@ -65,7 +70,7 @@ export default function CreateQuizModal({subjectId, showCreateQuiz, setShowCreat
     }
 
 
-    const quizRes = await axios.post("/api/quizzes", {
+    const quizRes = await quizService.createQuiz( {
       name: quizName,
       subjectId: subjectId,
       chapterId: chapterId,
@@ -89,9 +94,9 @@ export default function CreateQuizModal({subjectId, showCreateQuiz, setShowCreat
 
             if (q.type === "image") {
                 payload.image = q.imageURL;
-                return axios.post("/api/questionImages", payload);
+                return questionImageService.create(payload);
             } else {
-                return axios.post("/api/questions", payload);
+                return questionService.create(payload);
             }
         })
         );

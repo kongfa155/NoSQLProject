@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import  { useEffect, useState } from "react";
+
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import ReactPaginate from "react-paginate";
 import styles from "./ContributedQuizList.module.css";
+
+import contributedService from "../../services/contributedService";
 
 export default function ContributedQuizList() {
   const { account } = useSelector((state) => state.user);
@@ -23,10 +25,10 @@ export default function ContributedQuizList() {
     else setInitialLoading(true);
 
     try {
-      const res = await axios.get(
-        `http://localhost:5000/api/contributed/paginated?page=${page}&limit=${itemsPerPage}`,
-        { headers: { Authorization: `Bearer ${account.accessToken}` } }
-      );
+      const res = await contributedService.getPaginated({
+        page,
+        limit: itemsPerPage,
+      });
 
       const data = Array.isArray(res.data.data) ? res.data.data : [];
       setQuizzes(data);

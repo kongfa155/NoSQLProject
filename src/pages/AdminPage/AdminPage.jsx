@@ -3,15 +3,15 @@ import SidebarAdmin from "../../components/Users/SidebarAdmin";
 import NavbarAdmin from "../../components/Users/NavbarAdmin";
 import UserTable from "../../components/Users/UserTable";
 import { useEffect, useState } from "react";
-import api from "../../api/axiosInstance"; // axios đã có token
-
+// import api from "../../api/axiosInstance"; // axios đã có token
+import userService from "../../services/userService"; // Xài thằng này thay cho API cũ
 function AdminDashboard() {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const { data } = await api.get("/users"); // gọi API /users
+        const { data } = await userService.getAll(); // gọi API /users
         setUsers(data); // set vào state
         console.log("Thông tin users: ", data);
       } catch (err) {

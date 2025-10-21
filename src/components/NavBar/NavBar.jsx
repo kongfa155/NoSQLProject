@@ -1,7 +1,7 @@
 import './NavBar.css';
 import webLogo from '../../quizLogo_green.svg';
 import { useSelector, useDispatch } from 'react-redux';
-import { Link, useNavigate } from "react-router-dom";
+import {  useNavigate } from "react-router-dom";
 import { FaUserCircle } from "react-icons/fa";
 import { handleLogout } from "../../redux/action/userAction";
 import { motion, AnimatePresence } from "framer-motion";

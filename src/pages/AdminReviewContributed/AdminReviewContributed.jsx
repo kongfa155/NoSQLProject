@@ -1,9 +1,8 @@
-import React, { useEffect, useState, useCallback } from "react";
-import axios from "axios";
+import  { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import styles from "./AdminReviewContributed.module.css";
-
+import contributedService from "../../services/contributedService";
 const AdminReviewContributed = () => {
   const { id } = useParams();
   const { account } = useSelector((state) => state.user);
@@ -14,10 +13,14 @@ const AdminReviewContributed = () => {
   const headers = { Authorization: `Bearer ${account.accessToken}` };
 
   // 🟢 Hàm gọi API chung
-  const apiRequest = useCallback(
-    async (method, endpoint, successMsg, errorMsg) => {
+  const handleAction = useCallback(
+    async (action, successMsg, errorMsg) => {
       try {
-        await axios({ method, url: `/api/contributed/${endpoint}`, headers });
+        if(action === 'approve'){
+        await contributedService.approve(id);
+        } if(action === 'reject') {
+            await contributedService.reject(id);
+        }
         alert(successMsg);
         navigate("/donggopde");
       } catch (err) {
@@ -25,14 +28,14 @@ const AdminReviewContributed = () => {
         alert(errorMsg || "Đã xảy ra lỗi!");
       }
     },
-    [headers, navigate]
+    [id, navigate]
   );
 
   // 🟢 Lấy đề đóng góp
   useEffect(() => {
     const fetchQuiz = async () => {
       try {
-        const { data } = await axios.get(`/api/contributed/${id}`, { headers });
+        const { data } = await contributedService.getDetail(id);
         setQuiz(data);
       } catch (err) {
         console.error("❌ Lỗi khi tải đề:", err);
@@ -41,13 +44,7 @@ const AdminReviewContributed = () => {
       }
     };
     fetchQuiz();
-  }, [id, headers]);
-
-  const handleApprove = () =>
-    apiRequest("put", `approve/${id}`, "✅ Đã duyệt đề!", "Lỗi khi duyệt!");
-
-  const handleReject = () =>
-    apiRequest("put", `reject/${id}`, "❌ Đã từ chối đề!", "Lỗi khi từ chối!");
+  }, [id]);
 
   if (loading) return <div className={styles.loading}>⏳ Đang tải đề...</div>;
   if (!quiz)
@@ -111,10 +108,20 @@ const AdminReviewContributed = () => {
       </div>
 
       <div className={styles.actionBox}>
-        <button className={styles.approveBtn} onClick={handleApprove}>
+        <button
+          className={styles.approveBtn}
+          onClick={() => handleAction("approve", "✅ Đã duyệt đề!", "Lỗi khi duyệt!")}
+        >
           ✅ Duyệt
         </button>
-        <button className={styles.rejectBtn} onClick={handleReject}>
+        <button
+          className={styles.rejectBtn}
+          onClick={() =>handleAction(
+            "reject",
+            "❌ Đã từ chối đề!",
+            "Lỗi khi từ chối!"
+          )}
+        >
           ❌ Từ chối
         </button>
       </div>

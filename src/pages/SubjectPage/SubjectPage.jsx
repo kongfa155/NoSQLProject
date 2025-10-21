@@ -3,11 +3,11 @@ import {useEffect, useState} from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
-import { useDispatch, useSelector } from "react-redux";//
+import { useSelector } from "react-redux";//
 
 import ConfirmAlert from '../../components/AlertBoxes/ConfirmAlert';
 import CreateSubjectModal from '../../components/CreateSubJectModal/CreateSubjectModal';
-import DefaultAlert from '../../components/AlertBoxes/DefaultAlert';
+import subjectService from '../../services/subjectService';
 
 export default function SubjectPage(){
     const [showCreateSubjectModal, setShowCreateSubjectModal] = useState(false);
@@ -16,9 +16,9 @@ export default function SubjectPage(){
     const navigate = useNavigate();
     const account = useSelector((state) => state.user.account);//
 
-    // 
+    //     
     useEffect(()=>{
-        axios.get(`/api/subjects/`)
+        subjectService.getAll()
         .then(res=>{
             setSubjects(res.data);
  
@@ -30,7 +30,7 @@ export default function SubjectPage(){
     },[]);
     const reFetchSubjects = async ()=>{
         try{
-            axios.get(`/api/subjects/`)
+            subjectService.getAll()
         .then(res=>{
             setSubjects(res.data);
  

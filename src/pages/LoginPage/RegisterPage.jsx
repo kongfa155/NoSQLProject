@@ -3,10 +3,9 @@ import "./LoginPage.css";
 import quizLogo from "../../quizLogo_green.svg";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { FaEye as EyeLogo } from "react-icons/fa";
 import { RiEyeOffFill as CloseEye } from "react-icons/ri";
-
+import authService from "../../services/authService";
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,7 +23,7 @@ export default function RegisterPage() {
     }
     try {
       setMessage("Đang gửi mã xác minh...");
-      const res = await axios.post("http://localhost:5000/api/auth/register", {
+      const res = await authService.register({
         email,
         password,
       });
@@ -38,7 +37,7 @@ export default function RegisterPage() {
 
   const handleVerifyOtp = async () => {
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/verify-otp", {
+        const res = await authService.verifyOTP({
         email,
         otp,
       });

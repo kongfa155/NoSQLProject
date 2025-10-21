@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
-import axios from "axios";
 import styles from "./ReviewQuizPage.module.css";
 import ReviewDrawer from "../../components/ReviewDrawer/ReviewDrawer";
 import { useSelector } from "react-redux";
+import quizService from "../../services/quizService";
+import submissionService from "../../services/submissionService";
 
 const ReviewQuizPage = () => {
-  // ✅ Redux
+  // Redux
   const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
   const account = useSelector((state) => state.user.account);
   const userId = account?.id; // Redux lưu id là string
@@ -29,16 +30,12 @@ const ReviewQuizPage = () => {
       setLoading(true);
       try {
         // 1️⃣ Quiz info
-        const quizRes = await axios.get(
-          `http://localhost:5000/api/quizzes/${quizId}`
-        );
+        const quizRes = await quizService.getById(quizId);
         setQuizInfo(quizRes.data);
         setQuestions(quizRes.data.questions || []);
 
         // 2️⃣ Latest submission
-        const subRes = await axios.get(
-          `http://localhost:5000/api/submissions/latest/${quizId}/${userId}`
-        );
+        const subRes = await submissionService.getLatest(quizId, userId);
 
         if (!subRes.data) {
           // User chưa làm bài → mode full

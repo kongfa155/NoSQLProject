@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import './CreateSubjectModal.css'
 import stringValidater from "../../api/stringValidater";
-import axios from 'axios';
 import DefaultAlert from "../AlertBoxes/DefaultAlert";
+import subjectService from '../../services/subjectService';
 
 export default function CreateSubjectModal({setShowCreateSubjectModal}){
     const [name, setName] = useState("");
@@ -12,7 +12,7 @@ export default function CreateSubjectModal({setShowCreateSubjectModal}){
 
     async function handleCreateSubject(){
         try{
-            axios.post("/api/subjects",{
+            subjectService.create({
                 name: name,
                 image: image,
                 description: description

@@ -11,7 +11,7 @@ import {
   Line,
 } from "recharts";
 import { useState, useEffect, useMemo } from "react";
-import axios from "axios";
+import submissionService from "../../services/submissionService";
 
 const UserStats = ({ userId, chapters }) => {
   const [data, setData] = useState([]);
@@ -28,9 +28,7 @@ const UserStats = ({ userId, chapters }) => {
         // Lấy best submission của từng quiz
         const chapterDataPromises = chapters.map(async (chapter) => {
           const quizPromises = chapter.quizzes.map(async (quiz) => {
-            const res = await axios.get(
-              `/api/submissions/latest/${quiz._id}/${userId}`
-            );
+            const res = await submissionService.getLatest(quiz._id, userId) ;
             // Nếu có submission thì trả về score, nếu chưa thì trả về null
             return res.data?.score ?? null;
           });
