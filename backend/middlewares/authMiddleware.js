@@ -1,8 +1,11 @@
-//backend/src/middlewares/authMiddleware.js
-const jwt = require("jsonwebtoken");
+// backend/src/middlewares/authMiddleware.js
+import jwt from "jsonwebtoken";
+import express from "express";
+
+const app = express();
 app.use(express.json());
 
-const verifyToken = (req, res, next) => {
+export const verifyToken = (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
   if (!token) return res.status(401).json({ message: "Không có token" });
 
@@ -15,16 +18,12 @@ const verifyToken = (req, res, next) => {
   }
 };
 
-const verifyAdmin = (req, res, next) => {
-  // Gọi verifyToken trực tiếp
+export const verifyAdmin = (req, res, next) => {
   verifyToken(req, res, () => {
     if (req.user && req.user.role === "Admin") {
-      // <-- Thêm kiểm tra req.user
       next();
     } else {
       res.status(403).json({ message: "Không có quyền Admin" });
     }
   });
 };
-
-module.exports = { verifyToken, verifyAdmin };

@@ -1,14 +1,14 @@
-// controllers/contributeController.js
-const Quiz = require("../models/quiz");
-const QuestionText = require("../models/questionText");
-const QuestionImage = require("../models/questionImage");
-const ContributedQuiz = require("../models/contributedQuiz");
-const Subject = require("../models/subject");
-const Chapter = require("../models/chapter");
-const fs = require("fs");
-const csv = require("csv-parser");
+// backend/src/controllers/contributeController.js
+import Quiz from "../models/quiz.js";
+import QuestionText from "../models/questionText.js";
+import QuestionImage from "../models/questionImage.js";
+import ContributedQuiz from "../models/contributedQuiz.js";
+import Subject from "../models/subject.js";
+import Chapter from "../models/chapter.js";
+import fs from "fs";
+import csv from "csv-parser";
 
-const approveContribution = async (req, res) => {
+export const approveContribution = async (req, res) => {
   try {
     const { id } = req.params;
     const contrib = await ContributedQuiz.findById(id);
@@ -29,7 +29,6 @@ const approveContribution = async (req, res) => {
         return res.status(400).json({ message: "Chương không hợp lệ" });
     }
 
-    // 1. Tạo Quiz mới (và nếu có adminNote thì thêm vào)
     const quizData = {
       name: contrib.name,
       subjectId: contrib.subjectId || null,
@@ -37,15 +36,11 @@ const approveContribution = async (req, res) => {
       questionNum: contrib.questions.length,
       timeLimit: contrib.timeLimit || 0,
       availability: true,
+      note: contrib.adminNote || "",
     };
-
-    if (contrib.adminNote) {
-      quizData.note = contrib.adminNote;
-    }
 
     const quiz = await Quiz.create(quizData);
 
-    // 2. Tạo câu hỏi text & image
     const questionsText = contrib.questions
       .filter((q) => !q.image)
       .map((q) => ({
@@ -70,7 +65,6 @@ const approveContribution = async (req, res) => {
     if (questionsImage.length > 0)
       await QuestionImage.insertMany(questionsImage);
 
-    // Cập nhật trạng thái contributed
     contrib.status = "approved";
     contrib.approvedAt = new Date();
     contrib.approvedBy = req.user?._id || null;
@@ -86,7 +80,7 @@ const approveContribution = async (req, res) => {
   }
 };
 
-const getAllContributedQuizzes = async (req, res) => {
+export const getAllContributedQuizzes = async (req, res) => {
   try {
     const quizzes = await ContributedQuiz.find()
       .populate("contributorId", "username email")
@@ -100,7 +94,7 @@ const getAllContributedQuizzes = async (req, res) => {
   }
 };
 
-const handleCSVUpload = async (req, res) => {
+export const handleCSVUpload = async (req, res) => {
   try {
     if (!req.file)
       return res.status(400).json({ message: "Chưa tải lên file CSV nào!" });
@@ -120,7 +114,6 @@ const handleCSVUpload = async (req, res) => {
             explain: r.explain || "",
           }));
 
-          // Map subjectId/chapterId
           const subjectId =
             req.body.subjectId && req.body.subjectId !== ""
               ? req.body.subjectId
@@ -130,13 +123,11 @@ const handleCSVUpload = async (req, res) => {
               ? req.body.chapterId
               : null;
 
-          // ✅ Nếu chọn “Khác” => lưu suggestedNote vào adminNote
           const adminNote =
             (!subjectId || subjectId === "") && req.body.suggestedNote
               ? `\n${req.body.suggestedNote}`
               : "";
 
-          // 🔹 Kiểm tra số lượng đóng góp trong 7 ngày gần nhất
           const oneWeekAgo = new Date();
           oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
@@ -160,7 +151,7 @@ const handleCSVUpload = async (req, res) => {
             questionNum: questions.length,
             timeLimit: req.body.timeLimit || 45,
             questions,
-            adminNote, // ✅ lưu tại đây
+            adminNote,
           });
 
           fs.unlinkSync(filePath);
@@ -176,7 +167,7 @@ const handleCSVUpload = async (req, res) => {
   }
 };
 
-const rejectContribution = async (req, res) => {
+export const rejectContribution = async (req, res) => {
   try {
     const { id } = req.params;
     const contrib = await ContributedQuiz.findById(id);
@@ -196,10 +187,9 @@ const rejectContribution = async (req, res) => {
   }
 };
 
-const getDetailContributedQuiz = async (req, res) => {
+export const getDetailContributedQuiz = async (req, res) => {
   try {
     const { id } = req.params;
-
     const contrib = await ContributedQuiz.findById(id)
       .populate("contributorId", "username email")
       .populate("subjectId", "name")
@@ -216,7 +206,7 @@ const getDetailContributedQuiz = async (req, res) => {
   }
 };
 
-const getContributedQuizzesPaginated = async (req, res) => {
+export const getContributedQuizzesPaginated = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 5;
@@ -224,7 +214,6 @@ const getContributedQuizzesPaginated = async (req, res) => {
 
     const total = await ContributedQuiz.countDocuments();
 
-    // ⚡ Sử dụng aggregation pipeline để sort theo thứ tự tùy ý
     const quizzes = await ContributedQuiz.aggregate([
       {
         $addFields: {
@@ -240,12 +229,11 @@ const getContributedQuizzesPaginated = async (req, res) => {
           },
         },
       },
-      { $sort: { statusOrder: 1, createdAt: -1 } }, // pending → approved → rejected
+      { $sort: { statusOrder: 1, createdAt: -1 } },
       { $skip: skip },
       { $limit: limit },
     ]);
 
-    // ⚠️ populate thủ công vì aggregation không tự populate
     await ContributedQuiz.populate(quizzes, [
       { path: "contributorId", select: "username email" },
       { path: "subjectId", select: "name" },
@@ -266,7 +254,7 @@ const getContributedQuizzesPaginated = async (req, res) => {
   }
 };
 
-const getContributionStats = async (req, res) => {
+export const getContributionStats = async (req, res) => {
   try {
     const userId = req.user.id;
     const oneWeekAgo = new Date();
@@ -286,15 +274,4 @@ const getContributionStats = async (req, res) => {
     console.error("❌ Lỗi khi lấy thống kê đóng góp:", err);
     res.status(500).json({ message: "Lỗi khi lấy thống kê đóng góp!" });
   }
-};
-
-
-module.exports = {
-  handleCSVUpload,
-  approveContribution,
-  getAllContributedQuizzes,
-  rejectContribution,
-  getDetailContributedQuiz,
-  getContributedQuizzesPaginated,
-  getContributionStats,
 };

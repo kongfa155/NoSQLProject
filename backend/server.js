@@ -1,29 +1,34 @@
-//backend/sever.js
-require("dotenv").config();
-const express = require("express");
-const cors = require("cors");
-const connectDB = require("./config/db");
-//Các thư viện hỗ trợ của mongo và backend cho nó dễ làm hơn
+import dotenv from "dotenv";
+import express from "express";
+import cors from "cors";
+import connectDB from "./config/db.js";
+import questionRoutes from "./routes/questionRoutes.js";
+import questionImageRoutes from "./routes/questionImageRoutes.js";
+import quizRoutes from "./routes/quizRoutes.js";
+import submissionRoutes from "./routes/submissionRoutes.js";
+import subjectRoutes from "./routes/subjectRoutes.js";
+import chapterRoutes from "./routes/chapterRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
+import contributeRoutes from "./routes/contributeRoutes.js";
+
+dotenv.config();
+
 const app = express();
 connectDB();
 
 app.use(cors());
 app.use(express.json());
-//Hiện tại chỉ có làm việc trên route question
 
+app.use("/api/questions", questionRoutes);
+app.use("/api/questionImages", questionImageRoutes);
+app.use("/api/quizzes", quizRoutes);
+app.use("/api/submissions", submissionRoutes);
+app.use("/api/subjects", subjectRoutes);
+app.use("/api/chapters", chapterRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/contributed", contributeRoutes);
 
-app.use("/api/questions", require("./routes/questionRoutes"));
-app.use("/api/questionImages", require('./routes/questionImageRoutes.js'));
-app.use("/api/quizzes", require("./routes/quizRoutes.js"));
-app.use("/api/submissions", require("./routes/submissionRoutes.js"));   
-app.use("/api/subjects", require("./routes/subjectRoutes.js"));
-app.use("/api/chapters", require("./routes/chapterRoutes.js"));
-
-app.use("/api/users", require("./routes/userRoutes.js"));
-app.use("/api/auth", require("./routes/authRoutes.js")); 
-app.use("/api/contributed", require("./routes/contributeRoutes.js"));
-
-
-//Lắng nghe port backend, mặc định là 5000
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

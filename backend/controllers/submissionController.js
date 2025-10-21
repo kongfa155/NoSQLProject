@@ -1,8 +1,9 @@
-const mongoose = require("mongoose");
-const Submission = require("../models/submission");
+// 📁 controllers/submissionController.js
+import mongoose from "mongoose";
+import Submission from "../models/submission.js";
 
 // 🟢 Lưu hoặc cập nhật bài nộp
-const addSubmission = async (req, res) => {
+export const addSubmission = async (req, res) => {
   try {
     const { userId, quizId, answers, score, totalQuestions, timeSpent } =
       req.body;
@@ -50,11 +51,10 @@ const addSubmission = async (req, res) => {
 };
 
 // 🟢 Lấy bài làm gần nhất
-const getLatestSubmission = async (req, res) => {
+export const getLatestSubmission = async (req, res) => {
   try {
     const { quizId, userId } = req.params;
 
-    // Kiểm tra 24 ký tự hex
     if (!quizId || !userId) {
       return res.status(400).json({ message: "Thiếu quizId hoặc userId." });
     }
@@ -87,9 +87,8 @@ const getLatestSubmission = async (req, res) => {
   }
 };
 
-
 // 🟢 Lấy toàn bộ submission của user
-const getUserSubmissions = async (req, res) => {
+export const getUserSubmissions = async (req, res) => {
   try {
     const { userId } = req.params;
     const submissions = await Submission.find({ userId })
@@ -103,13 +102,14 @@ const getUserSubmissions = async (req, res) => {
   }
 };
 
-const getAllSubmissionFromSubject = async (req, res) => {
+// 🟢 Lấy tất cả submission theo môn học
+export const getAllSubmissionFromSubject = async (req, res) => {
   const { userId, subjectId } = req.params;
 
   try {
     const submissions = await Submission.find({ userId, subjectId })
-      .populate("quizId") // để lấy thông tin quiz
-      .populate("chapterId"); // để lấy thông tin chapter nếu cần
+      .populate("quizId")
+      .populate("chapterId");
 
     res.json(submissions);
   } catch (err) {
@@ -117,7 +117,9 @@ const getAllSubmissionFromSubject = async (req, res) => {
     res.status(500).json({ message: "Lỗi khi lấy submissions theo môn" });
   }
 };
-const getBestSubmission = async (req, res) => {
+
+// 🟢 Lấy best submission
+export const getBestSubmission = async (req, res) => {
   try {
     const { quizId, userId } = req.params;
 
@@ -147,11 +149,4 @@ const getBestSubmission = async (req, res) => {
       .status(500)
       .json({ message: "Lỗi khi lấy best submission", error: err.message });
   }
-};
-module.exports = {
-  addSubmission,
-  getUserSubmissions,
-  getLatestSubmission,
-  getAllSubmissionFromSubject,
-  getBestSubmission,
 };

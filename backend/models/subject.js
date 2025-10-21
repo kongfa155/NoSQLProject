@@ -1,11 +1,10 @@
-const mongoose = require("mongoose");
-
+import mongoose from "mongoose";
 
 const subjectSchema = new mongoose.Schema({
-    // _id là mặc định thằng mongodb sẽ cung cấp và nó là chuỗi khó hiểu 
-  name: {type:String},
-  image: {type:String},
-  description: {type:String},
+  name: { type: String },
+  image: { type: String },
+  description: { type: String },
 });
 
-module.exports = mongoose.model("Subject", subjectSchema);
+const Subject = mongoose.model("Subject", subjectSchema);
+export default Subject;

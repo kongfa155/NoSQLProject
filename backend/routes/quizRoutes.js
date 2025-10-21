@@ -1,6 +1,5 @@
-const express = require("express");
-const router = express.Router();
-const {
+import express from "express";
+import {
   getQuiz,
   addQuiz,
   getQuizById,
@@ -9,7 +8,9 @@ const {
   updateQuizFull,
   getQuizFromChapter,
   getQuizBySubject,
-} = require("../controllers/quizController.js");
+} from "../controllers/quizController.js";
+
+const router = express.Router();
 
 router.get("/", getQuiz);
 router.post("/", addQuiz);
@@ -20,4 +21,4 @@ router.put("/:id/full", updateQuizFull);
 router.get("/chapter/:id", getQuizFromChapter);
 router.get("/subject/:subjectid", getQuizBySubject);
 
-module.exports = router;
+export default router;

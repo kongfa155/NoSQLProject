@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const submissionSchema = new mongoose.Schema(
   {
@@ -12,7 +12,6 @@ const submissionSchema = new mongoose.Schema(
       ref: "Quiz",
       required: true,
     },
-
     answers: [
       {
         questionId: { type: String, required: true },
@@ -20,13 +19,13 @@ const submissionSchema = new mongoose.Schema(
         isCorrect: { type: Boolean, required: true },
       },
     ],
-
     score: { type: Number, required: true },
-    bestScore: { type: Number, default: 0 }, // ✅ thêm field điểm cao nhất
+    bestScore: { type: Number, default: 0 },
     totalQuestions: { type: Number, required: true },
-    timeSpent: { type: Number, default: 0 }, // giây
+    timeSpent: { type: Number, default: 0 },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Submission", submissionSchema);
+const Submission = mongoose.model("Submission", submissionSchema);
+export default Submission;

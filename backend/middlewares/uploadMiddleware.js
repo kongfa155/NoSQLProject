@@ -1,15 +1,15 @@
-// backend/middlewares/uploadMiddleware.js
-const multer = require("multer");
-const path = require("path");
-const fs = require("fs");
+// backend/src/middlewares/uploadMiddleware.js
+import multer from "multer";
+import path from "path";
+import fs from "fs";
 
-// 🔹 Tạo thư mục lưu file tạm (nếu chưa tồn tại)
-const uploadDir = path.join(__dirname, "../uploads");
+// 🔹 Tạo thư mục lưu file tạm nếu chưa có
+const uploadDir = path.join(process.cwd(), "uploads");
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir);
 }
 
-// 🔹 Cấu hình nơi lưu file CSV tạm
+// 🔹 Cấu hình lưu file CSV tạm
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, uploadDir);
@@ -20,7 +20,7 @@ const storage = multer.diskStorage({
   },
 });
 
-// 🔹 Kiểm tra định dạng file (chỉ chấp nhận .csv)
+// 🔹 Kiểm tra định dạng file
 const fileFilter = (req, file, cb) => {
   const ext = path.extname(file.originalname).toLowerCase();
   if (ext !== ".csv") {
@@ -33,9 +33,7 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({
   storage,
   fileFilter,
-  limits: {
-    fileSize: 5 * 1024 * 1024, // giới hạn 5MB
-  },
+  limits: { fileSize: 5 * 1024 * 1024 }, // Giới hạn 5MB
 });
 
-module.exports = upload;
+export default upload;

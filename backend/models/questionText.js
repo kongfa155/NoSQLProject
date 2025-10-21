@@ -1,13 +1,12 @@
-const mongoose = require("mongoose");
-
+import mongoose from "mongoose";
 
 const questionSchema = new mongoose.Schema({
-    // _id là mặc định thằng mongodb sẽ cung cấp và nó là chuỗi khó hiểu 
-  quizId: {type: mongoose.Schema.Types.ObjectId, ref:"Quiz", index:true},
+  quizId: { type: mongoose.Schema.Types.ObjectId, ref: "Quiz", index: true },
   question: { type: String, required: true },
   options: [{ type: String, required: true }],
   answer: { type: String, required: true },
-  explain: {type: String},
+  explain: { type: String },
 });
 
-module.exports = mongoose.model("QuestionText", questionSchema);
+const QuestionText = mongoose.model("QuestionText", questionSchema);
+export default QuestionText;

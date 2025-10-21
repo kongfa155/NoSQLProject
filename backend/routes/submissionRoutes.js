@@ -1,22 +1,18 @@
-const express = require("express");
-const router = express.Router();
-const {
+import express from "express";
+import {
   getUserSubmissions,
   addSubmission,
   getLatestSubmission,
   getAllSubmissionFromSubject,
   getBestSubmission,
-} = require("../controllers/submissionController");
+} from "../controllers/submissionController.js";
 
-// Lấy tất cả bài nộp của user
+const router = express.Router();
+
 router.get("/:userId", getUserSubmissions);
-
-// Lấy bài làm gần nhất của user cho 1 quiz
 router.get("/latest/:quizId/:userId", getLatestSubmission);
-// Lấy tất cả submissions của user trong 1 môn
 router.get("/subject/:userId/:subjectId", getAllSubmissionFromSubject);
 router.get("/best/:quizId/:userId", getBestSubmission);
-// Thêm hoặc cập nhật bài nộp
 router.post("/", addSubmission);
 
-module.exports = router;
+export default router;

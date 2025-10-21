@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const contributedQuizSchema = new mongoose.Schema({
   contributorId: {
@@ -8,14 +8,11 @@ const contributedQuizSchema = new mongoose.Schema({
   },
   name: { type: String, required: true },
 
-  // ✅ Cho phép null khi chọn "Khác"
   subjectId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Subject",
-    required: false,
     default: null,
   },
-
   chapterId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Chapter",
@@ -30,7 +27,6 @@ const contributedQuizSchema = new mongoose.Schema({
     enum: ["pending", "approved", "rejected"],
     default: "pending",
   },
-
   adminNote: { type: String },
 
   questions: [
@@ -49,4 +45,8 @@ const contributedQuizSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
-module.exports = mongoose.model("ContributedQuiz", contributedQuizSchema);
+const ContributedQuiz = mongoose.model(
+  "ContributedQuiz",
+  contributedQuizSchema
+);
+export default ContributedQuiz;
