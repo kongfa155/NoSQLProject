@@ -4,7 +4,8 @@ import baseAxios from "../utils/baseAxios";
 import nProgress from "nprogress";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api",
+  baseURL:
+    import.meta.env.VITE_API_BASE_URL || "https://nosqlproject.onrender.com/api",
 });
 nProgress.configure({
   showSpinner: false,
