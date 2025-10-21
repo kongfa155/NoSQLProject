@@ -80,7 +80,7 @@ export default function     () {
             onChange={(e) => setUsername(e.target.value)}
             value={username}
             type="text"
-            placeholder="Nhập email hoặc username"
+            placeholder="Nhập email"
             className="px-[12px] w-[90%] h-[3rem] rounded-[8px] mb-4 border border-white/50 bg-white/70"
           />
 

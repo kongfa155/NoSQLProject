@@ -142,27 +142,35 @@ export default function RegisterPage() {
             <>
               <div className="mb-8 text-center text-[28px] font-black text-white select-none drop-shadow-lg">
                 Nhập mã xác minh
-              </div>
+                  </div>
 
-              <input
-                type="text"
-                placeholder="Nhập mã OTP 6 chữ số"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-                className="px-[12px] w-[90%] h-[3rem] rounded-[8px] mb-6 border border-white/50 bg-white/70 text-center tracking-[4px]"
-              />
+                  <div className="flex justify-center mb-6">
+                    <input
+                      type="text"
+                      value={otp}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, "").slice(0, 6); // chỉ cho nhập 0–9 và tối đa 6 ký tự
+                        setOtp(value);
+                      }}
+                      maxLength="6"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      placeholder="Nhập mã OTP"
+                      className="w-[12rem] h-[3.2rem] text-center text-2xl rounded-[8px] border border-white/50 bg-white/70 text-gray-800 font-semibold focus:outline-none focus:ring-2 focus:ring-[#6EA269] placeholder-gray-500"
+                    />
+                  </div>
 
-              <div
-                onClick={handleVerifyOtp}
-                className="w-[70%] h-[3rem] flex justify-center items-center 
-                bg-[#41563F] text-white font-semibold rounded-[8px] cursor-pointer 
-                hover:bg-[#6EA269] transition-all duration-500 select-none drop-shadow-md transform 
-                 ease-in-out hover:scale-[1.05]"
-              >
-                Xác nhận mã
-              </div>
-            </>
-          )}
+                  <div
+                    onClick={handleVerifyOtp}
+                    className="w-[70%] h-[3rem] flex justify-center items-center 
+                    bg-[#41563F] text-white font-semibold rounded-[8px] cursor-pointer 
+                    hover:bg-[#6EA269] transition-all duration-500 select-none drop-shadow-md transform 
+                    ease-in-out hover:scale-[1.05]"
+                  >
+                    Xác nhận mã
+                  </div>
+                </>
+              )}
 
           {step === "done" && (
             <div className="text-white text-center text-lg font-semibold">

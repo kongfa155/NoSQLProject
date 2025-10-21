@@ -97,7 +97,7 @@ export default function ForgotPassPage() {
                       hover:bg-[#6EA269] transition-all duration-500 select-none drop-shadow-md transform 
                       ease-in-out hover:scale-[1.05] ${isSending ? "opacity-50 cursor-not-allowed hover:bg-[#41563F]" : ""}`}
                   >
-                    {isSending ? `Vui lòng chờ ${countdown}s` : "Gửi mã OTP"}
+                    {isSending ? `Vui lòng chờ ${countdown}s` : "Gửi mã xác thực"}
                   </div>
 
             </>
@@ -105,13 +105,29 @@ export default function ForgotPassPage() {
 
           {step === 2 && (
             <>
-              <input value={otp} onChange={e => setOtp(e.target.value)} type="text"
-                     placeholder="Nhập mã OTP"
-                     className="px-[12px] w-[90%] h-[3rem] rounded-[8px] mb-4 border border-white/50 bg-white/70"/>
-              <div onClick={handleVerifyOTP}
-                   className="w-[70%] h-[3rem] flex justify-center items-center bg-[#41563F] text-white font-semibold rounded-[8px] cursor-pointer hover:bg-[#6EA269] transition-all duration-500 select-none drop-shadow-md transform ease-in-out hover:scale-[1.05]">
-                Xác thực OTP
-              </div>
+              <div className="flex justify-center mb-6">
+              <input
+                type="text"
+                value={otp}
+                onChange={(e) => {
+                  // chỉ cho nhập số và tối đa 6 ký tự
+                  const value = e.target.value.replace(/\D/g, "").slice(0, 6);
+                  setOtp(value);
+                }}
+                maxLength="6"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                className="w-[12rem] h-[3.2rem] text-center text-2xl rounded-[8px] border border-white/50 bg-white/70 text-gray-800 font-semibold focus:outline-none focus:ring-2 focus:ring-[#6EA269] placeholder-gray-500"
+                placeholder="Nhập mã OTP"
+              />
+            </div>
+
+            <div
+              onClick={handleVerifyOTP}
+              className="w-[70%] h-[3rem] flex justify-center items-center bg-[#41563F] text-white font-semibold rounded-[8px] cursor-pointer hover:bg-[#6EA269] transition-all duration-500 select-none drop-shadow-md transform ease-in-out hover:scale-[1.05]"
+            >
+              Xác thực OTP
+            </div>
             </>
           )}
 
