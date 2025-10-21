@@ -1,5 +1,6 @@
 import "./LoginPage.css";
 import quizLogo from "../../quizLogo_green.svg";
+import bg from "/backGround.svg";
 import { FaEye as EyeLogo } from "react-icons/fa";
 import { RiEyeOffFill as CloseEye } from "react-icons/ri";
 import { useState, useEffect } from "react";
@@ -7,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../../redux/action/userAction";
 import { useNavigate } from "react-router-dom";
 
-export default function     () {
+export default function () {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -17,11 +18,11 @@ export default function     () {
 
   const account = useSelector((state) => state.user.account);
   const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
-  useEffect(()=>{
-    if(isAuthenticated){
-    navigate("/");
-  }
-  },[]);
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("");
+    }
+  }, []);
   const handleLogin = async () => {
     try {
       setError("");
@@ -36,7 +37,7 @@ export default function     () {
 
       if (result?.accessToken) {
         console.log("✅ Đăng nhập thành công, điều hướng...");
-        navigate("/");
+        navigate("");
       } else {
         setError("Đăng nhập thất bại.");
       }
@@ -50,7 +51,7 @@ export default function     () {
     <div
       className="flex w-full h-screen justify-center items-center bg-gray-100"
       style={{
-        backgroundImage: `url("/backGround.svg")`,
+        backgroundImage: `url(${bg})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
@@ -73,7 +74,7 @@ export default function     () {
 
         <div className="w-1/2 flex flex-col justify-center items-center p-12 bg-transparent">
           <div className="mb-8 text-center text-[32px] font-black text-white select-none drop-shadow-lg">
-            Đăng nhập 
+            Đăng nhập
           </div>
 
           <input
@@ -111,11 +112,11 @@ export default function     () {
             </div>
           )}
           <div
-              className="w-[90%] text-left mb-2 text-sm text-[#9DE3A4] cursor-pointer hover:underline select-none"
-              onClick={() => navigate("/forgot-password")}
-            >
-              Quên mật khẩu?
-            </div>
+            className="w-[90%] text-left mb-2 text-sm text-[#9DE3A4] cursor-pointer hover:underline select-none"
+            onClick={() => navigate("forgot-password")}
+          >
+            Quên mật khẩu?
+          </div>
           <div
             onClick={handleLogin}
             className="w-[70%] h-[3rem] flex justify-center items-center 
@@ -125,15 +126,15 @@ export default function     () {
           >
             Đăng nhập
           </div>
-            <div className="mt-4 text-white text-sm">
-              Chưa có tài khoản?{" "}
-              <span
-                onClick={() => navigate("/register")}
-                className="text-[#9DE3A4] font-semibold cursor-pointer hover:underline"
-              >
-                Đăng ký ngay
-              </span>
-            </div>
+          <div className="mt-4 text-white text-sm">
+            Chưa có tài khoản?{" "}
+            <span
+              onClick={() => navigate("register")}
+              className="text-[#9DE3A4] font-semibold cursor-pointer hover:underline"
+            >
+              Đăng ký ngay
+            </span>
+          </div>
 
           {isAuthenticated && (
             <div className="mt-6 text-sm text-white">

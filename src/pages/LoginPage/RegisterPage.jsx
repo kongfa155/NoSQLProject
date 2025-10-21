@@ -37,16 +37,18 @@ export default function RegisterPage() {
 
   const handleVerifyOtp = async () => {
     try {
-        const res = await authService.verifyOTP({
+      const res = await authService.verifyOTP({
         email,
         otp,
       });
       setStep("done");
       setMessage("✅ Xác minh thành công! Bạn có thể đăng nhập.");
-      setTimeout(() => navigate("/login"), 2000);
+      setTimeout(() => navigate("login"), 2000);
     } catch (err) {
       console.error(err);
-      setMessage(err.response?.data?.message || "Mã OTP không hợp lệ hoặc đã hết hạn.");
+      setMessage(
+        err.response?.data?.message || "Mã OTP không hợp lệ hoặc đã hết hạn."
+      );
     }
   };
 
@@ -89,42 +91,42 @@ export default function RegisterPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 className="px-[12px] w-[90%] h-[3rem] rounded-[8px] mb-4 border border-white/50 bg-white/70"
               />
-            <div className="flex flex-row items-center justify-center mb-4 rounded-[8px] border border-white/50 w-[90%] h-[3rem] bg-white/70">
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Nhập mật khẩu"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="px-[12px] w-[45%] h-full rounded-l-[8px] border-0 focus:outline-none bg-transparent text-gray-800 placeholder-gray-600"
-            />
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Xác nhận mật khẩu"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="px-[12px] w-[45%] h-full rounded-r-[8px] border-0 focus:outline-none bg-transparent text-gray-800 placeholder-gray-600"
-            />
-            {showPassword ? (
-              <CloseEye
-                onClick={() => setShowPassword(false)}
-                className="w-[28px] cursor-pointer text-gray-600 hover:text-gray-800 transition-colors ml-2"
-              />
-            ) : (
-              <EyeLogo
-                onClick={() => setShowPassword(true)}
-                className="w-[28px] cursor-pointer text-gray-600 hover:text-gray-800 transition-colors ml-2"
-              />
-            )}
-          </div>
-               <div className="w-[90%] text-left mb-4 text-sm text-white/80">
-                  Bạn đã có tài khoản?{" "}
-                  <span
-                    className="text-[#9DE3A4] font-semibold cursor-pointer hover:underline"
-                    onClick={() => navigate("/login")}
-                  >
-                    Đăng nhập
-                  </span>
-                </div>
+              <div className="flex flex-row items-center justify-center mb-4 rounded-[8px] border border-white/50 w-[90%] h-[3rem] bg-white/70">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Nhập mật khẩu"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="px-[12px] w-[45%] h-full rounded-l-[8px] border-0 focus:outline-none bg-transparent text-gray-800 placeholder-gray-600"
+                />
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Xác nhận mật khẩu"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="px-[12px] w-[45%] h-full rounded-r-[8px] border-0 focus:outline-none bg-transparent text-gray-800 placeholder-gray-600"
+                />
+                {showPassword ? (
+                  <CloseEye
+                    onClick={() => setShowPassword(false)}
+                    className="w-[28px] cursor-pointer text-gray-600 hover:text-gray-800 transition-colors ml-2"
+                  />
+                ) : (
+                  <EyeLogo
+                    onClick={() => setShowPassword(true)}
+                    className="w-[28px] cursor-pointer text-gray-600 hover:text-gray-800 transition-colors ml-2"
+                  />
+                )}
+              </div>
+              <div className="w-[90%] text-left mb-4 text-sm text-white/80">
+                Bạn đã có tài khoản?{" "}
+                <span
+                  className="text-[#9DE3A4] font-semibold cursor-pointer hover:underline"
+                  onClick={() => navigate("login")}
+                >
+                  Đăng nhập
+                </span>
+              </div>
               <div
                 onClick={handleRegister}
                 className="w-[70%] h-[3rem] flex justify-center items-center 
@@ -141,35 +143,35 @@ export default function RegisterPage() {
             <>
               <div className="mb-8 text-center text-[28px] font-black text-white select-none drop-shadow-lg">
                 Nhập mã xác minh
-                  </div>
+              </div>
 
-                  <div className="flex justify-center mb-6">
-                    <input
-                      type="text"
-                      value={otp}
-                      onChange={(e) => {
-                        const value = e.target.value.replace(/\D/g, "").slice(0, 6); // chỉ cho nhập 0–9 và tối đa 6 ký tự
-                        setOtp(value);
-                      }}
-                      maxLength="6"
-                      inputMode="numeric"
-                      pattern="[0-9]*"
-                      placeholder="Nhập mã OTP"
-                      className="w-[12rem] h-[3.2rem] text-center text-2xl rounded-[8px] border border-white/50 bg-white/70 text-gray-800 font-semibold focus:outline-none focus:ring-2 focus:ring-[#6EA269] placeholder-gray-500"
-                    />
-                  </div>
+              <div className="flex justify-center mb-6">
+                <input
+                  type="text"
+                  value={otp}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, "").slice(0, 6); // chỉ cho nhập 0–9 và tối đa 6 ký tự
+                    setOtp(value);
+                  }}
+                  maxLength="6"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  placeholder="Nhập mã OTP"
+                  className="w-[12rem] h-[3.2rem] text-center text-2xl rounded-[8px] border border-white/50 bg-white/70 text-gray-800 font-semibold focus:outline-none focus:ring-2 focus:ring-[#6EA269] placeholder-gray-500"
+                />
+              </div>
 
-                  <div
-                    onClick={handleVerifyOtp}
-                    className="w-[70%] h-[3rem] flex justify-center items-center 
+              <div
+                onClick={handleVerifyOtp}
+                className="w-[70%] h-[3rem] flex justify-center items-center 
                     bg-[#41563F] text-white font-semibold rounded-[8px] cursor-pointer 
                     hover:bg-[#6EA269] transition-all duration-500 select-none drop-shadow-md transform 
                     ease-in-out hover:scale-[1.05]"
-                  >
-                    Xác nhận mã
-                  </div>
-                </>
-              )}
+              >
+                Xác nhận mã
+              </div>
+            </>
+          )}
 
           {step === "done" && (
             <div className="text-white text-center text-lg font-semibold">

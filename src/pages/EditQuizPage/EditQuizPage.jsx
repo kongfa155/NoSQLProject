@@ -1,9 +1,9 @@
-import { useNavigate, useParams } from 'react-router-dom';
-import './EditQuizPage.css';
-import { useEffect, useState } from 'react';
-import DefaultAlert from '../../components/AlertBoxes/DefaultAlert';
-import quizService from '../../services/quizService';
-import chapterService from '../../services/chapterService';
+import { useNavigate, useParams } from "react-router-dom";
+import "./EditQuizPage.css";
+import { useEffect, useState } from "react";
+import DefaultAlert from "../../components/AlertBoxes/DefaultAlert";
+import quizService from "../../services/quizService";
+import chapterService from "../../services/chapterService";
 export default function EditQuizPage() {
   const { id } = useParams();
   const [quiz, setQuiz] = useState();
@@ -12,29 +12,31 @@ export default function EditQuizPage() {
   const [showSaving, setShowSaving] = useState(false);
   const [chapters, setChapters] = useState([]);
 
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   //Lấy quiz
-    useEffect(() => {
-    quizService.getById(id)
-      .then(async res => {
+  useEffect(() => {
+    quizService
+      .getById(id)
+      .then(async (res) => {
         setQuiz(res.data);
         setQuestions(res.data.questions || []);
-      
-         const chaptersRes = await chapterService.getBySubject(res.data.subjectId);
-      setChapters(chaptersRes.data);
 
+        const chaptersRes = await chapterService.getBySubject(
+          res.data.subjectId
+        );
+        setChapters(chaptersRes.data);
       })
-      
-      .catch(err => console.log("Lỗi khi tải quiz:", err))
+
+      .catch((err) => console.log("Lỗi khi tải quiz:", err))
       .finally(() => setLoading(false));
   }, [id]);
 
   const handleQuizChange = (field, value) => {
-    setQuiz(prev => ({ ...prev, [field]: value }));
+    setQuiz((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleQuestionChange = (index, field, value) => {
-    setQuestions(prev => {
+    setQuestions((prev) => {
       const updated = [...prev];
       updated[index] = { ...updated[index], [field]: value };
       return updated;
@@ -49,23 +51,23 @@ export default function EditQuizPage() {
       explain: "",
       image: hasImage ? "https://example.com/sample.jpg" : "",
     };
-    setQuestions(prev => [...prev, newQuestion]);
+    setQuestions((prev) => [...prev, newQuestion]);
   };
 
   const handleDeleteQuestion = (index) => {
     if (confirm("Bạn có chắc muốn xóa câu hỏi này không?")) {
-      setQuestions(prev => prev.filter((_, i) => i !== index));
+      setQuestions((prev) => prev.filter((_, i) => i !== index));
     }
   };
 
   const handleSave = async () => {
     setShowSaving(true);
     try {
-        await quizService.updateFull(id, {
+      await quizService.updateFull(id, {
         name: quiz.name,
         timeLimit: quiz.timeLimit,
         chapterId: quiz.chapterId,
-        questions: questions.map(q => ({
+        questions: questions.map((q) => ({
           _id: q._id || null,
           question: q.question,
           options: q.options,
@@ -74,7 +76,7 @@ export default function EditQuizPage() {
           image: q.image || "",
         })),
       });
-      navigate(`/subject/edit/${quiz.subjectId}`);
+      navigate(`subject/edit/${quiz.subjectId}`);
     } catch (error) {
       console.error("Lỗi khi cập nhật quiz:", error);
       alert("❌ Lỗi khi cập nhật quiz!");
@@ -94,27 +96,29 @@ export default function EditQuizPage() {
             className="text-3xl font-bold border-b-2 border-gray-400 focus:outline-none focus:border-blue-500 rounded-[8px]"
           />
           <div className="mt-3">
-  Chương:{" "}
-  <select
-    value={quiz?.chapterId || ""}
-    onChange={(e) => handleQuizChange("chapterId", e.target.value)}
-    className="border border-gray-400 rounded-md p-2 ml-2"
-  >
-    <option value="">-- Chọn chương --</option>
-    {chapters.map(ch => (
-      <option key={ch._id} value={ch._id}>
-        {ch.name}
-      </option>
-    ))}
-  </select>
-</div>
+            Chương:{" "}
+            <select
+              value={quiz?.chapterId || ""}
+              onChange={(e) => handleQuizChange("chapterId", e.target.value)}
+              className="border border-gray-400 rounded-md p-2 ml-2"
+            >
+              <option value="">-- Chọn chương --</option>
+              {chapters.map((ch) => (
+                <option key={ch._id} value={ch._id}>
+                  {ch.name}
+                </option>
+              ))}
+            </select>
+          </div>
 
           <div className="mt-3 rounded-[8px]">
             Thời gian làm bài (phút):{" "}
             <input
               type="number"
               value={quiz?.timeLimit || 0}
-              onChange={(e) => handleQuizChange("timeLimit", Number(e.target.value))}
+              onChange={(e) =>
+                handleQuizChange("timeLimit", Number(e.target.value))
+              }
               className="border border-gray-400 rounded-md p-2 w-24"
             />
           </div>
@@ -154,7 +158,15 @@ export default function EditQuizPage() {
           </button>
         </div>
       </div>
-      {showSaving&&<DefaultAlert  title="Đang lưu môn học" information="Đang lưu môn học, vui lòng chờ, quá trình này có thể kéo dài nếu bộ đề quá nhiều câu hỏi." closeButton={()=>{setShowSaving(false)}}></DefaultAlert>}
+      {showSaving && (
+        <DefaultAlert
+          title="Đang lưu môn học"
+          information="Đang lưu môn học, vui lòng chờ, quá trình này có thể kéo dài nếu bộ đề quá nhiều câu hỏi."
+          closeButton={() => {
+            setShowSaving(false);
+          }}
+        ></DefaultAlert>
+      )}
     </div>
   );
 }

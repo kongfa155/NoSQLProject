@@ -1,4 +1,4 @@
-import  { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import styles from "./AdminReviewContributed.module.css";
@@ -16,13 +16,14 @@ const AdminReviewContributed = () => {
   const handleAction = useCallback(
     async (action, successMsg, errorMsg) => {
       try {
-        if(action === 'approve'){
-        await contributedService.approve(id);
-        } if(action === 'reject') {
-            await contributedService.reject(id);
+        if (action === "approve") {
+          await contributedService.approve(id);
+        }
+        if (action === "reject") {
+          await contributedService.reject(id);
         }
         alert(successMsg);
-        navigate("/donggopde");
+        navigate("donggopde");
       } catch (err) {
         console.error(err);
         alert(errorMsg || "Đã xảy ra lỗi!");
@@ -110,17 +111,17 @@ const AdminReviewContributed = () => {
       <div className={styles.actionBox}>
         <button
           className={styles.approveBtn}
-          onClick={() => handleAction("approve", "✅ Đã duyệt đề!", "Lỗi khi duyệt!")}
+          onClick={() =>
+            handleAction("approve", "✅ Đã duyệt đề!", "Lỗi khi duyệt!")
+          }
         >
           ✅ Duyệt
         </button>
         <button
           className={styles.rejectBtn}
-          onClick={() =>handleAction(
-            "reject",
-            "❌ Đã từ chối đề!",
-            "Lỗi khi từ chối!"
-          )}
+          onClick={() =>
+            handleAction("reject", "❌ Đã từ chối đề!", "Lỗi khi từ chối!")
+          }
         >
           ❌ Từ chối
         </button>

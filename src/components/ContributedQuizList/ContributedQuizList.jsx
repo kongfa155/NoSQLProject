@@ -1,4 +1,4 @@
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -139,9 +139,7 @@ export default function ContributedQuizList() {
                   {quiz.status === "pending" ? (
                     <button
                       className={styles.reviewButton}
-                      onClick={() =>
-                        navigate(`/review-contributed/${quiz._id}`)
-                      }
+                      onClick={() => navigate(`review-contributed/${quiz._id}`)}
                     >
                       Xem
                     </button>
