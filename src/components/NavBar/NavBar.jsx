@@ -7,7 +7,7 @@ import { handleLogout } from "../../redux/action/userAction";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 
-export default function NavBar({ selected = "trangchu" }) {
+export default function NavBar({ selected = "about" }) {
   const account = useSelector((state) => state.user.account);
   const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
   const dispatch = useDispatch();
@@ -15,7 +15,7 @@ export default function NavBar({ selected = "trangchu" }) {
   const [openDropdown, setOpenDropdown] = useState(false);
 
   const map = {
-    trangchu: "", // -> /NoSQLProject/
+    trangchu: "about", // -> /NoSQLProject/
     monhoc: "subject/view", // -> /NoSQLProject/subject/view
     donggopde: "donggopde", // -> /NoSQLProject/donggopde
     canhan: "login", // -> /NoSQLProject/login
@@ -35,7 +35,7 @@ export default function NavBar({ selected = "trangchu" }) {
   return (
     <div
       className={`w-full h-16 shadow-sm shadow-gray-400 flex items-center justify-between font-semibold select-none ${
-        selected !== "trangchu" && "bg-white"
+        selected !== "about" && "bg-white"
       }`}
     >
       {/* Nhóm trái: Logo + Menu */}
@@ -45,7 +45,9 @@ export default function NavBar({ selected = "trangchu" }) {
           className="flex items-center cursor-pointer text-[20px]"
           onClick={() => handleItemOnClick("trangchu")}
         >
-          <img className="w-[32px] h-[32px]" src={webLogo} alt="logo" />
+        
+          <img className="mb-[12px] mw-[32px] h-[32px]" src={webLogo} alt="logo" />
+    
           <p className="ml-2 tracking-wide">PROJECT-QUIZZES</p>
         </div>
 
@@ -56,7 +58,7 @@ export default function NavBar({ selected = "trangchu" }) {
             transition={{ type: "spring", stiffness: 300, damping: 10 }}
             onClick={() => handleItemOnClick("trangchu")}
             className={`cursor-pointer ${
-              selected === "trangchu"
+              selected === "about"
                 ? "text-[#6ea269]"
                 : "hover:text-[#6ea269]"
             }`}

@@ -1,8 +1,9 @@
-//src/pages/LoginPage/RegisterPage.jxs
+//src/pages/LoginPage/RegisterPage.jsx
 import "./LoginPage.css";
 import quizLogo from "../../quizLogo_green.svg";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import backGround from '../../backGround.svg';
 import { FaEye as EyeLogo } from "react-icons/fa";
 import { RiEyeOffFill as CloseEye } from "react-icons/ri";
 import authService from "../../services/authService";
@@ -56,7 +57,7 @@ export default function RegisterPage() {
     <div
       className="flex w-full h-screen justify-center items-center bg-gray-100"
       style={{
-        backgroundImage: `url("/backGround.svg")`,
+        backgroundImage: `url(${backGround})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",

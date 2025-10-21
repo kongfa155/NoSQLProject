@@ -52,11 +52,11 @@ export default function SubjectPage() {
             <h1 className="text-[#00620B]">Chỉnh Sửa Môn Học</h1>
           )}
 
-          <div className="flex flex-row justify-between">
-            <p className="mx-8">Danh sách các môn học sẵn có</p>
+          <div className="relative flex flex-row w-full h-auto  justify-between">
+            <p className="mx-8 text-xl">Danh sách các môn học sẵn có</p>
             {account.role === "Admin" && ( //
               <div
-                className="mr-24 rounded-[8px] text-2xl text-white  shadow-black px-8 py-4 select-none cursor-pointer
+                className="absolute right-[5%] rounded-2 text-2xl text-white  shadow-black px-8 py-4 select-none cursor-pointer
                         bg-[#6ea269] transition-all duration-500 hover:scale-105 hover:bg-[#5a8d56]
                         "
                 onClick={() => {

@@ -20,7 +20,7 @@ export default function () {
   const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
   useEffect(() => {
     if (isAuthenticated) {
-      navigate("/");
+      navigate("/about");
     }
   }, []);
   const handleLogin = async () => {
@@ -37,7 +37,7 @@ export default function () {
 
       if (result?.accessToken) {
         console.log("✅ Đăng nhập thành công, điều hướng...");
-        navigate("/");
+        navigate("/about");
       } else {
         setError("Đăng nhập thất bại.");
       }

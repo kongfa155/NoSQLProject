@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import AboutUs from "./AboutUs/AboutUs";
 import "./App.css";
@@ -27,11 +27,16 @@ import ForgotPassPage from "../pages/LoginPage/ForgotPassPage";
 function App() {
   const [selected, setSelected] = useState("trangchu");
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const path = location.pathname.replace("/NoSQLProject", "");
-    if (path == "/") {
-      setSelected("trangchu");
+    if(path=="/"){
+      
+      navigate("/about");
+    }
+    if (path == "/about" ) {
+      setSelected("about");
     } else if (path.startsWith("/subject/view")) {
       setSelected("monhoc");
     } else if (path.startsWith("/subject/edit")) {
@@ -67,6 +72,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/about" element={<AboutUs />} />
           <Route path="/" element={<AboutUs />} />
           <Route
             path="/subject/:type"

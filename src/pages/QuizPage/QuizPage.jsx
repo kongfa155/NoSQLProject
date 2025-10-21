@@ -106,23 +106,16 @@ export default function QuizPage() {
             isCorrect: answers[q._id] === q.answer,
           }));
 
-        const res = await submissionService.createOrUpdate( {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            userId, // ✅ dùng user hiện tại
-            quizId,
-            answers: formattedAnswers,
-            score,
-            totalQuestions,
-            timeSpent: timeTaken,
-          }),
-        });
-
-        if (!res.ok) throw new Error("Lỗi khi gửi submission lên server");
-
-        const data = await res.json();
-        console.log("✅ Nộp bài thành công:", data);
+       const res = await submissionService.createOrUpdate({
+      userId,
+      quizId,
+      answers: formattedAnswers,
+      score,
+      totalQuestions,
+      timeSpent: timeTaken,
+    });
+        
+        console.log("✅ Nộp bài thành công:", res.data);
         alert(
           `🎯 Bạn đạt ${score}% (${correct}/${totalQuestions} câu đúng)\n⏱️ Thời gian: ${Math.floor(
             timeTaken / 60

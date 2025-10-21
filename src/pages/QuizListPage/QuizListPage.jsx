@@ -13,6 +13,7 @@ import DefaultAlert from "../../components/AlertBoxes/DefaultAlert";
 import subjectService from "../../services/subjectService";
 import chapterService from "../../services/chapterService";
 import quizService from "../../services/quizService";
+import submissionService from "../../services/submissionService";
 
 export default function QuizListPage() {
   const { subjectId } = useParams();
@@ -313,7 +314,26 @@ function ChapterBox({ chapter, setSelectedQuiz, onReview, type }) {
 
 // ---------------- QUIZ BOX ----------------
 function QuizBox({ quiz, onOpenModal, onReview, type }) {
+  const [bestScore, setBestScore] = useState(69);
+  const id = useSelector((state)=>state.user.account.id)
   const navigate = useNavigate();
+  // useEffect(()=>{ // Cái này bị bug, chưa có lấy được
+  //   if(type=="edit"){
+  //     return;
+  //   }
+  //   const fetchData = async ()=>{
+  //     try{
+  //       const res = await submissionService.getBest(quiz._id, id);
+  //       console.log("Lay duoc: ", res.data, quiz._id, id);
+  //       setBestScore(res.data);
+  //     }catch(err){
+  //       console.log("Loi khong lay duoc: ",err, quiz._id, id);
+  //     }
+  //   }
+  //   fetchData();
+  // },[id]);
+
+
   async function handleDeleteQuiz() {
     try {
       axios
@@ -331,11 +351,20 @@ function QuizBox({ quiz, onOpenModal, onReview, type }) {
 
   const [showConfirm, setShowConfirm] = useState(0);
   return (
-    <div className="mt-4 rounded-[8px] border border-gray-300 w-[95%] pt-4 pb-2 px-8 mx-auto flex justify-between items-center hover:shadow-md transition-all">
+    <div className="mt-4 rounded-[8px] border border-gray-300 w-[95%] pt-4 pb-2 px-8 mx-auto grid grid-cols-3 items-center hover:shadow-md transition-all">
       <div>
-        <p className="text-[24px] text-gray-700 font-light">{quiz.name}</p>
+
+        <p className="w-full text-[24px] text-gray-700 font-light">{quiz.name}</p>
       </div>
-      <div className="flex gap-3">
+      <div className="relative w-full h-[2rem] bg-gray-200 rounded-4 overflow-hidden">
+      <div
+        className="h-full bg-green-500 transition-all duration-500"
+        style={{ width: `${bestScore}%` }}
+      >
+        <p className="absolute w-full text-center text-white text-2xl">{bestScore}/100</p>
+      </div>
+    </div>
+      <div className="flex gap-3 justify-self-end">
         {type === "view" && (
           <>
             <button
