@@ -7,7 +7,7 @@ export default function SidebarAdmin() {
 
   // src/components/User/SidebarAdmin.jsx
 
-  const dispatch = useDispatch(); //navigate(""); //
+  const dispatch = useDispatch(); //navigate("/"); //
 
   return (
     <aside className="w-60 bg-[#6EA269] text-white flex flex-col justify-between">

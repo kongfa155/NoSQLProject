@@ -20,7 +20,7 @@ export default function () {
   const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
   useEffect(() => {
     if (isAuthenticated) {
-      navigate("");
+      navigate("/");
     }
   }, []);
   const handleLogin = async () => {
@@ -37,7 +37,7 @@ export default function () {
 
       if (result?.accessToken) {
         console.log("✅ Đăng nhập thành công, điều hướng...");
-        navigate("");
+        navigate("/");
       } else {
         setError("Đăng nhập thất bại.");
       }
@@ -113,7 +113,7 @@ export default function () {
           )}
           <div
             className="w-[90%] text-left mb-2 text-sm text-[#9DE3A4] cursor-pointer hover:underline select-none"
-            onClick={() => navigate("forgot-password")}
+            onClick={() => navigate("/forgot-password")}
           >
             Quên mật khẩu?
           </div>
@@ -129,7 +129,7 @@ export default function () {
           <div className="mt-4 text-white text-sm">
             Chưa có tài khoản?{" "}
             <span
-              onClick={() => navigate("register")}
+              onClick={() => navigate("/register")}
               className="text-[#9DE3A4] font-semibold cursor-pointer hover:underline"
             >
               Đăng ký ngay

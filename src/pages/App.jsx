@@ -29,7 +29,7 @@ function App() {
   const location = useLocation();
 
   useEffect(() => {
-    const path = location.pathname;
+    const path = location.pathname.replace("/NoSQLProject", "");
     if (path == "/") {
       setSelected("trangchu");
     } else if (path.startsWith("/subject/view")) {

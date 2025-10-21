@@ -76,7 +76,7 @@ export default function EditQuizPage() {
           image: q.image || "",
         })),
       });
-      navigate(`subject/edit/${quiz.subjectId}`);
+      navigate(`/subject/edit/${quiz.subjectId}`);
     } catch (error) {
       console.error("Lỗi khi cập nhật quiz:", error);
       alert("❌ Lỗi khi cập nhật quiz!");

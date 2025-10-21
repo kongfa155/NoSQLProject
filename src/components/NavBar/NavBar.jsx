@@ -15,20 +15,20 @@ export default function NavBar({ selected = "trangchu" }) {
   const [openDropdown, setOpenDropdown] = useState(false);
 
   const map = {
-    trangchu: "",
-    monhoc: "subject/view",
-    donggopde: "donggopde",
-    canhan: "login",
-    chinhsuamonhoc: "subject/edit",
+    trangchu: "", // -> /NoSQLProject/
+    monhoc: "subject/view", // -> /NoSQLProject/subject/view
+    donggopde: "donggopde", // -> /NoSQLProject/donggopde
+    canhan: "login", // -> /NoSQLProject/login
+    chinhsuamonhoc: "subject/edit", // -> /NoSQLProject/subject/edit
   };
 
   function handleItemOnClick(name) {
-    navigate(`${map[name]}`);
+    navigate(map[name]); // bỏ {replace: true} nếu muốn history bình thường
   }
 
   function handleLogoutClick() {
     handleLogout(dispatch);
-    navigate("login");
+    navigate("/login"); // tương đối
     setOpenDropdown(false);
   }
 
@@ -129,7 +129,7 @@ export default function NavBar({ selected = "trangchu" }) {
                   {account.role === "Admin" && (
                     <div
                       onClick={() => {
-                        navigate("admin");
+                        navigate("/admin");
                         setOpenDropdown(false);
                       }}
                       className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2"

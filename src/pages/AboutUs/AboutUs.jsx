@@ -67,7 +67,7 @@ export default function AboutUs() {
                 cursor-pointer select-none
                 "
             onClick={() => {
-              navigate("register");
+              navigate("/register");
             }}
           >
             Tạo Tài Khoản Ngay

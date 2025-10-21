@@ -55,7 +55,7 @@ export default function QuizListPage() {
   const handleStartQuiz = (options) => {
     if (!selectedQuiz) return;
     setShowModal(false);
-    navigate(`quizzes/${selectedQuiz._id}`, {
+    navigate(`/quizzes/${selectedQuiz._id}`, {
       state: { quiz: selectedQuiz, options: options || {} },
     });
   };
@@ -69,7 +69,7 @@ export default function QuizListPage() {
   const handleYes = () => {
     if (!quizToReview) return;
     setShowConfirm(false);
-    navigate(`quizzes/review/${quizToReview._id}`, {
+    navigate(`/quizzes/review/${quizToReview._id}`, {
       state: { mode: "latest" },
     });
   };
@@ -77,7 +77,7 @@ export default function QuizListPage() {
   const handleNo = () => {
     if (!quizToReview) return;
     setShowConfirm(false);
-    navigate(`quizzes/review/${quizToReview._id}`, {
+    navigate(`/quizzes/review/${quizToReview._id}`, {
       state: { mode: "full" },
     });
   };
@@ -367,7 +367,7 @@ function QuizBox({ quiz, onOpenModal, onReview, type }) {
             <button
               className="text-[#3D763A] bg-white border-none px-6 py-2 shadow-black shadow-sm rounded-xl  hover:scale-105 transition-all duration-400"
               onClick={() => {
-                navigate(`subject/${type}/quiz/${quiz._id}`);
+                navigate(`/subject/${type}/quiz/${quiz._id}`);
               }}
             >
               Chỉnh sửa

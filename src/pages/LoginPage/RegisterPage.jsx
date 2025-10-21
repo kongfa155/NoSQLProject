@@ -43,7 +43,7 @@ export default function RegisterPage() {
       });
       setStep("done");
       setMessage("✅ Xác minh thành công! Bạn có thể đăng nhập.");
-      setTimeout(() => navigate("login"), 2000);
+      setTimeout(() => navigate("/login"), 2000);
     } catch (err) {
       console.error(err);
       setMessage(
@@ -122,7 +122,7 @@ export default function RegisterPage() {
                 Bạn đã có tài khoản?{" "}
                 <span
                   className="text-[#9DE3A4] font-semibold cursor-pointer hover:underline"
-                  onClick={() => navigate("login")}
+                  onClick={() => navigate("/login")}
                 >
                   Đăng nhập
                 </span>

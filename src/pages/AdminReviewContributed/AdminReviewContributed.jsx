@@ -23,7 +23,7 @@ const AdminReviewContributed = () => {
           await contributedService.reject(id);
         }
         alert(successMsg);
-        navigate("donggopde");
+        navigate("/donggopde");
       } catch (err) {
         console.error(err);
         alert(errorMsg || "Đã xảy ra lỗi!");

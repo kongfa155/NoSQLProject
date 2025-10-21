@@ -118,7 +118,7 @@ function SubjectBox({ subject, navigate, type, reFetchSubjects }) {
       {type == "view" ? (
         <div
           onClick={() => {
-            navigate(`subject/view/${subject._id}`);
+            navigate(`/subject/view/${subject._id}`);
           }}
           className=" transition-colors duration-500 absolute w-[50%] h-[2rem] bg-[#6ea269] hover:bg-[#568651] bottom-2 left-1/2 -translate-x-1/2 rounded-xl flex justify-center items-center text-white cursor-pointer"
         >
@@ -128,7 +128,7 @@ function SubjectBox({ subject, navigate, type, reFetchSubjects }) {
         <div className="grid grid-cols-2 justify-items-center  mx-8 gap-4 my-2">
           <div
             onClick={() => {
-              navigate(`subject/edit/${subject._id}`);
+              navigate(`/subject/edit/${subject._id}`);
             }}
             className=" transition-colors duration-500 w-full h-[2rem] bg-[#6ea269] hover:bg-[#568651] rounded-xl flex justify-center items-center text-white cursor-pointer"
           >

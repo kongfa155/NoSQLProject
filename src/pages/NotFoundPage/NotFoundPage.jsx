@@ -15,7 +15,7 @@ export default function NotFoundPage() {
         </p>
         <div
           onClick={() => {
-            navigate("");
+            navigate("/");
           }}
           className="w-[50%] h-[4rem] bg-[#6ea269] text-white mx-auto rounded-[8px] text-2xl transition-all duration-500 cursor-pointer select-none hover:scale-105 flex items-center justify-center"
         >

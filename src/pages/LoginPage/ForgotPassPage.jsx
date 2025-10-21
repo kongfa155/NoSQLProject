@@ -60,7 +60,7 @@ export default function ForgotPassPage() {
       setError("");
       const res = await authService.resetPassword({ email, newPassword });
       setSuccessMsg(res.data.message);
-      setTimeout(() => navigate("login"), 1500);
+      setTimeout(() => navigate("/login"), 1500);
     } catch (err) {
       setError(err.response?.data?.message || "Cập nhật mật khẩu thất bại");
     }
@@ -189,7 +189,7 @@ export default function ForgotPassPage() {
 
           <div
             className="mt-4 text-white text-sm cursor-pointer"
-            onClick={() => navigate("login")}
+            onClick={() => navigate("/login")}
           >
             Quay lại đăng nhập
           </div>
