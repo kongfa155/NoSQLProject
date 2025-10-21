@@ -3,7 +3,7 @@ import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import User from "../models/User.js";
-import { sendVerificationEmail } from "../../src/api/sendEmail.js";
+import { sendVerificationEmail } from "../api/sendEmail.js";
 
 // -------------------------
 // Xử lý đăng nhập
