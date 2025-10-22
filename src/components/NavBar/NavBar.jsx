@@ -1,6 +1,8 @@
 import "./NavBar.css";
 import webLogo from "../../quizLogo_green.svg";
 import { useSelector, useDispatch } from "react-redux";
+import { setViewMode } from "../../redux/action/viewModeAction";
+import Form from "react-bootstrap/Form";
 import { useNavigate } from "react-router-dom";
 import { FaUserCircle } from "react-icons/fa";
 import { handleLogout } from "../../redux/action/userAction";
@@ -10,6 +12,8 @@ import { useState } from "react";
 export default function NavBar({ selected = "about" }) {
   const account = useSelector((state) => state.user.account);
   const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
+const isAdmin = account?.role === "Admin";
+const mode = useSelector((state) => state.viewMode?.mode || "edit");
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [openDropdown, setOpenDropdown] = useState(false);
@@ -45,9 +49,12 @@ export default function NavBar({ selected = "about" }) {
           className="flex items-center cursor-pointer text-[20px]"
           onClick={() => handleItemOnClick("trangchu")}
         >
-        
-          <img className="mb-[12px] mw-[32px] h-[32px]" src={webLogo} alt="logo" />
-    
+          <img
+            className="mb-[12px] mw-[32px] h-[32px]"
+            src={webLogo}
+            alt="logo"
+          />
+
           <p className="ml-2 tracking-wide">PROJECT-QUIZZES</p>
         </div>
 
@@ -58,9 +65,7 @@ export default function NavBar({ selected = "about" }) {
             transition={{ type: "spring", stiffness: 300, damping: 10 }}
             onClick={() => handleItemOnClick("trangchu")}
             className={`cursor-pointer ${
-              selected === "about"
-                ? "text-[#6ea269]"
-                : "hover:text-[#6ea269]"
+              selected === "about" ? "text-[#6ea269]" : "hover:text-[#6ea269]"
             }`}
           >
             TRANG CHỦ
@@ -104,14 +109,52 @@ export default function NavBar({ selected = "about" }) {
                 : "hover:text-[#6ea269]"
             }`}
           >
-            {account.role=="Admin"&&"PHÊ DUYỆT ĐỀ"}
-            {account.role!="Admin"&&"ĐÓNG GÓP ĐỀ"}
+            {account.role == "Admin" && "PHÊ DUYỆT ĐỀ"}
+            {account.role != "Admin" && "ĐÓNG GÓP ĐỀ"}
           </motion.p>
         </div>
       </div>
 
       {/* Nhóm phải: user/login */}
       <div className="relative flex items-center mr-8">
+        {isAdmin && (
+          <div className="flex items-center gap-2 mr-10">
+            <div
+              className={`relative w-[130px] h-[44px] rounded-full cursor-pointer transition-all duration-300 switch-pill
+                ${mode === "edit" ? "bg-[#006b3d]" : "bg-[#6ea269]"}`}
+              onClick={() =>
+                dispatch(setViewMode(mode === "edit" ? "view" : "edit"))
+              }
+            >
+              <div
+                className={`absolute top-[4px] w-[36px] h-[36px] bg-white rounded-full shadow-md transition-all duration-300 
+                ${mode === "edit" ? "right-[4px]" : "left-[4px]"}`}
+              ></div>
+
+              <div className="absolute inset-0 text-sm font-semibold text-white select-none overflow-hidden">
+                <span
+                  className={`absolute left-5 top-1/2 -translate-y-1/2 transition-all duration-300 ${
+                    mode === "view"
+                      ? "-translate-x-8 opacity-0"
+                      : "translate-x-0 opacity-100"
+                  }`}
+                >
+                  Admin
+                </span>
+                <span
+                  className={`absolute right-5 top-1/2 -translate-y-1/2 transition-all duration-300 ${
+                    mode === "edit"
+                      ? "translate-x-8 opacity-0"
+                      : "translate-x-0 opacity-100"
+                  }`}
+                >
+                  User
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+
         {isAuthenticated ? (
           <div className="relative">
             <FaUserCircle

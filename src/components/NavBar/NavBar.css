@@ -5,3 +5,10 @@
 @layer utilities {
 
 }
+.switch-pill {
+    transition: all 0.3s ease-in-out;
+}
+
+.switch-pill:hover {
+    filter: brightness(1.05);
+}

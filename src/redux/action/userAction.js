@@ -1,5 +1,6 @@
 
 import authService from "../../services/authService";
+import { setViewMode } from "./viewModeAction";
 export const FETCH_USER_LOGIN_SUCCESS = "FETCH_USER_LOGIN_SUCCESS";
 export const FETCH_USER_LOGIN_FAIL = "FETCH_USER_LOGIN_FAIL";
 
@@ -15,6 +16,11 @@ export const loginUser = (credentials) => {
           type: FETCH_USER_LOGIN_SUCCESS,
           payload: data,
         });
+         if (data.role === "Admin") {
+           dispatch(setViewMode("edit"));
+         } else {
+           dispatch(setViewMode("view"));
+         }
         localStorage.setItem("accessToken", data.accessToken);
         localStorage.setItem("refreshToken", data.refreshToken); // cần lưu
         // ✅ Trả lại data để component có thể await

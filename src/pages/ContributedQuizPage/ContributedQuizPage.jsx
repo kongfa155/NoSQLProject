@@ -8,6 +8,8 @@ import subjectService from "../../services/subjectService";
 import chapterService from "../../services/chapterService";
 export default function ContributedQuizPage() {
   const { account, isAuthenticated } = useSelector((state) => state.user);
+  const mode = useSelector((state) => state.viewMode.mode); 
+
   const [subjects, setSubjects] = useState([]);
   const [chapters, setChapters] = useState([]);
 
@@ -52,18 +54,17 @@ export default function ContributedQuizPage() {
   }, []);
 
   // Lấy danh sách môn học
-useEffect(() => {
-  const fetchSubjects = async () => {
-    try {
-      const res = await subjectService.getAll();
-      setSubjects(res.data || []);
-    } catch (err) {
-      console.error("Lỗi khi lấy danh sách môn học:", err);
-    }
-  };
-  fetchSubjects();
-}, []);
-
+  useEffect(() => {
+    const fetchSubjects = async () => {
+      try {
+        const res = await subjectService.getAll();
+        setSubjects(res.data || []);
+      } catch (err) {
+        console.error("Lỗi khi lấy danh sách môn học:", err);
+      }
+    };
+    fetchSubjects();
+  }, []);
 
   // Lấy danh sách chương khi chọn môn (chỉ khi có _id thực)
   useEffect(() => {
@@ -149,7 +150,7 @@ useEffect(() => {
       </div>
 
       <div className={styles.contentBox}>
-        {account.role === "Admin" ? (
+        {account.role === "Admin" && mode === "edit" ?  (
           <ContributedQuizList />
         ) : (
           <div className={styles.formArea}>

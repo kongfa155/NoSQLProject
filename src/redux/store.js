@@ -8,7 +8,7 @@ import storage from "redux-persist/lib/storage";
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["user"], // chỉ lưu state user
+  whitelist: ["user", "viewMode"], // chỉ lưu state user
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

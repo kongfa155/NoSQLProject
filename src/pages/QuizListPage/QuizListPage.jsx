@@ -38,8 +38,9 @@ export default function QuizListPage() {
   const isAdmin = role === "Admin";
 
   // Xác định chế độ hiển thị: edit cho admin, view cho user
-  const type = isAdmin ? "edit" : "view";
 
+  const mode = useSelector(state => state.viewMode.mode);
+  const type = mode === "edit"  ? "edit" : "view";
   // --- HANDLERS ---
   const handleCreateNewQuiz = () => setShowCreateQuiz(true);
 

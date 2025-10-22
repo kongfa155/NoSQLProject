@@ -2,7 +2,7 @@ import "./SubjectPage.css";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { useParams } from "react-router-dom";
+
 import { useSelector } from "react-redux"; //
 
 import ConfirmAlert from "../../components/AlertBoxes/ConfirmAlert";
@@ -12,7 +12,7 @@ import subjectService from "../../services/subjectService";
 export default function SubjectPage() {
   const [showCreateSubjectModal, setShowCreateSubjectModal] = useState(false);
   const [subjects, setSubjects] = useState([]);
-  const { type } = useParams();
+  const type = useSelector(state => state.viewMode.mode);
   const navigate = useNavigate();
   const account = useSelector((state) => state.user.account); //
 
