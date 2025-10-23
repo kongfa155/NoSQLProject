@@ -5,6 +5,9 @@ import QuestionDrawer from "../../components/QuestionDrawer/QuestionDrawer";
 import { useSelector } from "react-redux";
 import quizService from "../../services/quizService";
 import submissionService from "../../services/submissionService";
+// ✨ IMPORT ICONS MỚI
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+
 export default function QuizPage() {
   const { quizId } = useParams();
   const location = useLocation();
@@ -106,15 +109,15 @@ export default function QuizPage() {
             isCorrect: answers[q._id] === q.answer,
           }));
 
-       const res = await submissionService.createOrUpdate({
-      userId,
-      quizId,
-      answers: formattedAnswers,
-      score,
-      totalQuestions,
-      timeSpent: timeTaken,
-    });
-        
+        const res = await submissionService.createOrUpdate({
+          userId,
+          quizId,
+          answers: formattedAnswers,
+          score,
+          totalQuestions,
+          timeSpent: timeTaken,
+        });
+
         console.log("✅ Nộp bài thành công:", res.data);
         alert(
           `🎯 Bạn đạt ${score}% (${correct}/${totalQuestions} câu đúng)\n⏱️ Thời gian: ${Math.floor(
@@ -161,19 +164,48 @@ export default function QuizPage() {
     <div className={styles.quizContainer}>
       {/* --- CÂU HỎI HIỆN TẠI --- */}
       <div className={styles.fullQuestionArea}>
+        {/* ✨ KHỐI ĐIỀU KHIỂN NAVIGATOR MỚI (Nằm trên câu hỏi) */}
+        <div className={styles.navControls}>
+          {/* Nút CÂU TRƯỚC */}
+          <button
+            className={styles.navBtn}
+            disabled={currentIndex === 0}
+            onClick={() => setCurrentIndex((prev) => Math.max(prev - 1, 0))}
+          >
+            <FaChevronLeft size={16} style={{ marginRight: "6px" }} /> Câu trước
+          </button>
+
+          {/* Phần chứa nút CẮM CỜ và CÂU SAU */}
+          <div className={styles.rightHeader}>
+            <button
+              className={styles.navBtn}
+              disabled={currentIndex === questions.length - 1}
+              onClick={() =>
+                setCurrentIndex((prev) =>
+                  Math.min(prev + 1, questions.length - 1)
+                )
+              }
+            >
+              Câu sau <FaChevronRight size={16} style={{ marginLeft: "6px" }} />
+            </button>
+            <button
+              className={`${styles.flagButton} ${
+                flagged.includes(q._id) ? styles.flaggedButton : ""
+              }`}
+              onClick={() => handleToggleFlag(q._id)}
+            >
+              🚩
+            </button>
+          </div>
+        </div>
+
+        {/* ✨ HEADER CHỈ CÒN TEXT CÂU HỎI */}
         <div className={styles.questionHeader}>
           <p className={styles.questionText}>
             {currentIndex + 1}. {q.question}
           </p>
-          <button
-            className={`${styles.flagButton} ${
-              flagged.includes(q._id) ? styles.flaggedButton : ""
-            }`}
-            onClick={() => handleToggleFlag(q._id)}
-          >
-            🚩
-          </button>
         </div>
+
         {q.image && (
           <div className={styles.questionIMGContainer}>
             <img
