@@ -10,6 +10,15 @@
     <title>Question Project</title>
   </head>
   <body>
+    <script>
+  (function() {
+    const redirect = sessionStorage.redirect;
+    if (redirect) {
+      sessionStorage.removeItem('redirect');
+      window.history.replaceState(null, null, redirect);
+    }
+  })();
+</script>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
