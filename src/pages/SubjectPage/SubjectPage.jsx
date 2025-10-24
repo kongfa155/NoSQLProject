@@ -44,7 +44,7 @@ export default function SubjectPage() {
 
   return (
     <div className="w-full min-h-screen bg-white flex flex-col overflow-y-auto">
-      <div className=" mx-24 my-32">
+      <div className=" mx-24 my-24">
         <div id="subjectPageTitle" className="text-[#272b41]">
           {type == "view" ? (
             <h1 className="text-[#00620B]">Làm Bài Trực Tuyến</h1>
@@ -70,7 +70,8 @@ export default function SubjectPage() {
           </div>
         </div>
 
-        <div className="w-[90%] mx-auto my-12 grid grid-cols-3 gap-18">
+        
+            <div className="w-[90%] mx-auto my-12 grid grid-cols-3 gap-18">
           {subjects.length > 0 &&
             subjects.map((subject, i) => {
               if(!subject.availability){
@@ -87,6 +88,7 @@ export default function SubjectPage() {
               );
             })}
         </div>
+        
       </div>
       {showCreateSubjectModal && (
         <CreateSubjectModal

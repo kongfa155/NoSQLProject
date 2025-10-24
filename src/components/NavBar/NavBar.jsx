@@ -37,10 +37,10 @@ const mode = useSelector((state) => state.viewMode?.mode || "edit");
   }
 
   return (
-    <div className="relative shadow-sm shadow-gray-400 h-[64px] flex justify-center z-99">
+    <div className="relative  shadow-sm shadow-gray-400 h-[64px] flex justify-center z-99">
     
       <div
-      className={`w-full h-full flex items-center justify-between font-semibold select-none ${
+      className={`w-full h-full  flex items-center justify-between font-semibold select-none ${
         selected !== "about" && "bg-white"
       }`}
     >
