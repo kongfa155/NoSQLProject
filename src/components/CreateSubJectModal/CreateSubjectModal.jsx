@@ -15,7 +15,8 @@ export default function CreateSubjectModal({setShowCreateSubjectModal}){
             subjectService.create({
                 name: name,
                 image: image,
-                description: description
+                description: description,
+                availability:true
             })
             .then((res)=>{
                 setShowAlert(1);
