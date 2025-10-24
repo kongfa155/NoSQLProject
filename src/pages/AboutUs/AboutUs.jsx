@@ -2,11 +2,14 @@ import { IoMdCheckmarkCircleOutline as CheckIcon } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
+
 export default function AboutUs() {
   const navigate = useNavigate();
   const { isAuthenticated } = useSelector((state) => state.user);
   return (
+    
     <div className=" w-[95%] mx-auto mt-2 rounded-xl shadow-md shadow-gray-500 pb-8">
+
       <div id="aboutUs_title" className="py-12 w-[80%] mx-auto text-center">
         <p className="px-[10%] text-6xl font-black">
           Sứ mệnh của chúng mình:{" "}

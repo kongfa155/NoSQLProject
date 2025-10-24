@@ -143,7 +143,7 @@ export default function QuizListPage() {
           <p className="px-18 text-2xl text-gray-600">Danh sách bộ đề sẵn có</p>
           <div>
             <div
-              className="mx-24 bg-[#3D763A] px-6 py-4 text-white flex items-center justify-center rounded-2xl cursor-pointer select-none shadow-sm shadow-black hover:scale-105 transition-all duration-500"
+              className="mx-24 bg-[#6ea269] px-6 py-4 text-white flex items-center justify-center rounded-2xl cursor-pointer select-none shadow-sm shadow-black hover:scale-105 transition-all duration-500"
               onClick={handleCreateNewQuiz}
             >
               Tạo đề
@@ -272,7 +272,7 @@ function ChapterBox({ chapter, setSelectedQuiz, onReview, type }) {
             setShowConfirm(1);
           }}
           className={`absolute right-8 ${
-            chapter.availability ? "bg-red-600" : "bg-green-700"
+            chapter.availability ? "bg-red-500" : "bg-[#6ea269]"
           }  text-white border-none px-6 py-2 shadow-black shadow-sm rounded-xl  hover:scale-105 transition-all duration-400`}
         >
           {chapter.availability ? "Ẩn chương" : "Hiện chương"}
@@ -377,7 +377,7 @@ function QuizBox({ quiz, onOpenModal, onReview, type }) {
               Review
             </button>
             <button
-              className="bg-[#3D763A] text-white px-6 py-2 rounded-xl hover:bg-[#31612F] transition-all"
+              className="bg-[#6ea269] text-white px-6 py-2 rounded-xl hover:bg-[#31612F] transition-all"
               onClick={() => onOpenModal(quiz)}
             >
               Làm bài
@@ -391,7 +391,7 @@ function QuizBox({ quiz, onOpenModal, onReview, type }) {
                 setShowConfirm(1);
               }}
               className={`${
-                quiz.availability ? "bg-red-500" : "bg-green-600 "
+                quiz.availability ? "bg-red-500" : "bg-[#6ea269] "
               } text-white border-none px-6 py-2 shadow-black shadow-sm rounded-xl  hover:scale-105 transition-all duration-400`}
             >
               {quiz.availability ? "Ẩn bài" : "Hiện bài"}

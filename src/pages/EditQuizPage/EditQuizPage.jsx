@@ -126,7 +126,7 @@ export default function EditQuizPage() {
 
         <button
           onClick={handleSave}
-          className="px-6 py-3 bg-green-600  text-white rounded-lg hover:bg-green-700 transition"
+          className="px-6 py-3 bg-[#6ea269] text-white rounded-lg hover:bg-[#548d4f] transition-all duration-700"
         >
           Lưu thay đổi
         </button>
