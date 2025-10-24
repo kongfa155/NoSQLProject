@@ -42,3 +42,23 @@ export const getSubjectById = async (req, res) => {
     res.status(500).json({ message: "Lỗi server" });
   }
 };
+
+export const updateSubjectAvailability = async (req, res) => {
+  try {
+    const { availability } = req.body;
+    const subject = await Subject.findByIdAndUpdate(
+      req.params.id,
+      { availability },
+      { new: true }
+    );
+
+    if (!subject) {
+      return res.status(404).json({ message: "Không tìm thấy subject" });
+    }
+
+    res.json({ message: "Cập nhật thành công"});
+  } catch (error) {
+    console.error("Lỗi khi cập nhật chapter:", error);
+    res.status(500).json({ message: "Lỗi server khi cập nhật subject" });
+  }
+};

@@ -5,6 +5,8 @@ const subjectService = {
   getById: (id) => api.get(`/subjects/${id}`),
   create: (data) => api.post("/subjects", data),
   delete: (id) => api.delete(`/subjects/${id}`),
+  updateAvailability: (id, data) =>
+    api.put(`/subjects/${id}`, data),
 };
 
 export default subjectService;

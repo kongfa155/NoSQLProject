@@ -93,7 +93,7 @@ export default function EditQuizPage() {
             type="text"
             value={quiz?.name || ""}
             onChange={(e) => handleQuizChange("name", e.target.value)}
-            className="text-3xl font-bold border-b-2 border-gray-400 focus:outline-none focus:border-blue-500 rounded-[8px]"
+            className="text-3xl font-bold border-b-2 px-2 border-gray-400 focus:outline-none focus:border-blue-500 rounded-[8px]"
           />
           <div className="mt-3">
             Chương:{" "}
@@ -184,7 +184,7 @@ function QuestionEditBox({ question, i, onChange, onDelete }) {
         <p className="text-xl font-semibold mb-2">Câu {i + 1}</p>
         <button
           onClick={onDelete}
-          className="text-red-500 hover:text-red-700 font-bold px-4 py-2 rounded-[8px] mb-4"
+          className="text-white bg-red-400 hover:bg-red-500 transform-all duration-500 font-bold px-4 py-2 rounded-[8px] mb-4"
         >
           Xóa
         </button>

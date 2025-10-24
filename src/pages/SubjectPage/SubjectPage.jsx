@@ -73,6 +73,9 @@ export default function SubjectPage() {
         <div className="w-[90%] mx-auto my-12 grid grid-cols-3 gap-18">
           {subjects.length > 0 &&
             subjects.map((subject, i) => {
+              if(!subject.availability){
+                return;
+              }
               return (
                 <SubjectBox
                   key={`subject_${i}`}
@@ -150,10 +153,10 @@ function SubjectBox({ subject, navigate, type, reFetchSubjects }) {
               isNegative={true}
               confirmButton={async () => {
                 try {
-                  axios.delete(`/api/subjects/${subject._id}`).then((res) => {
-                    setShowConfirm(false);
-                    reFetchSubjects();
+                  await subjectService.updateAvailability(subject._id,{
+                    availability:false,
                   });
+                  reFetchSubjects();
                 } catch (err) {
                   console.log("Khong xoa duoc subject");
                 }
