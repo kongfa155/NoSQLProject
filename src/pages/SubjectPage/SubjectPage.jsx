@@ -100,8 +100,8 @@ export default function SubjectPage() {
 function SubjectBox({ subject, navigate, type, reFetchSubjects }) {
   const [showConfirm, setShowConfirm] = useState(0);
   return (
-    <div className="relative h-[300px] w-[100%] shadow-sm shadow-black justify-items-center overflow-hidden rounded-xl">
-      <div className="h-[40%] w-full ">
+    <div className="relative w-[100%] shadow-sm shadow-black justify-items-center overflow-hidden rounded-xl">
+      <div className="h-[312px] w-full ">
         <img
           src={subject.image}
           atl={`Url: ${subject.image}`}
@@ -128,7 +128,7 @@ function SubjectBox({ subject, navigate, type, reFetchSubjects }) {
           Vào học →
         </div>
       ) : (
-        <div className="grid grid-cols-2 justify-items-center  mx-8 gap-4 my-2">
+        <div className="grid grid-cols-2 justify-items-center pb-2 mx-8 gap-4 my-2">
           <div
             onClick={() => {
               navigate(`/subject/edit/${subject._id}`);

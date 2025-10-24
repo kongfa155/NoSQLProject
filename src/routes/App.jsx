@@ -54,8 +54,7 @@ function App() {
 
   return (
     <div className="relative z-10 flex flex-col h-screen w-screen">
-      {selected == "trangchu" && <SmokeTrail />}
-
+      {selected == "about" && <SmokeTrail />}
       {!location.pathname.startsWith("/quizzes/") && selected != "admin" && (
         <div className="h-[5%] w-full my-1">
           <NavBar selected={selected} />

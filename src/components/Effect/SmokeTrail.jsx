@@ -7,7 +7,7 @@ export default function SmokeTrail() {
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
-
+    
     // Set full-screen canvas
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;

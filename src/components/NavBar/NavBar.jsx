@@ -8,7 +8,7 @@ import { FaUserCircle } from "react-icons/fa";
 import { handleLogout } from "../../redux/action/userAction";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
-
+import SmokeTrail from "../Effect/SmokeTrail";
 export default function NavBar({ selected = "about" }) {
   const account = useSelector((state) => state.user.account);
   const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
@@ -37,13 +37,15 @@ const mode = useSelector((state) => state.viewMode?.mode || "edit");
   }
 
   return (
-    <div
-      className={`w-full h-16 shadow-sm shadow-gray-400 pt-2 flex items-center justify-between font-semibold select-none ${
+    <div className="relative shadow-sm shadow-gray-400 h-[64px] flex justify-center z-99">
+    
+      <div
+      className={`w-full h-full flex items-center justify-between font-semibold select-none ${
         selected !== "about" && "bg-white"
       }`}
     >
       {/* Nhóm trái: Logo + Menu */}
-      <div className="flex items-center ml-6">
+      <div className="flex h-full pt-2 items-center ml-6">
         {/* Logo + tên */}
         <div
           className="flex items-center cursor-pointer text-[20px]"
@@ -212,6 +214,8 @@ const mode = useSelector((state) => state.viewMode?.mode || "edit");
           </motion.div>
         )}
       </div>
+        
+    </div>
     </div>
   );
 }
