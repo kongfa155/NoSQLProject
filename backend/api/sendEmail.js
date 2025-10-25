@@ -1,20 +1,12 @@
-//backend/api sendEmail.js (ESM style)
-import nodemailer from "nodemailer";
+// backend/api/sendEmail.js (ESM style)
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function sendVerificationEmail(to, otp) {
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  });
+  const subject = "Mã xác minh đăng ký tài khoản";
 
-  const mailOptions = {
-    from: `"Quiz Company" <${process.env.EMAIL_USER}>`,
-    to,
-    subject: "Mã xác minh đăng ký tài khoản",
-    text: `Chào bạn,
+  const text = `Chào bạn,
 
 Bạn đã yêu cầu xác minh email ${to} trên ${new Date().toLocaleString("vi-VN")}.
 Để tiếp tục, vui lòng nhập mã bên dưới vào trang web đăng ký:
@@ -27,9 +19,20 @@ Nếu bạn không thực hiện yêu cầu này, vui lòng liên hệ với b�
 Email này được gửi tự động, vui lòng không trả lời.
 
 Trân trọng,
-Quiz Company`,
-  };
+Quiz Company`;
 
-  await transporter.sendMail(mailOptions);
-  console.log("✅ Email đã gửi đến:", to);
+  try {
+    const response = await resend.emails.send({
+      from: "Quiz Company <onboarding@resend.dev>", // hoặc domain verified
+      to,
+      subject,
+      text,
+    });
+
+    console.log("✅ Email đã gửi đến:", to);
+    return response;
+  } catch (error) {
+    console.error("❌ Lỗi gửi email:", error);
+    throw new Error("Gửi email thất bại");
+  }
 }
