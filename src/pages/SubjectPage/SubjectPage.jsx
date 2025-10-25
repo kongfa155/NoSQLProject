@@ -116,7 +116,7 @@ function SubjectBox({ subject, navigate, type, reFetchSubjects }) {
         </p>
       </div>
       <div className=" flex justify-center">
-        <p className="text-center px-4 text-gray-700 line-clamp-2 ">
+        <p className="min-h-[4rem] text-center px-4 text-gray-700 line-clamp-2 ">
           {subject.description}
         </p>
       </div>
@@ -125,7 +125,7 @@ function SubjectBox({ subject, navigate, type, reFetchSubjects }) {
           onClick={() => {
             navigate(`/subject/view/${subject._id}`);
           }}
-          className=" transition-colors duration-500 absolute w-[50%] h-[2rem] bg-[#6ea269] hover:bg-[#568651] bottom-2 left-1/2 -translate-x-1/2 rounded-xl flex justify-center items-center text-white cursor-pointer"
+          className=" transition-colors duration-500 w-[50%] mx-auto mb-4 h-[2rem] bg-[#6ea269] hover:bg-[#568651]  rounded-xl flex justify-center items-center text-white cursor-pointer"
         >
           Vào học →
         </div>
