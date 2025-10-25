@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ChevronUp, ChevronDown, Flag } from "lucide-react";
 import styles from "./QuestionDrawer.module.css";
+import { useNavigate } from "react-router-dom";
 
 export default function QuestionDrawer({
   totalQuestions = 50,
@@ -12,9 +13,10 @@ export default function QuestionDrawer({
   onRetry,
   remainingTime = "1:30:00",
   showRetryButton = false,
+  rotationalPractice
 }) {
   const [open, setOpen] = useState(true);
-
+    const navigate = useNavigate();
   return (
     //Cập nhật trạng thái kéo lên hay xuống
     <div
@@ -70,11 +72,11 @@ export default function QuestionDrawer({
             <p className={styles.timerLabel}>Thời gian</p>
             <p className={styles.timerValue}>{remainingTime}</p>
           </div>
-
+            {!rotationalPractice ? (
           <button className={styles.submitButton} onClick={onSubmit}>
             Nộp bài
           </button>
-
+            ) : <button className={styles.submitButton} onClick={()=> navigate(-1)}>Dừng ôn tập</button>}
           {/* Hiển thị cái nút này nếu bật làm bài lại nè */}
           {showRetryButton && (
             <button className={styles.retryButton} onClick={onRetry}>

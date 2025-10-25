@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import styles from "./ReviewQuizPage.module.css";
 import ReviewDrawer from "../../components/ReviewDrawer/ReviewDrawer";
 import { useSelector } from "react-redux";
@@ -11,10 +11,11 @@ const ReviewQuizPage = () => {
   const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
   const account = useSelector((state) => state.user.account);
   const userId = account?.id; // Redux lưu id là string
-
+    const navigate = useNavigate();
   const { quizId } = useParams();
   const location = useLocation();
   const initialMode = location.state?.mode || "latest";
+  const subjectId = location.state.subjectId;
   const [mode, setMode] = useState(initialMode);
 
   const [quizInfo, setQuizInfo] = useState(null);
@@ -149,7 +150,14 @@ const ReviewQuizPage = () => {
           </div>
         );
       })}
-
+      <div>
+        <button
+          className="px-6 py-3 bg-[#6ea269] text-white rounded-lg hover:bg-[#548d4f] transition-all duration-700"
+          onClick={() => navigate(`/subject/view/${subjectId}`)}
+        >
+          Hoàn tất việc xem lại
+        </button>
+      </div>
       <ReviewDrawer totalQuestions={questions.length} />
     </div>
   );

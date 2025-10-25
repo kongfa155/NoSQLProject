@@ -54,11 +54,12 @@ export default function QuizListPage() {
     setSelectedQuiz(null);
   };
 
-  const handleStartQuiz = (options) => {
+  const handleStartQuiz = (options, subjectId) => {
     if (!selectedQuiz) return;
     setShowModal(false);
     navigate(`/quizzes/${selectedQuiz._id}`, {
       state: { quiz: selectedQuiz, options: options || {} },
+      subjectId: {subjectId},
     });
   };
 
@@ -72,7 +73,8 @@ export default function QuizListPage() {
     if (!quizToReview) return;
     setShowConfirm(false);
     navigate(`/quizzes/review/${quizToReview._id}`, {
-      state: { mode: "latest" },
+      state: { mode: "latest" , subjectId},
+
     });
   };
 
@@ -80,7 +82,7 @@ export default function QuizListPage() {
     if (!quizToReview) return;
     setShowConfirm(false);
     navigate(`/quizzes/review/${quizToReview._id}`, {
-      state: { mode: "full" },
+      state: { mode: "full" , subjectId},
     });
   };
 
@@ -188,6 +190,7 @@ export default function QuizListPage() {
         quiz={selectedQuiz}
         onClose={handleCloseModal}
         onStart={handleStartQuiz}
+        subjectId = {subjectId} 
       />
 
       <CreateQuizModal

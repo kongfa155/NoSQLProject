@@ -4,7 +4,7 @@ import { IoClose } from "react-icons/io5";
 import "bootstrap/dist/css/bootstrap.min.css";
 import styles from "./ModalOptionQuiz.module.css";
 
-export default function ModalOptionQuiz({ show, quiz, onClose, onStart }) {
+export default function ModalOptionQuiz({ show, quiz, onClose, onStart, subjectId }) {
   const [options, setOptions] = useState({
     shuffleQuestions: true,
     showAnswers: true,
@@ -109,7 +109,7 @@ export default function ModalOptionQuiz({ show, quiz, onClose, onStart }) {
       </Modal.Body>
 
       <Modal.Footer className={styles.modalFooter}>
-        <Button className={styles.startButton} onClick={() => onStart(options)}>
+        <Button className={styles.startButton} onClick={() => onStart(options, subjectId)}>
           Bắt đầu làm bài
         </Button>
       </Modal.Footer>

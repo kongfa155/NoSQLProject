@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import styles from "./QuizPage.module.css";
 import QuestionDrawer from "../../components/QuestionDrawer/QuestionDrawer";
 import { useSelector } from "react-redux";
@@ -11,7 +11,7 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 export default function QuizPage() {
   const { quizId } = useParams();
   const location = useLocation();
-
+    const navigate = useNavigate();
   const account = useSelector((state) => state.user.account);
   const userId = account?.id;
 
@@ -21,6 +21,7 @@ export default function QuizPage() {
     name: "Kiểm tra nhanh Giới thiệu ngôn ngữ lập trình",
     timeLimit: 5,
   };
+  const subjectId = location.state.subjectId;
   const options = location.state?.options || {
     shuffleQuestions: true,
     showAnswers: true,
@@ -117,13 +118,14 @@ export default function QuizPage() {
           totalQuestions,
           timeSpent: timeTaken,
         });
-
-        console.log("✅ Nộp bài thành công:", res.data);
         alert(
           `🎯 Bạn đạt ${score}% (${correct}/${totalQuestions} câu đúng)\n⏱️ Thời gian: ${Math.floor(
             timeTaken / 60
           )} phút ${timeTaken % 60} giây`
         );
+        navigate(`/quizzes/review/${quizId}`, {
+            state: {mode: "latest", subjectId},
+        })
       } catch (err) {
         console.error(err);
         alert("❌ Lỗi khi nộp bài. Vui lòng thử lại sau!");
@@ -135,8 +137,10 @@ export default function QuizPage() {
 
   const handleRetry = () => {
     const incorrect = questions.filter((q) => answers[q._id] !== q.answer);
-    if (incorrect.length === 0)
-      return alert("🎉 Bạn đã làm đúng tất cả câu hỏi!");
+    if (incorrect.length === 0){
+        alert("🎉 Bạn đã làm đúng tất cả câu hỏi!");
+        navigate(-1); //Trở lại trang sau khi đã làm đúng hết
+    }
     setQuestions(incorrect);
     setSubmitted(false);
     setAnswers({});
@@ -269,6 +273,7 @@ export default function QuizPage() {
         remainingTime={
           options.timeLimit ? formatTime(remainingTime) : "Không giới hạn"
         }
+        rotationalPractice={options.rotationalPractice}
         onSelectQuestion={(num) => setCurrentIndex(num - 1)}
         onSubmit={handleSubmit}
         onRetry={handleRetry}
