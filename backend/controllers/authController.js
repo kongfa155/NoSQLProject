@@ -91,34 +91,41 @@ export const checkToken = (req, res) => {
 // Register send OTP
 // -------------------------
 export const register = async (req, res) => {
+  console.log("🚀 [REGISTER] Request body:", req.body);
   try {
     const { email, password } = req.body;
-    if (!email || !password) return res.status(400).json({ message: "Email và mật khẩu là bắt buộc" });
+    if (!email || !password) {
+      console.log("⚠️ Thiếu email hoặc password");
+      return res.status(400).json({ message: "Email và mật khẩu là bắt buộc" });
+    }
 
     // Sinh OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const otpExpiry = Date.now() + 10 * 60 * 1000; // 10 phút
+    const otpExpiry = Date.now() + 10 * 60 * 1000;
+    console.log("✅ OTP sinh ra:", otp);
 
     const existingUser = await User.findOne({ email });
+    console.log("📦 existingUser:", existingUser ? "có" : "không");
 
-        if (existingUser) {
-          if (existingUser.active) {
-            // User đã active → báo lỗi
-            return res.status(400).json({ message: "Email đã tồn tại" });
-          } else {
-            // User chưa active → cập nhật OTP mới
-            existingUser.otp = otp;
-            existingUser.otpExpires = otpExpiry;
-            await existingUser.save();
-            await sendVerificationEmail(email, otp);
-            return res.status(200).json({
-              message: "Email chưa xác thực. Mã OTP mới đã được gửi.",
-              email,
-            });
-          }
-}
+    if (existingUser) {
+      if (existingUser.active) {
+        console.log("⛔ User đã active");
+        return res.status(400).json({ message: "Email đã tồn tại" });
+      } else {
+        console.log("📧 Gửi OTP cho user chưa active");
+        existingUser.otp = otp;
+        existingUser.otpExpires = otpExpiry;
+        await existingUser.save();
+        await sendVerificationEmail(email, otp);
+        console.log("✅ Đã gửi OTP lại cho user cũ");
+        return res.status(200).json({
+          message: "Email chưa xác thực. Mã OTP mới đã được gửi.",
+          email,
+        });
+      }
+    }
 
-    // Create new user
+    console.log("🆕 Tạo user mới...");
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({
       email,
@@ -127,22 +134,24 @@ export const register = async (req, res) => {
       role: "User",
       active: false,
       otp,
-      otpExpires: otpExpiry
+      otpExpires: otpExpiry,
     });
 
     await newUser.save();
+    console.log("✅ User mới đã lưu vào DB, chuẩn bị gửi email...");
     await sendVerificationEmail(email, otp);
+    console.log("📨 Email gửi thành công!");
 
     res.status(200).json({
       message: "Đã gửi mã OTP xác thực tới email của bạn.",
       email,
     });
-
   } catch (error) {
-    console.error("Lỗi đăng ký:", error);
+    console.error("❌ [REGISTER] Lỗi:", error);
     res.status(500).json({ message: "Lỗi đăng ký", error });
   }
 };
+
 
 
 // -------------------------
