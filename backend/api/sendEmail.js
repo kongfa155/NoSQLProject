@@ -28,7 +28,7 @@ Trân trọng,
 Quiz Company`;
 
   const msg = {
-    from: "Quiz Company <onboarding@resend.dev>", // domain/email đã verify
+    from: "Quiz Company <nguyenhuynhngocquyen1@gmail.com>", // domain/email đã verify
     to,
     subject,
     text,
