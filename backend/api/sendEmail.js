@@ -1,6 +1,10 @@
 import sgMail from "@sendgrid/mail";
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+console.log(
+  "SENDGRID_API_KEY:",
+  process.env.SENDGRID_API_KEY ? "✅ Loaded" : "❌ Missing"
+);
 
 export async function sendVerificationEmail(to, otp) {
   const subject = "Mã xác minh đăng ký tài khoản";
