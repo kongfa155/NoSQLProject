@@ -1,4 +1,3 @@
-// ---------------- UserStats ----------------
 import {
   BarChart,
   Bar,
@@ -13,6 +12,23 @@ import {
 import { useState, useEffect, useMemo } from "react";
 import submissionService from "../../services/submissionService";
 
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white rounded-lg border border-gray-300 p-2 text-sm shadow-md">
+        <p className="font-bold text-[#3D763A] mb-1">{label}</p>
+        {payload.map((p, index) => (
+          <p key={index} className="text-gray-700">
+            <span style={{ color: p.color || "#333" }}>{p.name}: </span>
+            <span className="font-semibold">{p.value}%</span>
+          </p>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
+
 const UserStats = ({ userId, chapters }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -23,22 +39,15 @@ const UserStats = ({ userId, chapters }) => {
 
     const fetchData = async () => {
       setLoading(true);
-
       try {
-        // Lấy best submission của từng quiz
         const chapterDataPromises = chapters.map(async (chapter) => {
           const quizPromises = chapter.quizzes.map(async (quiz) => {
-            const res = await submissionService.getLatest(quiz._id, userId) ;
-            // Nếu có submission thì trả về score, nếu chưa thì trả về null
+            const res = await submissionService.getLatest(quiz._id, userId);
             return res.data?.score ?? null;
           });
 
           const scores = await Promise.all(quizPromises);
-
-          // Lọc ra chỉ những quiz có submission
-          const validScores = scores.filter((score) => score !== null);
-
-          // Tính trung bình dựa trên số quiz có submission
+          const validScores = scores.filter((s) => s !== null);
           const avg =
             validScores.length > 0
               ? validScores.reduce((a, b) => a + b, 0) / validScores.length
@@ -70,12 +79,10 @@ const UserStats = ({ userId, chapters }) => {
   }, [data]);
 
   const recommendation = useMemo(() => {
-    // Nếu không có dữ liệu, không đưa ra đề xuất
     if (!data.length) {
       return "Vui lòng hoàn thành ít nhất một bài kiểm tra để nhận đề xuất học tập chi tiết.";
     }
 
-    // 1. Phân loại các chương dựa trên điểm trung bình
     const weakChapters = data.filter((d) => d.avg < 40).map((d) => d.name);
     const middleChapters = data
       .filter((d) => d.avg >= 40 && d.avg <= 70)
@@ -83,8 +90,6 @@ const UserStats = ({ userId, chapters }) => {
     const strongChapters = data.filter((d) => d.avg > 70).map((d) => d.name);
 
     let message = "";
-
-    // 2. Tạo thông điệp tổng quan dựa trên điểm trung bình chung
     if (overallAvg >= 90) {
       message +=
         "🔥 Rất xuất sắc! Bạn đang làm rất tốt, hãy duy trì phong độ nhé.";
@@ -97,37 +102,30 @@ const UserStats = ({ userId, chapters }) => {
       message +=
         "📚 Bạn cần ôn tập lại các chương cơ bản. Đã đến lúc dành thời gian nghiêm túc cho việc học.";
     }
+
     if (weakChapters.length > 0) {
       message += `\n\n⚠️ Chương cần TẬP TRUNG CAO ĐỘ (${
         weakChapters.length
-      } chương) Bạn cần ôn tập lại toàn bộ kiến thức và làm thêm nhiều bài tập cho các chương: ${weakChapters.join(
-        ", "
-      )}.`;
+      } chương): ${weakChapters.join(", ")}.`;
     }
-
     if (middleChapters.length > 0) {
       message += `\n\n⭐ Chương nên ÔN TẬP THÊM (${
         middleChapters.length
-      } chương): Điểm 40% - 70%. Bạn đã nắm được cơ bản nhưng cần luyện tập nhiều hơn để nâng cao điểm số ở các chương: ${middleChapters.join(
-        ", "
-      )}.`;
+      } chương): ${middleChapters.join(", ")}.`;
     }
-
     if (
       weakChapters.length === 0 &&
       middleChapters.length === 0 &&
       strongChapters.length > 0
     ) {
-      // Nếu tất cả đều > 70%
-      message += `\n\n✅ Đánh giá chi tiết: Tất cả các chương đều đạt kết quả TỐT (trên 70%). Hãy tiếp tục luyện tập để đạt mức hoàn hảo 100%!`;
+      message += `\n\n✅ Tất cả các chương đều đạt kết quả TỐT (trên 70%). Tiếp tục phát huy!`;
     } else if (
       strongChapters.length > 0 &&
       (weakChapters.length > 0 || middleChapters.length > 0)
     ) {
-      // Trường hợp có cả chương tốt và chương yếu
-      message += `\n\n✅ Đánh giá chi tiết: Bạn đã đạt kết quả TỐT (trên 70%) ở các chương: ${strongChapters.join(
+      message += `\n\n✅ Bạn đã làm TỐT (trên 70%) ở các chương: ${strongChapters.join(
         ", "
-      )}. Hãy tạm thời ưu tiên thời gian cho các chương còn yếu hơn.`;
+      )}. Tập trung thêm ở các chương còn yếu.`;
     }
 
     return message;
@@ -135,37 +133,9 @@ const UserStats = ({ userId, chapters }) => {
 
   if (loading) return <p>Đang tải dữ liệu...</p>;
 
-  // Custom Tooltip component
-  const CustomTooltip = ({ active, payload, label }) => {
-    // Chỉ hiển thị Tooltip nếu activeTooltip là TRUE và Recharts báo active
-    if (activeTooltip && active && payload && payload.length) {
-      return (
-        <div
-          style={{
-            backgroundColor: "#f9f9f9",
-            borderRadius: "8px",
-            border: "1px solid #ddd",
-            padding: "8px",
-            fontSize: "14px",
-          }}
-        >
-          <p className="label" style={{ fontWeight: "bold", color: "#3D763A" }}>
-            {label}
-          </p>
-          {payload.map((p, index) => (
-            <p key={index} style={{ color: p.color || "#333" }}>
-              {p.name}: <span style={{ fontWeight: "600" }}>{p.value}%</span>
-            </p>
-          ))}
-        </div>
-      );
-    }
-    return null;
-  };
-
   return (
     <div className="flex flex-col gap-6">
-      <div style={{ width: "100%", height: 350, padding: "16px 0" }}>
+      <div className="w-full h-[350px] py-4">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={data}
@@ -190,7 +160,12 @@ const UserStats = ({ userId, chapters }) => {
                 fontWeight: 600,
               }}
             />
-            <Tooltip trigger="hover" cursor={false} content={CustomTooltip} />
+            <Tooltip
+              trigger="hover"
+              cursor={false}
+              content={CustomTooltip}
+              active={activeTooltip}
+            />
             <Legend verticalAlign="top" align="right" />
             <Bar
               dataKey="avg"
@@ -214,10 +189,7 @@ const UserStats = ({ userId, chapters }) => {
         </ResponsiveContainer>
       </div>
 
-      <div
-        className="p-6 rounded-xl border border-gray-200 bg-[#F8FFF8] shadow-sm"
-        style={{ lineHeight: 1.6 }}
-      >
+      <div className="p-6 rounded-xl border border-gray-200 bg-[#F8FFF8] shadow-sm leading-relaxed">
         <p className="text-xl font-semibold text-[#3D763A] mb-2">
           📊 Tổng kết kết quả học tập
         </p>
@@ -225,10 +197,7 @@ const UserStats = ({ userId, chapters }) => {
           Điểm trung bình hiện tại:{" "}
           <span className="font-bold text-[#2F855A]">{overallAvg}%</span>
         </p>
-        <p
-          className="text-gray-700 text-base italic"
-          style={{ whiteSpace: "pre-line" }}
-        >
+        <p className="text-gray-700 text-base italic whitespace-pre-line">
           {recommendation}
         </p>
       </div>

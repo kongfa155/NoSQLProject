@@ -1,31 +1,41 @@
 import { useState, useEffect } from "react";
-import styles from "./Timer.module.css";
 
-export default function Timer({ minutes = 0, onTimeUp }) { //Minutes là thời gian ban đầu, onTimeUp là hàm xử lý khi hết giờ
-  const [timeLeft, setTimeLeft] = useState(minutes * 60); //Đổi thời gian về giây
+export default function Timer({ minutes = 0, onTimeUp }) {
+  const [timeLeft, setTimeLeft] = useState(minutes * 60);
 
   useEffect(() => {
-    //Hết giờ gọi hàm onTimeUp
-    if (timeLeft <= 0) {
-      onTimeUp?.();
-      return;
-    }
-    //Thằng này cập nhật lại Time nè
-    const timer = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
+    if (timeLeft <= 0) return;
+
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          onTimeUp?.();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
     return () => clearInterval(timer);
-  }, [timeLeft]); //Render lại thằng này mỗi khi thời gian thay đổi
+  }, [onTimeUp]);
 
   const formatTime = (sec) => {
+    if (sec < 0) sec = 0;
     const m = Math.floor(sec / 60);
     const s = sec % 60;
     return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
-  }; //Chuyển định dạng hiển thị
+  };
 
-  const isWarning = timeLeft <= 30; //Sắp hết thời gian thì set này để cảnh báo
+  const isWarning = timeLeft > 0 && timeLeft <= 30;
 
   return (
     <div
-      className={`${styles.timerBox} ${isWarning ? styles.timerWarning : ""}`}
+      className={`flex items-center justify-center rounded-lg p-2 sm:px-4 font-semibold text-xl min-w-[100px] transition-all duration-300 border-2 ${
+        isWarning
+          ? "border-[#dc2626] text-[#dc2626] bg-[#fee2e2] animate-pulse"
+          : "border-[#2f834d] text-[#2f834d] bg-[#ecfdf5]"
+      }`}
     >
       ⏱ {formatTime(timeLeft)}
     </div>

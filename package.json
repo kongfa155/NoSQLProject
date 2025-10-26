@@ -36,6 +36,7 @@
     "redux-persist": "^6.0.0",
     "redux-thunk": "^3.1.0",
     "resend": "^6.2.2",
+    "tailwind-scrollbar-hide": "^4.0.0",
     "tailwindcss": "^4.1.14"
   },
   "devDependencies": {
