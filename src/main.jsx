@@ -10,7 +10,7 @@ import "nprogress/nprogress.css";
 ReactDOM.createRoot(document.getElementById("root")).render(
   <Provider store={store}>
     <PersistGate loading={<div>Đang tải dữ liệu...</div>} persistor={persistor}>
-      <BrowserRouter basename="/NoSQLProject">
+      <BrowserRouter>
         <App />
       </BrowserRouter>
     </PersistGate>

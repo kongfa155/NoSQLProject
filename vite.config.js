@@ -5,11 +5,15 @@ import tailwindcss from "@tailwindcss/vite";
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  base: "/NoSQLProject/",
+  base: "/",
   server: {
+    host: "0.0.0.0",
+    port: 5000,
+    strictPort: true,
+    allowedHosts: true,
     proxy: {
       "/api": {
-        target: "https://nosqlproject.onrender.com",
+        target: "http://localhost:3000",
         changeOrigin: true,
       },
     },

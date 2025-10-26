@@ -30,7 +30,7 @@ function App() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const path = location.pathname.replace("/NoSQLProject", "");
+    const path = location.pathname;
     if(path=="/"){
       
       navigate("/about");
