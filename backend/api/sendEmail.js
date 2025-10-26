@@ -75,9 +75,19 @@ Quiz Company`;
       text: textContent,
     });
 
+    if (data.error) {
+      console.error("❌ Resend API Error:", data.error);
+      console.log("⚠️ Fallback: Hiển thị OTP trong console (Domain chưa được verify hoặc email testing)");
+      console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+      console.log(`📧 Email: ${to}`);
+      console.log(`🔐 OTP: ${otp}`);
+      console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+      return { success: true, mode: 'console_fallback', error: data.error };
+    }
+
     console.log("✅ Email đã gửi đến:", to);
     console.log("📨 Response:", data);
-    return data;
+    return { success: true, mode: 'email', data };
   } catch (error) {
     console.error("❌ Lỗi gửi email:", error);
     console.log("⚠️ Fallback: Hiển thị OTP trong console");
@@ -85,6 +95,6 @@ Quiz Company`;
     console.log(`📧 Email: ${to}`);
     console.log(`🔐 OTP: ${otp}`);
     console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-    return { success: true, mode: 'console_fallback' };
+    return { success: true, mode: 'console_exception', error: error.message };
   }
 }
