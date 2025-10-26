@@ -1,7 +1,6 @@
-// backend/api/sendEmail.js (ESM style)
-import { Resend } from "resend";
+import sgMail from "@sendgrid/mail";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 export async function sendVerificationEmail(to, otp) {
   const subject = "Mã xác minh đăng ký tài khoản";
@@ -21,14 +20,15 @@ Email này được gửi tự động, vui lòng không trả lời.
 Trân trọng,
 Quiz Company`;
 
-  try {
-    const response = await resend.emails.send({
-      from: "Quiz Company <onboarding@resend.dev>", // hoặc domain verified
-      to,
-      subject,
-      text,
-    });
+  const msg = {
+    from: "Quiz Company <onboarding@resend.dev>", // domain/email đã verify
+    to,
+    subject,
+    text,
+  };
 
+  try {
+    const response = await sgMail.send(msg);
     console.log("✅ Email đã gửi đến:", to);
     return response;
   } catch (error) {
