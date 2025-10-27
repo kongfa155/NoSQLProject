@@ -32,7 +32,7 @@ export default function () {
         email: username.includes("@") ? username : undefined,
         password,
       };
-
+      console.log("🚀 Sending credentials:", credentials);
       const result = await dispatch(loginUser(credentials));
 
       if (result?.accessToken) {

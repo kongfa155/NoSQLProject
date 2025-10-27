@@ -24,6 +24,7 @@ export const login = async (req, res) => {
     }
     if (searchUsername) {
       orConditions.push({ username: { $regex: new RegExp('^' + searchUsername + '$', 'i') } });
+      orConditions.push({ email: { $regex: new RegExp('^' + searchUsername + '$', 'i') } });
     }
 
     const user = await User.findOne({ $or: orConditions });
@@ -130,7 +131,7 @@ export const register = async (req, res) => {
     const newUser = new User({
       email,
       username: email,
-      password: hashedPassword,
+      password,
       role: "User",
       active: false,
       otp,
