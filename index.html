@@ -14,14 +14,13 @@
   </head>
   <body>
     <script>
-  (function() {
+  if (sessionStorage.redirect) {
     const redirect = sessionStorage.redirect;
-    if (redirect) {
-      sessionStorage.removeItem('redirect');
-      window.history.replaceState(null, null, redirect);
-    }
-  })();
+    delete sessionStorage.redirect;
+    history.replaceState(null, '', redirect);
+  }
 </script>
+
     <div id="root"></div>
   </body>
 </html>
