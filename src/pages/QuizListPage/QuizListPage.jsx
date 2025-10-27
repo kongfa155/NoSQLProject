@@ -58,8 +58,7 @@ export default function QuizListPage() {
     if (!selectedQuiz) return;
     setShowModal(false);
     navigate(`/quizzes/${selectedQuiz._id}`, {
-      state: { quiz: selectedQuiz, options: options || {} },
-      subjectId: {subjectId},
+      state: { quiz: selectedQuiz, options: options, subjectId: subjectId || {} },
     });
   };
 

@@ -3,50 +3,86 @@ import mongoose from "mongoose";
 import Submission from "../models/submission.js";
 
 // 🟢 Lưu hoặc cập nhật bài nộp
+// controllers/submissionController.js
+import mongoose from "mongoose";
+import Submission from "../models/submission.js";
+
 export const addSubmission = async (req, res) => {
   try {
     const { userId, quizId, answers, score, totalQuestions, timeSpent } =
       req.body;
 
+    // basic required fields
     if (!userId || !quizId || !answers || !totalQuestions) {
       return res.status(400).json({ message: "Thiếu dữ liệu bắt buộc." });
     }
 
-    const existing = await Submission.findOne({ userId, quizId });
+    // Normalize & validate score nếu có
+    let scoreNum;
+    if (typeof score !== "undefined" && score !== null) {
+      scoreNum = Number(score);
+      if (Number.isNaN(scoreNum) || scoreNum < 0) {
+        // bạn có thể decide: reject request hoặc set về 0; ở đây reject request
+        return res.status(400).json({ message: "Score không hợp lệ." });
+      }
+    }
 
-    let updatedSubmission;
+    const filter = {
+      userId: new mongoose.Types.ObjectId(userId),
+      quizId: new mongoose.Types.ObjectId(quizId),
+    };
+
+    const existing = await Submission.findOne(filter);
+
     if (existing) {
-      updatedSubmission = await Submission.findOneAndUpdate(
-        { userId, quizId },
-        {
+      // Build update object: luôn cập nhật answers/totalQuestions/timeSpent
+      const update = {
+        $set: {
           answers,
           totalQuestions,
           timeSpent,
-          score,
-          bestScore: Math.max(existing.bestScore || existing.score || 0, score),
+          // chỉ set score nếu score hợp lệ được gửi
+          ...(typeof scoreNum !== "undefined" ? { score: scoreNum } : {}),
         },
+      };
+
+      // Sử dụng $max để đảm bảo bestScore chỉ tăng lên (không bị giảm)
+      if (typeof scoreNum !== "undefined") {
+        update.$max = { bestScore: scoreNum };
+      }
+
+      const updatedSubmission = await Submission.findOneAndUpdate(
+        filter,
+        update,
         { new: true }
       );
+
+      return res.status(200).json({
+        message: "Đã cập nhật bài nộp!",
+        submission: updatedSubmission,
+      });
     } else {
-      updatedSubmission = new Submission({
+      // New submission: require scoreNum? ở đây nếu score không hợp lệ thì đã bị reject phía trên.
+      const newSub = new Submission({
         userId,
         quizId,
         answers,
-        score,
-        bestScore: score,
+        score: typeof scoreNum !== "undefined" ? scoreNum : 0,
+        bestScore: typeof scoreNum !== "undefined" ? scoreNum : 0,
         totalQuestions,
         timeSpent,
       });
-      await updatedSubmission.save();
-    }
 
-    res.status(201).json({
-      message: "Đã lưu bài nộp thành công!",
-      submission: updatedSubmission,
-    });
+      await newSub.save();
+
+      return res.status(201).json({
+        message: "Đã lưu bài nộp thành công!",
+        submission: newSub,
+      });
+    }
   } catch (error) {
     console.error("❌ Lỗi khi lưu bài nộp:", error);
-    res.status(500).json({ message: "Không thể lưu bài nộp." });
+    return res.status(500).json({ message: "Không thể lưu bài nộp." });
   }
 };
 
@@ -78,12 +114,10 @@ export const getLatestSubmission = async (req, res) => {
     res.status(200).json(latest);
   } catch (error) {
     console.error("❌ Lỗi khi lấy bài làm gần nhất:", error);
-    res
-      .status(500)
-      .json({
-        message: "Không thể lấy bài làm gần nhất.",
-        error: error.message,
-      });
+    res.status(500).json({
+      message: "Không thể lấy bài làm gần nhất.",
+      error: error.message,
+    });
   }
 };
 
