@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://www.nhhun2005.id.vn",
+  "homepage": "https://kongfa155.github.io/NoSQLProject",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
