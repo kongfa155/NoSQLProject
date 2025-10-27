@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta http-equiv="refresh" content="0; url=/about" />
+    <meta charset="utf-8">
+    <title>Redirecting...</title>
+    <script>
+      // Lưu đường dẫn hiện tại để React Router xử lý sau khi reload
+      sessionStorage.redirect = location.pathname + location.search + location.hash;
+      // Chuyển hướng về trang gốc (index.html)
+      window.location.replace("/");
+    </script>
   </head>
+  <body></body>
 </html>

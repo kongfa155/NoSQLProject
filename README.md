@@ -8,9 +8,9 @@
 
 **Thông tin chung:**
 + Ngày bắt đầu: 02/10/2025
-+ Tiến độ: 90%
++ Tiến độ: 93%
 + Ngày đầu deploy thành website: 21/10/2025
 
 **Thành quả:**
-+ Website: https://kongfa155.github.io/NoSQLProject/
++ Website: https://www.quiz.id.vn/about
 
