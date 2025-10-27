@@ -7,10 +7,11 @@ import { PersistGate } from "redux-persist/integration/react";
 import { store, persistor } from "./redux/store";
 import App from "./routes/App";
 import "nprogress/nprogress.css";
+const basename = import.meta.env.MODE === "production" ? "/NoSQLProject" : "/";
 ReactDOM.createRoot(document.getElementById("root")).render(
   <Provider store={store}>
     <PersistGate loading={<div>Đang tải dữ liệu...</div>} persistor={persistor}>
-      <BrowserRouter basename="/NoSQLProject">
+      <BrowserRouter basename={basename}>
         <App />
       </BrowserRouter>
     </PersistGate>

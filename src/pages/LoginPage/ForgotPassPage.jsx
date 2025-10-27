@@ -4,6 +4,7 @@ import { FaEye as EyeLogo } from "react-icons/fa";
 import { RiEyeOffFill as CloseEye } from "react-icons/ri";
 import quizLogo from "../../quizLogo_green.svg";
 import authService from "../../services/authService";
+import background from "../../backGround.svg";
 export default function ForgotPassPage() {
   const navigate = useNavigate();
 
@@ -70,7 +71,7 @@ export default function ForgotPassPage() {
     <div
       className="flex w-full h-screen justify-center items-center bg-gray-100"
       style={{
-        backgroundImage: `url("/backGround.svg")`,
+        backgroundImage: `url(${background})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
