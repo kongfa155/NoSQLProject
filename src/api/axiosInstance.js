@@ -5,7 +5,7 @@ import nProgress from "nprogress";
 
 const api = axios.create({
   baseURL:
-    import.meta.env.VITE_API_BASE_URL || "https://nosqlproject.onrender.com/api",
+    import.meta.env.VITE_API_BASE_URL || "https://quizproject-qqwi.onrender.com/api",
 });
 nProgress.configure({
   showSpinner: false,
