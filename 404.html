@@ -1,5 +1,12 @@
-<script>
-  const redirect = location.pathname;
-  sessionStorage.redirect = redirect;
-  window.location.href = '/';
-</script>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <script>
+      const segment = window.location.pathname.split("/NoSQLProject")[1] || "";
+      sessionStorage.redirect = segment;
+      window.location.replace("/NoSQLProject/");
+    </script>
+  </head>
+  <body></body>
+</html>
