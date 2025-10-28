@@ -11,6 +11,7 @@ import chapterRoutes from "./routes/chapterRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import contributeRoutes from "./routes/contributeRoutes.js";
+import pingRoutes from "./routes/pingRoutes.js";
 
 dotenv.config();
 
@@ -30,5 +31,10 @@ app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/contributed", contributeRoutes);
 
+
+
+//thang o duoi ko can quan tam
+app.use("/api/ping", pingRoutes);
+//dung quan tam thang o tren
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, "0.0.0.0", () => console.log(`Server running on port ${PORT}`));
