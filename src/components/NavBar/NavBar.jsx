@@ -2,13 +2,11 @@ import "./NavBar.css";
 import webLogo from "../../quizLogo_green.svg";
 import { useSelector, useDispatch } from "react-redux";
 import { setViewMode } from "../../redux/action/viewModeAction";
-import Form from "react-bootstrap/Form";
 import { useNavigate } from "react-router-dom";
 import { FaUserCircle } from "react-icons/fa";
 import { handleLogout } from "../../redux/action/userAction";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
-import SmokeTrail from "../Effect/SmokeTrail";
 export default function NavBar({ selected = "about" }) {
   const account = useSelector((state) => state.user.account);
   const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
@@ -161,7 +159,7 @@ const mode = useSelector((state) => state.viewMode?.mode || "edit");
           <div className="relative">
             <FaUserCircle
               size={36}
-              className="cursor-pointer text-[#6ea269] hover:scale-110 transition-transform"
+              className="cursor-pointer text-[#006b3d] hover:scale-110 transition-transform"
               onClick={() => setOpenDropdown(!openDropdown)}
             />
 

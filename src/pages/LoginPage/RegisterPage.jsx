@@ -18,23 +18,30 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
 
   const handleRegister = async () => {
-    if (password !== confirmPassword) {
-      setMessage("Mật khẩu xác nhận không trùng khớp.");
-      return;
-    }
-    try {
-      setMessage("Đang gửi mã xác minh...");
-      const res = await authService.register({
-        email,
-        password,
-      });
-      setStep("otp");
-      setMessage("Mã OTP đã được gửi về email của bạn!");
-    } catch (err) {
-      console.error(err);
-      setMessage(err.response?.data?.message || "Đăng ký thất bại.");
-    }
-  };
+  if (password !== confirmPassword) {
+    setMessage("Mật khẩu xác nhận không trùng khớp.");
+    return;
+  }
+
+  if (password.length < 6) {
+    setMessage("Mật khẩu phải có ít nhất 6 ký tự.");
+    return;
+  }
+
+  try {
+    setMessage("Đang gửi mã xác minh...");
+    const res = await authService.register({
+      email,
+      password,
+    });
+    setStep("otp");
+    setMessage("Mã OTP đã được gửi về email của bạn!");
+  } catch (err) {
+    console.error(err);
+    setMessage(err.response?.data?.message || "Đăng ký thất bại.");
+  }
+};
+
 
   const handleVerifyOtp = async () => {
     try {

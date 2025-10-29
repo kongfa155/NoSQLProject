@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState,useEffect  } from "react";
 import { Trash2, Pencil } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSelector } from "react-redux";
@@ -27,7 +27,37 @@ export default function UserTable({ users, setUsers }) {
     active: true,
   });
 
-  const itemsPerPage = 8;
+  function getItemsPerPage() {
+  if (typeof window === "undefined") return 8; // fallback an toàn
+
+  const height = window.innerHeight;
+  const width = window.innerWidth;
+
+  if (width < 640) return 4;
+  if (width < 1024) return 6;
+  if (height < 800) return 7;
+  return 9;
+}
+
+const [itemsPerPage, setItemsPerPage] = useState(getItemsPerPage());
+useEffect(() => {
+  function handleResize() {
+    if (typeof window === "undefined") return;
+    const tableTopOffset = 280; // chiều cao phần header + search + nút thêm
+    const rowHeight = 48;       // chiều cao trung bình 1 dòng (td)
+    const availableHeight = window.innerHeight - tableTopOffset;
+    const visibleRows = Math.max(4, Math.floor(availableHeight / rowHeight));
+    setItemsPerPage(visibleRows);
+  }
+
+  // Gọi 1 lần khi mount
+  handleResize();
+
+  // Cập nhật khi resize cửa sổ
+  window.addEventListener("resize", handleResize);
+  return () => window.removeEventListener("resize", handleResize);
+}, []);
+
   const account = useSelector((state) => state.user.account);
 
   // 🔍 Lọc user theo tên/email
