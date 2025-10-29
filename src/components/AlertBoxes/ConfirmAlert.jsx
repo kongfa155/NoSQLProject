@@ -20,10 +20,10 @@ export default function ConfirmAlert({title="No title", information="No informat
                     <div className="grid grid-cols-2 gap-4">
                         <div 
                         onClick={confirmButton}
-                        className={`px-4 min-h-[3rem] ${isNegative?"bg-[#dd3f3f]":"bg-[#6ea269]"} text-white font-bold text-[1.3rem] rounded-xl flex justify-center items-center cursor-pointer`}>Xác nhận</div>
+                        className={`px-4 min-h-[3rem] ${isNegative?"bg-[#dd3f3f]":"bg-[#5DC254]"} text-white font-bold text-[1.3rem] rounded-xl flex justify-center items-center cursor-pointer`}>Xác nhận</div>
                         <div 
                         onClick={closeButton}
-                        className="px-4 min-h-[3rem] bg-[#6ea269] text-white font-bold text-[1.3rem] rounded-xl flex justify-center items-center cursor-pointer">Hủy</div>
+                        className="px-4 min-h-[3rem] bg-[#5DC254] text-white font-bold text-[1.3rem] rounded-xl flex justify-center items-center cursor-pointer">Hủy</div>
                     </div>
                 </div>
                 

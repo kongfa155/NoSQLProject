@@ -10,7 +10,7 @@ export default function SidebarAdmin() {
   const dispatch = useDispatch(); //navigate("/"); //
 
   return (
-    <aside className="w-60 bg-[#6EA269] text-white flex flex-col justify-between">
+    <aside className="w-60 bg-[#5DC254] text-white flex flex-col justify-between">
       <div>
         <div className="p-4 text-2xl font-bold tracking-wide">QUIZZES</div>
 

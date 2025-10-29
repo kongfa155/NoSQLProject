@@ -13,7 +13,7 @@ export default function AboutUs() {
       <div id="aboutUs_title" className="py-12 w-[80%] mx-auto text-center">
         <p className="px-[10%] text-6xl font-black">
           Sứ mệnh của chúng mình:{" "}
-          <span className="text-[#6ea269]">
+          <span className="text-[#5DC254]">
             Giúp đỡ cộng đồng cùng nhau ôn luyện
           </span>{" "}
         </p>
@@ -44,8 +44,8 @@ export default function AboutUs() {
           qua việc giải đề hay không.
         </p>
         <div className="px-8 flex flex-row items-center gap-1">
-          <CheckIcon className="text-[#6ea269] text-2xl"></CheckIcon>
-          <p className="text-[#6ea269] text-2xl font-black">Tầm nhìn</p>
+          <CheckIcon className="text-[#5DC254] text-2xl"></CheckIcon>
+          <p className="text-[#5DC254] text-2xl font-black">Tầm nhìn</p>
         </div>
         <div className="px-8 py-4">
           <p>Phát triển dự án trên tinh thần hướng đến cộng đồng.</p>
@@ -65,7 +65,7 @@ export default function AboutUs() {
           </p>
           <div
             className="rounded-2xl text-xl font-black shadow-sm shadow-black
-                mx-auto px-6 py-2 text-white bg-[#6ea269] flex items-center
+                mx-auto px-6 py-2 text-white bg-[#5DC254] flex items-center
                 hover:bg-[#4d7c48] hover:scale-105 transition-all duration-500
                 cursor-pointer select-none
                 "

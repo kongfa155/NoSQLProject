@@ -65,7 +65,7 @@ const mode = useSelector((state) => state.viewMode?.mode || "edit");
             transition={{ type: "spring", stiffness: 300, damping: 10 }}
             onClick={() => handleItemOnClick("trangchu")}
             className={`cursor-pointer ${
-              selected === "about" ? "text-[#6ea269]" : "hover:text-[#6ea269]"
+              selected === "about" ? "text-[#5DC254]" : "hover:text-[#5DC254]"
             }`}
           >
             TRANG CHỦ
@@ -78,8 +78,8 @@ const mode = useSelector((state) => state.viewMode?.mode || "edit");
               onClick={() => handleItemOnClick("monhoc")}
               className={`cursor-pointer ${
                 selected === "monhoc"
-                  ? "text-[#6ea269]"
-                  : "hover:text-[#6ea269]"
+                  ? "text-[#5DC254]"
+                  : "hover:text-[#5DC254]"
               }`}
             >
               MÔN HỌC
@@ -91,8 +91,8 @@ const mode = useSelector((state) => state.viewMode?.mode || "edit");
               onClick={() => handleItemOnClick("chinhsuamonhoc")}
               className={`cursor-pointer ${
                 selected === "chinhsuamonhoc"
-                  ? "text-[#6ea269]"
-                  : "hover:text-[#6ea269]"
+                  ? "text-[#5DC254]"
+                  : "hover:text-[#5DC254]"
               }`}
             >
               CHỈNH SỬA MÔN HỌC
@@ -105,8 +105,8 @@ const mode = useSelector((state) => state.viewMode?.mode || "edit");
             onClick={() => handleItemOnClick("donggopde")}
             className={`cursor-pointer ${
               selected === "donggopde"
-                ? "text-[#6ea269]"
-                : "hover:text-[#6ea269]"
+                ? "text-[#5DC254]"
+                : "hover:text-[#5DC254]"
             }`}
           >
             {account.role == "Admin" && "PHÊ DUYỆT ĐỀ"}
@@ -121,7 +121,7 @@ const mode = useSelector((state) => state.viewMode?.mode || "edit");
           <div className="flex items-center gap-2 mr-10">
             <div
               className={`relative w-[130px] h-[44px] rounded-full cursor-pointer transition-all duration-300 switch-pill
-                ${mode === "edit" ? "bg-[#006b3d]" : "bg-[#6ea269]"}`}
+                ${mode === "edit" ? "bg-[#006b3d]" : "bg-[#5DC254]"}`}
               onClick={() =>
                 dispatch(setViewMode(mode === "edit" ? "view" : "edit"))
               }
@@ -199,7 +199,7 @@ const mode = useSelector((state) => state.viewMode?.mode || "edit");
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 200, damping: 10 }}
             className={`${
-              selected === "dangnhap" && "text-[#6ea269]"
+              selected === "dangnhap" && "text-[#5DC254]"
             } cursor-pointer mt-4 duration-700 transform transition ease-in-out hover:scale-[1.05]`}
             onClick={() => handleItemOnClick("canhan")}
           >

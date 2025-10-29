@@ -11,8 +11,6 @@
     "preview": "vite preview",
     "deploy": "gh-pages -d dist",
     "forcedeploy": "rm -rf dist && npm run build && npm run deploy"
-
-    
   },
   "dependencies": {
     "@sendgrid/mail": "^8.1.6",
@@ -40,19 +38,21 @@
     "redux-persist": "^6.0.0",
     "redux-thunk": "^3.1.0",
     "resend": "^6.2.2",
-    "tailwind-scrollbar-hide": "^4.0.0",
-    "tailwindcss": "^4.1.14"
+    "tailwind-scrollbar-hide": "^4.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
     "@types/react": "^19.1.13",
     "@types/react-dom": "^19.1.9",
     "@vitejs/plugin-react": "^5.0.3",
+    "autoprefixer": "^10.4.21",
     "eslint": "^9.36.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "gh-pages": "^6.3.0",
     "globals": "^16.4.0",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.16",
     "vite": "^7.1.7"
   }
 }
