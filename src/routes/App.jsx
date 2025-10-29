@@ -21,41 +21,40 @@ import ContributedQuizPage from "../pages/ContributedQuizPage/ContributedQuizPag
 import AdminReviewContributed from "../pages/AdminReviewContributed/AdminReviewContributed";
 import RegisterPage from "../pages/LoginPage/RegisterPage";
 import ForgotPassPage from "../pages/LoginPage/ForgotPassPage";
-
-
+import LoadingSpinner from "../components/Effect/LoadingSpinner"; // ✅ Spinner component riêng
 
 function App() {
   const [selected, setSelected] = useState("trangchu");
+  const [loading, setLoading] = useState(false); // ✅ thêm state cho spinner
   const location = useLocation();
   const navigate = useNavigate();
 
+  // ✅ Hiện spinner mỗi khi đổi route
+  useEffect(() => {
+    setLoading(true);
+    const timer = setTimeout(() => setLoading(false), 400); // 0.4s
+    return () => clearTimeout(timer);
+  }, [location.pathname]);
+
   useEffect(() => {
     const path = location.pathname;
-    if(path=="/"){
-      
-      navigate("/about");
-    }
-    if (path == "/about" ) {
-      setSelected("about");
-    } else if (path.startsWith("/subject/view")) {
-      setSelected("monhoc");
-    } else if (path.startsWith("/subject/edit")) {
-      setSelected("chinhsuamonhoc");
-    } else if (path.startsWith("/donggopde")) {
-      setSelected("donggopde");
-    } else if (path.startsWith("/login")) {
-      setSelected("dangnhap");
-    } else if (path.startsWith("/admin")) {
-      setSelected("admin");
-    } else {
-      setSelected("");
-    }
+    if (path === "/") navigate("/about");
+    if (path === "/about") setSelected("about");
+    else if (path.startsWith("/subject/view")) setSelected("monhoc");
+    else if (path.startsWith("/subject/edit")) setSelected("chinhsuamonhoc");
+    else if (path.startsWith("/donggopde")) setSelected("donggopde");
+    else if (path.startsWith("/login")) setSelected("dangnhap");
+    else if (path.startsWith("/admin")) setSelected("admin");
+    else setSelected("");
   }, [location]);
 
   return (
     <div className="relative z-10 flex flex-col h-screen w-screen">
-      {selected == "about" && <SmokeTrail />}
-      {!location.pathname.startsWith("/quizzes/") && selected != "admin" && (
+      {/* ✅ Spinner toàn trang */}
+      {loading && <LoadingSpinner />}
+
+      {selected === "about" && <SmokeTrail />}
+      {!location.pathname.startsWith("/quizzes/") && selected !== "admin" && (
         <div className="h-[5%] w-full my-1">
           <NavBar selected={selected} />
         </div>
@@ -77,17 +76,13 @@ function App() {
             path="/subject/:type"
             element={
               <ProtectedRoute>
-                <SubjectPermissionHandler></SubjectPermissionHandler>
+                <SubjectPermissionHandler />
               </ProtectedRoute>
             }
           >
-            <Route index element={<SubjectPage></SubjectPage>}></Route>
-            <Route
-              path=":subjectId"
-              element={<QuizListPage></QuizListPage>}
-            ></Route>
-
-            <Route path="quiz/:id" element={<EditQuizPage/>} />
+            <Route index element={<SubjectPage />} />
+            <Route path=":subjectId" element={<QuizListPage />} />
+            <Route path="quiz/:id" element={<EditQuizPage />} />
           </Route>
           <Route
             path="/subject/:type/:subjectId"
@@ -102,26 +97,13 @@ function App() {
             path="/settings"
             element={
               <ProtectedRoute>
-                <SettingPage></SettingPage>
+                <SettingPage />
               </ProtectedRoute>
             }
-          ></Route>
-          <Route 
-          path="/register" 
-          element={
-           
-              <RegisterPage />
-            
-          } />
-            <Route 
-          path="/forgot-password" 
-          element={
-           
-              <ForgotPassPage />
-            
-          } />
+          />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/forgot-password" element={<ForgotPassPage />} />
           <Route
-          
             path="/quizzes/:quizId"
             element={
               <ProtectedRoute>
@@ -136,7 +118,7 @@ function App() {
                 <ReviewQuizPage />
               </ProtectedRoute>
             }
-          ></Route>
+          />
           <Route
             path="/user"
             element={
@@ -161,8 +143,8 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="/login-test" element={<LoginPage_ReduxTest />} />;
-          <Route path="*" element={<NotFoundPage></NotFoundPage>}></Route>
+          <Route path="/login-test" element={<LoginPage_ReduxTest />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </div>
     </div>
