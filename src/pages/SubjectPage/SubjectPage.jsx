@@ -125,7 +125,7 @@ function SubjectBox({ subject, navigate, type, reFetchSubjects }) {
           onClick={() => {
             navigate(`/subject/view/${subject._id}`);
           }}
-          className=" transition-all duration-500 w-[50%] mx-auto mb-4 h-[2rem] bg-[#31872D] hover:scale-105  rounded-xl flex justify-center items-center text-[#e7e7e7] cursor-pointer"
+          className=" transition-all duration-500 w-[50%] font-semibold mx-auto mb-4 h-[2rem] bg-[#31872D] hover:scale-105  rounded-xl flex justify-center items-center text-[#e7e7e7] cursor-pointer"
         >
           Vào học →
         </div>
@@ -135,7 +135,7 @@ function SubjectBox({ subject, navigate, type, reFetchSubjects }) {
             onClick={() => {
               navigate(`/subject/edit/${subject._id}`);
             }}
-            className=" transition-all duration-500 w-full h-[2rem] bg-qprimary hover:scale-105 rounded-xl flex justify-center items-center text-[#e7e7e7] cursor-pointer"
+            className=" transition-all duration-500 font-semibold w-full h-[2rem] bg-[#31872D] hover:scale-105 rounded-xl flex justify-center items-center text-[#e7e7e7] cursor-pointer"
           >
             Chỉnh sửa →
           </div>
@@ -143,7 +143,7 @@ function SubjectBox({ subject, navigate, type, reFetchSubjects }) {
             onClick={() => {
               setShowConfirm(true);
             }}
-            className=" transition-all duration-500 w-full h-[2rem] bg-[#ff6b6b] hover:scale-105 rounded-xl flex justify-center items-center text-[#e7e7e7] cursor-pointer"
+            className=" transition-all duration-500 font-semibold w-full h-[2rem] bg-[#ff6b6b] hover:scale-105 rounded-xl flex justify-center items-center text-[#e7e7e7] cursor-pointer"
           >
             Xóa ✘
           </div>
