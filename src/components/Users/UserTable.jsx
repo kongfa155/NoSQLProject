@@ -140,7 +140,7 @@ export default function UserTable({ users, setUsers }) {
           />
           <button
             onClick={() => setShowAddModal(true)}
-            className="bg-[#6EA269] text-white px-3 py-1 rounded-sm text-sm hover:bg-[#41563F] transition"
+            className="bg-[#5DC254] text-white px-3 py-1 rounded-sm text-sm hover:bg-[#41563F] transition"
           >
             + Thêm user
           </button>
@@ -179,7 +179,7 @@ export default function UserTable({ users, setUsers }) {
                 <div className="flex justify-end items-center gap-2">
                   <button
                     onClick={() => setEditingUser(u)}
-                    className="w-8 h-8 flex items-center justify-center rounded-lg border border-[#6EA269] text-[#6EA269] bg-white hover:bg-[#6EA269]/10 transform hover:scale-110 transition-all duration-200"
+                    className="w-8 h-8 flex items-center justify-center rounded-lg border border-[#5DC254] text-[#5DC254] bg-white hover:bg-[#5DC254]/10 transform hover:scale-110 transition-all duration-200"
                   >
                     <Pencil size={16} />
                   </button>
@@ -294,7 +294,7 @@ export default function UserTable({ users, setUsers }) {
                 </button>
                 <button
                   onClick={handleUpdate}
-                  className="px-4 py-2 bg-[#6EA269] text-white rounded-md hover:bg-green-700"
+                  className="px-4 py-2 bg-[#5DC254] text-white rounded-md hover:bg-green-700"
                 >
                   Lưu
                 </button>
@@ -424,7 +424,7 @@ export default function UserTable({ users, setUsers }) {
                 </button>
                 <button
                   onClick={handleAdd}
-                  className="px-3 py-1 text-sm bg-[#6EA269] text-white rounded-md hover:bg-[#41563F]"
+                  className="px-3 py-1 text-sm bg-[#5DC254] text-white rounded-md hover:bg-[#41563F]"
                 >
                   Thêm
                 </button>

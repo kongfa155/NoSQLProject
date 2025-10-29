@@ -47,17 +47,17 @@ export default function SubjectPage() {
       <div className=" mx-24 my-24">
         <div id="subjectPageTitle" className="text-[#272b41]">
           {type == "view" ? (
-            <h1 className="text-[#00620B]">Làm Bài Trực Tuyến</h1>
+            <h1 className="text-[#5DC254]">Làm Bài Trực Tuyến</h1>
           ) : (
-            <h1 className="text-[#00620B]">Chỉnh Sửa Môn Học</h1>
+            <h1 className="text-[#5DC254]">Chỉnh Sửa Môn Học</h1>
           )}
 
           <div className="relative flex flex-row w-full h-auto  justify-between">
             <p className="mx-8 text-xl">Danh sách các môn học sẵn có</p>
             {account.role === "Admin" && ( //
               <div
-                className="absolute right-[5%] rounded-2 text-2xl text-white  shadow-black px-8 py-4 select-none cursor-pointer
-                        bg-[#6ea269] transition-all duration-500 hover:scale-105 hover:bg-[#5a8d56]
+                className="absolute right-[5%] rounded-2 text-2xl text-[#e7e7e7]  shadow-black px-8 py-4 select-none cursor-pointer
+                        bg-[#5DC254] transition-all duration-500 hover:scale-105
                         "
                 onClick={() => {
                   setShowCreateSubjectModal(true);
@@ -66,7 +66,7 @@ export default function SubjectPage() {
                 Thêm môn học
               </div>
             )}
-            ;
+            
           </div>
         </div>
 
@@ -103,7 +103,7 @@ function SubjectBox({ subject, navigate, type, reFetchSubjects }) {
   const [showConfirm, setShowConfirm] = useState(0);
   return (
     <div className="relative w-[100%] shadow-sm shadow-black justify-items-center overflow-hidden rounded-xl">
-      <div className="h-[312px] w-full ">
+      <div className="h-[312px] w-full p-2 rounded-xl">
         <img
           src={subject.image}
           atl={`Url: ${subject.image}`}
@@ -111,12 +111,12 @@ function SubjectBox({ subject, navigate, type, reFetchSubjects }) {
         ></img>
       </div>
       <div className="my-2  w-full flex justify-center">
-        <p className="text-center text-[1.2rem] line-clamp-1 px-4">
+        <p className="text-center text-[32px] line-clamp-1 px-4">
           {subject.name}
         </p>
       </div>
       <div className=" flex justify-center">
-        <p className="min-h-[4rem] text-center px-4 text-gray-700 line-clamp-2 ">
+        <p className="min-h-[4rem] text-center px-4 text-[18px] text-gray-700 line-clamp-2 ">
           {subject.description}
         </p>
       </div>
@@ -125,7 +125,7 @@ function SubjectBox({ subject, navigate, type, reFetchSubjects }) {
           onClick={() => {
             navigate(`/subject/view/${subject._id}`);
           }}
-          className=" transition-colors duration-500 w-[50%] mx-auto mb-4 h-[2rem] bg-[#6ea269] hover:bg-[#568651]  rounded-xl flex justify-center items-center text-white cursor-pointer"
+          className=" transition-all duration-500 w-[50%] mx-auto mb-4 h-[2rem] bg-[#5DC254] hover:scale-105  rounded-xl flex justify-center items-center text-[#e7e7e7] cursor-pointer"
         >
           Vào học →
         </div>
@@ -135,7 +135,7 @@ function SubjectBox({ subject, navigate, type, reFetchSubjects }) {
             onClick={() => {
               navigate(`/subject/edit/${subject._id}`);
             }}
-            className=" transition-colors duration-500 w-full h-[2rem] bg-[#6ea269] hover:bg-[#568651] rounded-xl flex justify-center items-center text-white cursor-pointer"
+            className=" transition-all duration-500 w-full h-[2rem] bg-qprimary hover:scale-105 rounded-xl flex justify-center items-center text-[#e7e7e7] cursor-pointer"
           >
             Chỉnh sửa →
           </div>
@@ -143,7 +143,7 @@ function SubjectBox({ subject, navigate, type, reFetchSubjects }) {
             onClick={() => {
               setShowConfirm(true);
             }}
-            className=" transition-colors duration-500 w-full h-[2rem] bg-[#ff6b6b] hover:bg-[#dd3f3f] rounded-xl flex justify-center items-center text-white cursor-pointer"
+            className=" transition-all duration-500 w-full h-[2rem] bg-[#ff6b6b] hover:scale-105 rounded-xl flex justify-center items-center text-[#e7e7e7] cursor-pointer"
           >
             Xóa ✘
           </div>

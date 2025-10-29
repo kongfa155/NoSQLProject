@@ -19,7 +19,7 @@ export default function DefaultAlert({title="No title", information="No informat
                 <div className="flex justify-end mt-[auto]">
                     <div 
                         onClick={closeButton}
-                        className="w-[96px] min-h-[3rem] bg-[#6ea269] text-white font-bold text-[1.3rem] rounded-xl flex justify-center items-center cursor-pointer">Đóng</div>
+                        className="w-[96px] min-h-[3rem] bg-[#5DC254] text-white font-bold text-[1.3rem] rounded-xl flex justify-center items-center cursor-pointer">Đóng</div>
                 </div>
                 
             </div>

@@ -132,7 +132,7 @@ export default function RegisterPage() {
                 onClick={handleRegister}
                 className="w-[70%] h-[3rem] flex justify-center items-center 
                 bg-[#41563F] text-white font-semibold rounded-[8px] cursor-pointer 
-                hover:bg-[#6EA269] transition-all duration-500 select-none drop-shadow-md transform 
+                hover:bg-[#5DC254] transition-all duration-500 select-none drop-shadow-md transform 
                  ease-in-out hover:scale-[1.05]"
               >
                 Gửi mã xác minh
@@ -158,7 +158,7 @@ export default function RegisterPage() {
                   inputMode="numeric"
                   pattern="[0-9]*"
                   placeholder="Nhập mã OTP"
-                  className="w-[12rem] h-[3.2rem] text-center text-2xl rounded-[8px] border border-white/50 bg-white/70 text-gray-800 font-semibold focus:outline-none focus:ring-2 focus:ring-[#6EA269] placeholder-gray-500"
+                  className="w-[12rem] h-[3.2rem] text-center text-2xl rounded-[8px] border border-white/50 bg-white/70 text-gray-800 font-semibold focus:outline-none focus:ring-2 focus:ring-[#5DC254] placeholder-gray-500"
                 />
               </div>
 
@@ -166,7 +166,7 @@ export default function RegisterPage() {
                 onClick={handleVerifyOtp}
                 className="w-[70%] h-[3rem] flex justify-center items-center 
                     bg-[#41563F] text-white font-semibold rounded-[8px] cursor-pointer 
-                    hover:bg-[#6EA269] transition-all duration-500 select-none drop-shadow-md transform 
+                    hover:bg-[#5DC254] transition-all duration-500 select-none drop-shadow-md transform 
                     ease-in-out hover:scale-[1.05]"
               >
                 Xác nhận mã

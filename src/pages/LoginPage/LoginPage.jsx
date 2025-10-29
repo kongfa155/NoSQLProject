@@ -121,7 +121,7 @@ export default function () {
             onClick={handleLogin}
             className="w-[70%] h-[3rem] flex justify-center items-center 
             bg-[#41563F] text-white font-semibold rounded-[8px] cursor-pointer 
-            hover:bg-[#6EA269] transition-all duration-500 select-none drop-shadow-md transform 
+            hover:bg-[#5DC254] transition-all duration-500 select-none drop-shadow-md transform 
              ease-in-out hover:scale-[1.05]"
           >
             Đăng nhập
