@@ -106,7 +106,7 @@ export default function ForgotPassPage() {
                 onClick={handleSendOTP}
                 className={`w-[70%] h-[3rem] flex justify-center items-center 
                       bg-[#41563F] text-white font-semibold rounded-[8px] cursor-pointer 
-                      hover:bg-[#5DC254] transition-all duration-500 select-none drop-shadow-md transform 
+                      hover:bg-[#31872D] transition-all duration-500 select-none drop-shadow-md transform 
                       ease-in-out hover:scale-[1.05] ${
                         isSending
                           ? "opacity-50 cursor-not-allowed hover:bg-[#41563F]"
@@ -132,14 +132,14 @@ export default function ForgotPassPage() {
                   maxLength="6"
                   inputMode="numeric"
                   pattern="[0-9]*"
-                  className="w-[12rem] h-[3.2rem] text-center text-2xl rounded-[8px] border border-white/50 bg-white/70 text-gray-800 font-semibold focus:outline-none focus:ring-2 focus:ring-[#5DC254] placeholder-gray-500"
+                  className="w-[12rem] h-[3.2rem] text-center text-2xl rounded-[8px] border border-white/50 bg-white/70 text-gray-800 font-semibold focus:outline-none focus:ring-2 focus:ring-[#31872D] placeholder-gray-500"
                   placeholder="Nhập mã OTP"
                 />
               </div>
 
               <div
                 onClick={handleVerifyOTP}
-                className="w-[70%] h-[3rem] flex justify-center items-center bg-[#41563F] text-white font-semibold rounded-[8px] cursor-pointer hover:bg-[#5DC254] transition-all duration-500 select-none drop-shadow-md transform ease-in-out hover:scale-[1.05]"
+                className="w-[70%] h-[3rem] flex justify-center items-center bg-[#41563F] text-white font-semibold rounded-[8px] cursor-pointer hover:bg-[#31872D] transition-all duration-500 select-none drop-shadow-md transform ease-in-out hover:scale-[1.05]"
               >
                 Xác thực OTP
               </div>
@@ -170,7 +170,7 @@ export default function ForgotPassPage() {
               </div>
               <div
                 onClick={handleResetPassword}
-                className="w-[70%] h-[3rem] flex justify-center items-center bg-[#41563F] text-white font-semibold rounded-[8px] cursor-pointer hover:bg-[#5DC254] transition-all duration-500 select-none drop-shadow-md transform ease-in-out hover:scale-[1.05]"
+                className="w-[70%] h-[3rem] flex justify-center items-center bg-[#41563F] text-white font-semibold rounded-[8px] cursor-pointer hover:bg-[#31872D] transition-all duration-500 select-none drop-shadow-md transform ease-in-out hover:scale-[1.05]"
               >
                 Cập nhật mật khẩu
               </div>

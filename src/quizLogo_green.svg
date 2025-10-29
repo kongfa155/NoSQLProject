@@ -1,8 +1,8 @@
 <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-  <!-- Màu xanh lá (#5DC254) là màu chủ đạo, tượng trưng cho sự chính xác và tự nhiên -->
+  <!-- Màu xanh lá (#31872D) là màu chủ đạo, tượng trưng cho sự chính xác và tự nhiên -->
   <defs>
     <style>
-      .quiz-card { fill: #5DC254; } /* Primary Green specified by user */
+      .quiz-card { fill: #31872D; } /* Primary Green specified by user */
       .quiz-check { stroke: white; fill: none; stroke-width: 10; stroke-linecap: round; stroke-linejoin: round; }
       .quiz-line { fill: white; opacity: 0.8; }
     </style>

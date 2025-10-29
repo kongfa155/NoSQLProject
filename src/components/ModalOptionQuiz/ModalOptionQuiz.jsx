@@ -60,7 +60,7 @@ export default function ModalOptionQuiz({
       onHide={onClose}
       centered
       dialogClassName="!max-w-[960px] !w-[960px] md:max-lg:!max-w-[80%] md:max-lg:!w-[80%] sm:max-md:!max-w-[95%] sm:max-md:!w-[95%]"
-      contentClassName="!border-2 !border-gray-300 !shadow-[0_0_4px_2px_#5DC254] !rounded-none !p-8 flex flex-col !overflow-visible"
+      contentClassName="!border-2 !border-gray-300 !shadow-[0_0_4px_2px_#31872D] !rounded-none !p-8 flex flex-col !overflow-visible"
     >
       {/* Header */}
       <Modal.Header className="flex justify-end p-2 sm:p-4 border-0">
