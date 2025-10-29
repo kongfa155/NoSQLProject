@@ -202,7 +202,7 @@ const mode = useSelector((state) => state.viewMode?.mode || "edit");
             transition={{ type: "spring", stiffness: 200, damping: 10 }}
             className={`${
               selected === "dangnhap" && "text-[#6ea269]"
-            } cursor-pointer duration-700 transform transition ease-in-out hover:scale-[1.05]`}
+            } cursor-pointer mt-4 duration-700 transform transition ease-in-out hover:scale-[1.05]`}
             onClick={() => handleItemOnClick("canhan")}
           >
             <p
