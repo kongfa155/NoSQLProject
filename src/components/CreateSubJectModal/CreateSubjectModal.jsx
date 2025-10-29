@@ -65,7 +65,7 @@ export default function CreateSubjectModal({setShowCreateSubjectModal}){
                 </div>
                 <div className="flex flex-row justify-center  gap-12 w-[50%] items-center h-[4rem] mx-auto mt-8">
                     <div className=" rounded-[8px] text-2xl text-white  shadow-black px-4 py-4 select-none cursor-pointer
-                        bg-[#5DC254] transition-all duration-500 hover:scale-105 hover:bg-[#5a8d56]
+                        bg-[#31872D] transition-all duration-500 hover:scale-105 hover:bg-[#5a8d56]
                         " onClick={()=>{
                             handleCreateSubject();
                         }}>

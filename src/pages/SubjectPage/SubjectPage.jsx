@@ -47,9 +47,9 @@ export default function SubjectPage() {
       <div className=" mx-24 my-24">
         <div id="subjectPageTitle" className="text-[#272b41]">
           {type == "view" ? (
-            <h1 className="text-[#5DC254]">Làm Bài Trực Tuyến</h1>
+            <h1 className="text-[#31872D]">Làm Bài Trực Tuyến</h1>
           ) : (
-            <h1 className="text-[#5DC254]">Chỉnh Sửa Môn Học</h1>
+            <h1 className="text-[#31872D]">Chỉnh Sửa Môn Học</h1>
           )}
 
           <div className="relative flex flex-row w-full h-auto  justify-between">
@@ -57,7 +57,7 @@ export default function SubjectPage() {
             {account.role === "Admin" && ( //
               <div
                 className="absolute right-[5%] rounded-2 text-2xl text-[#e7e7e7]  shadow-black px-8 py-4 select-none cursor-pointer
-                        bg-[#5DC254] transition-all duration-500 hover:scale-105
+                        bg-[#31872D] transition-all duration-500 hover:scale-105
                         "
                 onClick={() => {
                   setShowCreateSubjectModal(true);
@@ -125,7 +125,7 @@ function SubjectBox({ subject, navigate, type, reFetchSubjects }) {
           onClick={() => {
             navigate(`/subject/view/${subject._id}`);
           }}
-          className=" transition-all duration-500 w-[50%] mx-auto mb-4 h-[2rem] bg-[#5DC254] hover:scale-105  rounded-xl flex justify-center items-center text-[#e7e7e7] cursor-pointer"
+          className=" transition-all duration-500 w-[50%] font-semibold mx-auto mb-4 h-[2rem] bg-[#31872D] hover:scale-105  rounded-xl flex justify-center items-center text-[#e7e7e7] cursor-pointer"
         >
           Vào học →
         </div>
@@ -135,7 +135,7 @@ function SubjectBox({ subject, navigate, type, reFetchSubjects }) {
             onClick={() => {
               navigate(`/subject/edit/${subject._id}`);
             }}
-            className=" transition-all duration-500 w-full h-[2rem] bg-qprimary hover:scale-105 rounded-xl flex justify-center items-center text-[#e7e7e7] cursor-pointer"
+            className=" transition-all duration-500 font-semibold w-full h-[2rem] bg-[#31872D] hover:scale-105 rounded-xl flex justify-center items-center text-[#e7e7e7] cursor-pointer"
           >
             Chỉnh sửa →
           </div>
@@ -143,7 +143,7 @@ function SubjectBox({ subject, navigate, type, reFetchSubjects }) {
             onClick={() => {
               setShowConfirm(true);
             }}
-            className=" transition-all duration-500 w-full h-[2rem] bg-[#ff6b6b] hover:scale-105 rounded-xl flex justify-center items-center text-[#e7e7e7] cursor-pointer"
+            className=" transition-all duration-500 font-semibold w-full h-[2rem] bg-[#ff6b6b] hover:scale-105 rounded-xl flex justify-center items-center text-[#e7e7e7] cursor-pointer"
           >
             Xóa ✘
           </div>
