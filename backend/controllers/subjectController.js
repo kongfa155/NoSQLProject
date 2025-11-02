@@ -2,7 +2,7 @@
 import Subject from "../models/subject.js";
 
 export const getSubjects = async (req, res) => {
-  const subjects = await Subject.find();
+  const subjects = await Subject.find().lean();
   res.json(subjects);
 };
 
@@ -33,7 +33,7 @@ export const deleteSubject = async (req, res) => {
 
 export const getSubjectById = async (req, res) => {
   try {
-    const subject = await Subject.findById(req.params.id);
+    const subject = await Subject.findById(req.params.id).lean();
     if (!subject)
       return res.status(404).json({ message: "Không tìm thấy subject" });
     res.json(subject);

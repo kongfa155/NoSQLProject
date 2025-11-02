@@ -3,12 +3,12 @@ import QuestionImage from "../models/questionImage.js";
 
 // Lấy tất cả câu hỏi
 export const getQuestionImages = async (req, res) => {
-  const questions = await QuestionImage.find();
+  const questions = await QuestionImage.find().lean();
   res.json(questions);
 };
 
 export const getQuestionImagesById = async (req, res) => {
-  const questions = await QuestionImage.find({ quizId: req.params.id });
+  const questions = await QuestionImage.find({ quizId: req.params.id }).lean();
   res.json(questions);
 };
 

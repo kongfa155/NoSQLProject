@@ -3,13 +3,13 @@ import Question from "../models/questionText.js";
 
 // Lấy tất cả câu hỏi
 export const getQuestions = async (req, res) => {
-  const questions = await Question.find();
+  const questions = await Question.find().lean();
   res.json(questions);
 };
 
 // Lấy câu hỏi theo quizId
 export const getQuestionsById = async (req, res) => {
-  const questions = await Question.find({ quizId: req.params.id });
+  const questions = await Question.find({ quizId: req.params.id }).lean();
   res.json(questions);
 };
 

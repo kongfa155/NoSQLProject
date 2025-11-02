@@ -21,7 +21,7 @@ export const addChapter = async (req, res) => {
 
 export const getChapters = async (req, res) => {
   try {
-    const chapters = await Chapter.find();
+    const chapters = await Chapter.find().lean();
     res.json(chapters);
   } catch (err) {
     console.error("Lỗi khi lấy danh sách chương:", err);
@@ -31,7 +31,7 @@ export const getChapters = async (req, res) => {
 
 export const getChaptersFromSubject = async (req, res) => {
   try {
-    const chapters = await Chapter.find({ subjectId: req.params.id });
+    const chapters = await Chapter.find({ subjectId: req.params.id }).lean();
     res.json(chapters);
   } catch (err) {
     console.error("Lỗi khi lấy chương từ subject:", err);

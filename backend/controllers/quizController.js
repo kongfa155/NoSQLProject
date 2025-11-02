@@ -86,13 +86,13 @@ export const updateQuizAvailability = async (req, res) => {
 
 // 🟩 Lấy tất cả quiz
 export const getQuiz = async (req, res) => {
-  const quizzes = await Quiz.find();
+  const quizzes = await Quiz.find().lean();
   res.json(quizzes);
 };
 
 // 🟩 Lấy quiz theo chương
 export const getQuizFromChapter = async (req, res) => {
-  const quiz = await Quiz.find({ chapterId: req.params.id });
+  const quiz = await Quiz.find({ chapterId: req.params.id }).lean();
   res.json(quiz);
 };
 

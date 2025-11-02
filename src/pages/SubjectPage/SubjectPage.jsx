@@ -110,13 +110,13 @@ function SubjectBox({ subject, navigate, type, reFetchSubjects }) {
           className="w-full h-full object-cover object-center"
         ></img>
       </div>
-      <div className="my-2  w-full flex justify-center">
-        <p className="text-center text-[32px] line-clamp-1 px-4">
+      <div className="my-2 w-full">
+        <p className=" text-[32px] line-clamp-1 px-8">
           {subject.name}
         </p>
       </div>
-      <div className=" flex justify-center">
-        <p className="min-h-[4rem] text-center px-4 text-[18px] text-gray-700 line-clamp-2 ">
+      <div className="">
+        <p className="mx-4 border-l-4 min-h-[4rem] text-left px-4 text-[18px] text-gray-700 line-clamp-2 ">
           {subject.description}
         </p>
       </div>
