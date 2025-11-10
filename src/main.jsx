@@ -7,6 +7,7 @@ import { PersistGate } from "redux-persist/integration/react";
 import { store, persistor } from "./redux/store";
 import App from "./routes/App";
 import "nprogress/nprogress.css";
+
 const basename = "/";
 ReactDOM.createRoot(document.getElementById("root")).render(
   <Provider store={store}>
