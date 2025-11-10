@@ -4,7 +4,7 @@ import axios from "axios";
 const baseAxios = axios.create({
   baseURL:
     import.meta.env.VITE_API_BASE_URL ||
-    "https://quizproject-qqwi.onrender.com/api",
+    "https://nosqlproject-fp2f.onrender.com/api",
   headers: { "Content-Type": "application/json" },
 });
 
