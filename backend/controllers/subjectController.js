@@ -9,7 +9,7 @@ export const getSubjects = async (req, res) => {
 export const addSubject = async (req, res) => {
   try {
     const { name, image, description, availability } = req.body;
-    const newSubject = new Subject({ name, image, description });
+    const newSubject = new Subject({ name, image, description, availability });
     await newSubject.save();
     res.json(newSubject);
   } catch (err) {
