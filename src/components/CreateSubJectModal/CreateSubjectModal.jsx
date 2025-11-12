@@ -32,7 +32,7 @@ export default function CreateSubjectModal({setShowCreateSubjectModal}){
 
     return (
         <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-49 ">
-            <div className="w-[50%] h-[50%] bg-white rounded-[8px]">
+            <div className="w-[50%] h-[50%] bg-white rounded-[8px] pb-24">
                 <p className="w-full py-8 text-4xl font-black text-green-700 text-center mb-12">Tạo môn học mới</p>
                 <div className="flex flex-row items-center w-[90%] mx-auto h-[4rem]">
                     <p className="my-2 text-2xl pr-8 w-[25%]">Tên môn học: </p>
