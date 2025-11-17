@@ -234,7 +234,7 @@ export default function ContributedQuizPage() {
             </div>
 
             {/* Chapter dropdown */}
-            {selectedSubject && selectedSubject._id !== null && (
+            {selectedSubject && selectedSubject._id !== null && chapters && (
               <div className="mt-3" ref={chapterRef}>
                 <div className="flex items-center gap-4 flex-col sm:flex-row">
                   <p className="w-full sm:w-1/4 font-semibold text-lg text-green-700">
