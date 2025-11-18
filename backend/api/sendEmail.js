@@ -98,3 +98,4 @@ Quiz Company`;
     return { success: true, mode: 'console_exception', error: error.message };
   }
 }
+export default sendVerificationEmail;
