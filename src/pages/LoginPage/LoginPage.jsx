@@ -35,12 +35,26 @@ export default function () {
       console.log("🚀 Sending credentials:", credentials);
       const result = await dispatch(loginUser(credentials));
 
-      if (result?.accessToken) {
-        console.log("✅ Đăng nhập thành công, điều hướng...");
-        navigate("/about");
-      } else {
-        setError("Đăng nhập thất bại.");
+     if (result?.type === "banned") {
+        // USER BANNED
+        navigate("/banned"); 
+        return;
       }
+
+      if (result?.type === "unverified") {
+        // USER CHƯA KÍCH HOẠT
+        setError("Tài khoản chưa kích hoạt, vui lòng thực hiện lại thao tác đăng ký.");
+        return;
+      }
+
+      if (result?.accessToken) {
+        // SUCCESS
+        navigate("/about");
+        return;
+      }
+
+setError("Đăng nhập thất bại.");
+
     } catch (err) {
       console.error("❌ Lỗi đăng nhập:", err);
       setError("Đăng nhập thất bại, vui lòng thử lại.");

@@ -8,23 +8,23 @@ import { sendVerificationEmail } from "../api/sendEmail.js";
 // -------------------------
 // Xử lý đăng nhập
 // -------------------------
-export const login = async (req, res) => { 
+export const login = async (req, res) => {
   try {
     const { username, email, password } = req.body;
     const searchEmail = (email || '').toLowerCase().trim();
     const searchUsername = (username || '').toLowerCase().trim();
-    
+
     if (!(searchEmail || searchUsername) || !password) {
       return res.status(400).json({ message: "Vui lòng gửi email và mật khẩu" });
     }
 
     const orConditions = [];
     if (searchEmail) {
-      orConditions.push({ email: { $regex: new RegExp('^' + searchEmail + '$', 'i') } });
+      orConditions.push({ email: { $regex: new RegExp("^" + searchEmail + "$", "i") } });
     }
     if (searchUsername) {
-      orConditions.push({ username: { $regex: new RegExp('^' + searchUsername + '$', 'i') } });
-      orConditions.push({ email: { $regex: new RegExp('^' + searchUsername + '$', 'i') } });
+      orConditions.push({ username: { $regex: new RegExp("^" + searchUsername + "$", "i") } });
+      orConditions.push({ email: { $regex: new RegExp("^" + searchUsername + "$", "i") } });
     }
 
     const user = await User.findOne({ $or: orConditions });
@@ -33,6 +33,23 @@ export const login = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ message: "Sai mật khẩu" });
 
+    // CASE 1 — User chưa kích hoạt (inactive + otp != null)
+    if (!user.active && user.otp) {
+      return res.status(403).json({
+        type: "unverified",
+        message: "Tài khoản chưa kích hoạt, vui lòng thực hiện lại thao tác đăng ký."
+      });
+    }
+
+    //  CASE 2 — User bị BAN (inactive + otp == null)
+    if (!user.active && !user.otp) {
+      return res.status(403).json({
+        type: "banned",
+        message: "Tài khoản này đã bị khóa."
+      });
+    }
+
+    // —— Nếu qua hết → Login OK ——
     const accessToken = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
@@ -45,7 +62,7 @@ export const login = async (req, res) => {
       { expiresIn: "7d" }
     );
 
-    res.status(200).json({
+    return res.status(200).json({
       message: "Đăng nhập thành công",
       accessToken,
       refreshToken,
@@ -53,13 +70,15 @@ export const login = async (req, res) => {
       email: user.email,
       name: user.username,
       id: user._id,
-      active: user.active,
+      active: user.active
     });
+
   } catch (err) {
     console.error("Lỗi đăng nhập:", err);
     res.status(500).json({ message: "Lỗi Server Nội bộ" });
   }
 };
+
 
 export const refresh = (req, res) => {
   const { refreshToken } = req.body;
