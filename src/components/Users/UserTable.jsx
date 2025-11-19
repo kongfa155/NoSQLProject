@@ -1,8 +1,8 @@
-import { useState,useEffect  } from "react";
+import { useState, useEffect } from "react";
 import { Trash2, Pencil } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSelector } from "react-redux";
-import userService from "../../services/userService"; // ✅ Dùng service chuẩn
+import userService from "../../services/userService";
 
 // 🧩 Hàm chia trang
 function Paginate(items, currentPage, itemsPerPage) {
@@ -18,49 +18,46 @@ export default function UserTable({ users, setUsers }) {
   const [editingUser, setEditingUser] = useState(null);
   const [deletingUser, setDeletingUser] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
+
+  // NEW USER DEFAULT
   const [newUser, setNewUser] = useState({
     username: "",
     email: "",
     password: "",
     confirmPassword: "",
     role: "User",
-    active: true,
+    status: "normal", 
   });
 
   function getItemsPerPage() {
-  if (typeof window === "undefined") return 8; // fallback an toàn
+    if (typeof window === "undefined") return 8;
 
-  const height = window.innerHeight;
-  const width = window.innerWidth;
+    const height = window.innerHeight;
+    const width = window.innerWidth;
 
-  if (width < 640) return 4;
-  if (width < 1024) return 6;
-  if (height < 800) return 7;
-  return 9;
-}
-
-const [itemsPerPage, setItemsPerPage] = useState(getItemsPerPage());
-useEffect(() => {
-  function handleResize() {
-    if (typeof window === "undefined") return;
-    const tableTopOffset = 280; // chiều cao phần header + search + nút thêm
-    const rowHeight = 48;       // chiều cao trung bình 1 dòng (td)
-    const availableHeight = window.innerHeight - tableTopOffset;
-    const visibleRows = Math.max(4, Math.floor(availableHeight / rowHeight));
-    setItemsPerPage(visibleRows);
+    if (width < 640) return 4;
+    if (width < 1024) return 6;
+    if (height < 800) return 7;
+    return 9;
   }
 
-  // Gọi 1 lần khi mount
-  handleResize();
+  const [itemsPerPage, setItemsPerPage] = useState(getItemsPerPage());
 
-  // Cập nhật khi resize cửa sổ
-  window.addEventListener("resize", handleResize);
-  return () => window.removeEventListener("resize", handleResize);
-}, []);
+  useEffect(() => {
+    function handleResize() {
+      if (typeof window === "undefined") return;
+      const tableTopOffset = 280;
+      const rowHeight = 48;
+      const availableHeight = window.innerHeight - tableTopOffset;
+      const visibleRows = Math.max(4, Math.floor(availableHeight / rowHeight));
+      setItemsPerPage(visibleRows);
+    }
 
-  const account = useSelector((state) => state.user.account);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
-  // 🔍 Lọc user theo tên/email
   const filtered = users.filter(
     (u) =>
       u.username?.toLowerCase().includes(search.toLowerCase()) ||
@@ -73,13 +70,19 @@ useEffect(() => {
     itemsPerPage
   );
 
-  // 🗑️ Xóa user (thực ra là toggle trạng thái)
+  // Toggle Banned/Normal
   const handleDelete = async (id) => {
     try {
       await userService.toggleStatus(id);
+
       setUsers((prev) =>
-        prev.map((u) => (u._id === id ? { ...u, active: !u.active } : u))
+        prev.map((u) =>
+          u._id === id
+            ? { ...u, status: u.status === "normal" ? "banned" : "normal" }
+            : u
+        )
       );
+
       setDeletingUser(null);
     } catch (err) {
       console.error(err);
@@ -87,15 +90,16 @@ useEffect(() => {
     }
   };
 
-  // ✏️ Cập nhật user
+  // Update user
   const handleUpdate = async () => {
     try {
       const payload = {
         username: editingUser.username,
         email: editingUser.email,
         role: editingUser.role,
-        active: editingUser.active,
+        status: editingUser.status,
       };
+
       if (editingUser.password) payload.password = editingUser.password;
 
       const { data } = await userService.update(editingUser._id, payload);
@@ -103,6 +107,7 @@ useEffect(() => {
       setUsers((prev) =>
         prev.map((u) => (u._id === editingUser._id ? data : u))
       );
+
       setEditingUser(null);
       alert("Cập nhật user thành công!");
     } catch (err) {
@@ -111,10 +116,9 @@ useEffect(() => {
     }
   };
 
-  // ➕ Thêm user
+  // Add user
   const handleAdd = async () => {
-    const { username, email, password, confirmPassword, role, active } =
-      newUser;
+    const { username, email, password, confirmPassword, role } = newUser;
 
     if (!username || !email || !password || !confirmPassword) {
       alert("Vui lòng nhập đủ thông tin!");
@@ -131,18 +135,21 @@ useEffect(() => {
         email,
         password,
         role,
-        active,
+        status: "normal", 
       });
+
       setUsers((prev) => [...prev, data]);
       setShowAddModal(false);
+
       setNewUser({
         username: "",
         email: "",
         password: "",
         confirmPassword: "",
         role: "User",
-        active: true,
+        status: "normal",
       });
+
       alert("Thêm user thành công!");
     } catch (err) {
       console.error(err);
@@ -188,23 +195,27 @@ useEffect(() => {
             <th className="text-right">Thao tác</th>
           </tr>
         </thead>
+
         <tbody>
           {slicedItems.map((u) => (
             <tr key={u._id} className="border-b hover:bg-gray-50">
               <td className="py-2">{u.username}</td>
+
               <td>
                 <span
                   className={`px-2 py-1 text-xs font-semibold rounded-full border ${
-                    u.active
+                    u.status === "normal"
                       ? "text-green-700 bg-green-100 border-green-400"
-                      : "text-orange-700 bg-orange-100 border-orange-400"
+                      : "text-red-700 bg-red-100 border-red-400"
                   }`}
                 >
-                  {u.active ? "Active" : "Inactive"}
+                  {u.status === "normal" ? "Active" : "Banned"}
                 </span>
               </td>
+
               <td>{u.role}</td>
               <td>{u.email}</td>
+
               <td className="text-right">
                 <div className="flex justify-end items-center gap-2">
                   <button
@@ -213,6 +224,7 @@ useEffect(() => {
                   >
                     <Pencil size={16} />
                   </button>
+
                   <button
                     onClick={() => setDeletingUser(u)}
                     className="w-8 h-8 flex items-center justify-center rounded-lg border border-red-500 text-red-500 bg-white hover:bg-red-500/10 transform hover:scale-110 transition-all duration-200"
@@ -235,9 +247,11 @@ useEffect(() => {
         >
           ← Previous
         </button>
+
         <span className="text-sm">
           Page {currentPage} / {totalPages}
         </span>
+
         <button
           onClick={() => setPage(Math.min(totalPages, page + 1))}
           disabled={page === totalPages}
@@ -247,7 +261,7 @@ useEffect(() => {
         </button>
       </div>
 
-      {/* ✏️ MODAL EDIT */}
+      {/* MODAL EDIT */}
       <AnimatePresence>
         {editingUser && (
           <motion.div
@@ -268,53 +282,34 @@ useEffect(() => {
                 Cập nhật user
               </h3>
 
-              <input
-                className="border px-3 py-2 w-full rounded-md mb-3"
-                placeholder="Username"
-                value={editingUser.username}
-                onChange={(e) =>
-                  setEditingUser({ ...editingUser, username: e.target.value })
-                }
-              />
-              <input
-                className="border px-3 py-2 w-full rounded-md mb-3"
-                value={editingUser.email}
-                onChange={(e) =>
-                  setEditingUser({ ...editingUser, email: e.target.value })
-                }
-              />
-              <input
-                type="password"
-                placeholder="Mật khẩu mới (nếu đổi)"
-                className="border px-3 py-2 w-full rounded-md mb-3"
-                value={editingUser.password || ""}
-                onChange={(e) =>
-                  setEditingUser({ ...editingUser, password: e.target.value })
-                }
-              />
               <select
                 className="border px-3 py-2 w-full rounded-md mb-4"
-                value={editingUser.active ? "true" : "false"}
+                value={editingUser.status}
                 onChange={(e) =>
                   setEditingUser({
                     ...editingUser,
-                    active: e.target.value === "true",
+                    status: e.target.value,
                   })
                 }
               >
-                <option value="true">Active</option>
-                <option value="false">Inactive</option>
+                <option value="normal">Active</option>
+                <option value="banned">Banned</option>
               </select>
+
               <select
                 className="border px-3 py-2 w-full rounded-md mb-4"
                 value={editingUser.role}
                 onChange={(e) =>
-                  setEditingUser({ ...editingUser, role: e.target.value })
+                  setEditingUser({
+                    ...editingUser,
+                    role: e.target.value,
+                  })
                 }
               >
                 <option value="User">User</option>
                 <option value="Admin">Admin</option>
               </select>
+
               <div className="flex justify-between">
                 <button
                   onClick={() => setEditingUser(null)}
@@ -334,7 +329,7 @@ useEffect(() => {
         )}
       </AnimatePresence>
 
-      {/* 🗑️ MODAL DELETE */}
+      {/* MODAL DELETE */}
       <AnimatePresence>
         {deletingUser && (
           <motion.div
@@ -354,10 +349,12 @@ useEffect(() => {
               <h3 className="text-lg font-semibold mb-3">
                 Đổi trạng thái người dùng?
               </h3>
+
               <p className="text-sm text-gray-600 mb-6">
                 Bạn có chắc muốn đổi trạng thái của{" "}
                 <span className="font-semibold">{deletingUser.username}</span>?
               </p>
+
               <div className="flex justify-center gap-4">
                 <button
                   onClick={() => setDeletingUser(null)}
@@ -365,6 +362,7 @@ useEffect(() => {
                 >
                   Hủy
                 </button>
+
                 <button
                   onClick={() => handleDelete(deletingUser._id)}
                   className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
@@ -377,7 +375,7 @@ useEffect(() => {
         )}
       </AnimatePresence>
 
-      {/* ➕ MODAL ADD */}
+      {/* MODAL ADD */}
       <AnimatePresence>
         {showAddModal && (
           <motion.div
@@ -394,9 +392,8 @@ useEffect(() => {
               exit={{ scale: 0.9, opacity: 0 }}
               className="bg-white p-6 rounded-xl shadow-lg w-96"
             >
-              <h2 className="text-lg font-semibold mb-4">
-                Thêm người dùng mới
-              </h2>
+              <h2 className="text-lg font-semibold mb-4">Thêm người dùng mới</h2>
+
               <div className="flex flex-col gap-3">
                 <input
                   type="text"
@@ -407,6 +404,7 @@ useEffect(() => {
                     setNewUser({ ...newUser, username: e.target.value })
                   }
                 />
+
                 <input
                   type="email"
                   placeholder="Email"
@@ -416,6 +414,7 @@ useEffect(() => {
                     setNewUser({ ...newUser, email: e.target.value })
                   }
                 />
+
                 <input
                   type="password"
                   placeholder="Mật khẩu"
@@ -425,15 +424,20 @@ useEffect(() => {
                     setNewUser({ ...newUser, password: e.target.value })
                   }
                 />
+
                 <input
                   type="password"
                   placeholder="Xác nhận mật khẩu"
                   className="border rounded-md px-3 py-2 text-sm"
                   value={newUser.confirmPassword}
                   onChange={(e) =>
-                    setNewUser({ ...newUser, confirmPassword: e.target.value })
+                    setNewUser({
+                      ...newUser,
+                      confirmPassword: e.target.value,
+                    })
                   }
                 />
+
                 <select
                   className="border rounded-md px-3 py-2 text-sm"
                   value={newUser.role}
@@ -445,6 +449,7 @@ useEffect(() => {
                   <option value="Admin">Admin</option>
                 </select>
               </div>
+
               <div className="flex justify-end gap-2 mt-5">
                 <button
                   onClick={() => setShowAddModal(false)}
@@ -452,6 +457,7 @@ useEffect(() => {
                 >
                   Hủy
                 </button>
+
                 <button
                   onClick={handleAdd}
                   className="px-3 py-1 text-sm bg-[#31872D] text-white rounded-md hover:bg-[#41563F]"
