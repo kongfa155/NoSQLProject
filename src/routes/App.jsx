@@ -10,7 +10,6 @@ import QuizPage from "../pages/QuizPage/QuizPage";
 import NotFoundPage from "../pages/NotFoundPage/NotFoundPage";
 import EditQuizPage from "../pages/EditQuizPage/EditQuizPage";
 import AdminPage from "../pages/AdminPage/AdminPage";
-import SettingPage from "../pages/SettingPage/Setting";
 import SmokeTrail from "../components/Effect/SmokeTrail";
 import ReviewQuizPage from "../pages/ReviewQuizPage/ReviewQuizPage";
 import ProtectedRoute from "./ProtectedRoute";
@@ -92,15 +91,6 @@ function App() {
             }
           />
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/banned" element={<BannedPage />} />
-          <Route
-            path="/settings"
-            element={
-              <ProtectedRoute>
-                <SettingPage />
-              </ProtectedRoute>
-            }
-          />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forgot-password" element={<ForgotPassPage />} />
           <Route
@@ -144,6 +134,7 @@ function App() {
             }
           />
           <Route path="/login-test" element={<LoginPage_ReduxTest />} />
+          <Route path="/banned" element={<BannedPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </div>

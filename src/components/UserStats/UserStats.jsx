@@ -42,7 +42,7 @@ const UserStats = ({ userId, chapters }) => {
       try {
         const chapterDataPromises = chapters.map(async (chapter) => {
           const quizPromises = chapter.quizzes.map(async (quiz) => {
-            const res = await submissionService.getLatest(quiz._id, userId);
+            const res = await submissionService.getBest(quiz._id, userId);
             return res.data?.score ?? null;
           });
 

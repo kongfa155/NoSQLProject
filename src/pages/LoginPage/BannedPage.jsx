@@ -33,7 +33,6 @@ export default function BannedPage() {
 
         {/* Cột nội dung */}
         <div className="w-1/2 flex flex-col justify-center items-center p-12 bg-transparent">
-
           <div className="mb-6 text-center text-[32px] font-black text-white drop-shadow-lg select-none">
             Tài khoản bị vô hiệu hóa
           </div>
@@ -53,7 +52,6 @@ export default function BannedPage() {
           >
             Quay lại trang đăng nhập
           </div>
-
         </div>
       </div>
     </div>

@@ -8,7 +8,13 @@ const userSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true, trim: true },
     password: { type: String, required: true },
     role: { type: String, enum: ["User", "Admin"], default: "User" },
+    //verifyEmail
     active: { type: Boolean, default: true },
+      status: {
+      type: String,
+      enum: ["normal", "banned"],
+      default: "normal",
+    },
     otp: { type: String },
     otpExpires: { type: Date },
   },

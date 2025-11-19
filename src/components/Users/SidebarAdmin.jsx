@@ -31,13 +31,6 @@ export default function SidebarAdmin() {
             Quản lí user
           </Link>
 
-          <Link
-            to="/settings"
-            className="flex items-center gap-3 p-3 hover:bg-[#41563F] rounded-md transition-colors text-white hover:text-black"
-          >
-            <Settings size={18} />
-            Cài đặt
-          </Link>
         </nav>
       </div>
 

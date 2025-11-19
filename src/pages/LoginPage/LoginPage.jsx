@@ -18,48 +18,41 @@ export default function () {
 
   const account = useSelector((state) => state.user.account);
   const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
-  useEffect(() => {
-    if (isAuthenticated) {
+    useEffect(() => {
+    if (isAuthenticated && account?.status === "banned") {
+      navigate("/banned");
+    } else if (isAuthenticated) {
       navigate("/about");
     }
-  }, []);
+  }, [isAuthenticated, account]);
+
   const handleLogin = async () => {
-    try {
-      setError("");
+  try {
+    setError("");
 
-      const credentials = {
-        username: username.includes("@") ? undefined : username,
-        email: username.includes("@") ? username : undefined,
-        password,
-      };
-      console.log("🚀 Sending credentials:", credentials);
-      const result = await dispatch(loginUser(credentials));
+    const credentials = {
+      username: username.includes("@") ? undefined : username,
+      email: username.includes("@") ? username : undefined,
+      password,
+    };
 
-     if (result?.type === "banned") {
-        // USER BANNED
-        navigate("/banned"); 
-        return;
-      }
+    const result = await dispatch(loginUser(credentials));
 
-      if (result?.type === "unverified") {
-        // USER CHƯA KÍCH HOẠT
-        setError("Tài khoản chưa kích hoạt, vui lòng thực hiện lại thao tác đăng ký.");
-        return;
-      }
-
-      if (result?.accessToken) {
-        // SUCCESS
-        navigate("/about");
-        return;
-      }
-
-setError("Đăng nhập thất bại.");
-
-    } catch (err) {
-      console.error("❌ Lỗi đăng nhập:", err);
-      setError("Đăng nhập thất bại, vui lòng thử lại.");
+    if (result?.status === "banned") {
+      return navigate("/banned");
     }
-  };
+
+    if (result?.accessToken) {
+      navigate("/about");
+    } else {
+      setError("Đăng nhập thất bại.");
+    }
+
+  } catch (err) {
+    setError("Đăng nhập thất bại, vui lòng thử lại.");
+  }
+};
+
 
   return (
     <div
