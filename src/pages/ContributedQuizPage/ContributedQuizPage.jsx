@@ -202,20 +202,26 @@ export default function ContributedQuizPage() {
                   expandSubject ? "max-h-[200px]" : "max-h-0"
                 }`}
               >
-                {subjects.map((subject) => (
-                  <div
-                    key={subject._id}
-                    className="py-3 px-4 text-base bg-white m-1.5 rounded-lg cursor-pointer hover:bg-green-400 hover:text-white transition-all duration-200"
-                    onClick={() => {
-                      setSelectedSubject(subject);
-                      setExpandSubject(false);
-                      setSelectedChapter(null);
-                      setSuggestedNote("");
-                    }}
-                  >
-                    {subject.name}
-                  </div>
-                ))}
+                {subjects.map((subject) => {
+                  if (subject.availability == false) {
+                    return <></>;
+                  } else {
+                    return (
+                      <div
+                        key={subject._id}
+                        className="py-3 px-4 text-base bg-white m-1.5 rounded-lg cursor-pointer hover:bg-green-400 hover:text-white transition-all duration-200"
+                        onClick={() => {
+                          setSelectedSubject(subject);
+                          setExpandSubject(false);
+                          setSelectedChapter(null);
+                          setSuggestedNote("");
+                        }}
+                      >
+                        {subject.name}
+                      </div>
+                    );
+                  }
+                })}
 
                 <div
                   key="other-subject"
