@@ -27,7 +27,10 @@ export const loginUser = (credentials) => {
         return data;
       }
     } catch (error) {
-      console.error("Login failed:", error);
+      const errData = error.response?.data;
+      if (errData?.status === "banned") {
+        return errData;
+      }
       dispatch({ type: FETCH_USER_LOGIN_FAIL });
       throw error;
     }
