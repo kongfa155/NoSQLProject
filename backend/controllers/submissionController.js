@@ -44,6 +44,7 @@ export const addSubmission = async (req, res) => {
 
       // Sử dụng $max để đảm bảo bestScore chỉ tăng lên (không bị giảm)
       if (typeof scoreNum !== "undefined") {
+        update.$set.score = scoreNum;
         update.$max = { bestScore: scoreNum };
       }
 
@@ -180,6 +181,3 @@ export const getBestSubmission = async (req, res) => {
       .json({ message: "Lỗi khi lấy best submission", error: err.message });
   }
 };
-
-
-
