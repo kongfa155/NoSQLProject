@@ -27,6 +27,7 @@ export default function QuizListPage() {
   const [showModal, setShowModal] = useState(false);
   const [selectedQuiz, setSelectedQuiz] = useState(null);
   const [showCreateQuiz, setShowCreateQuiz] = useState(false);
+  const [showCreateChapter, setShowCreateChapter] = useState(false);
 
   // Confirm modal (review)
   const [showConfirm, setShowConfirm] = useState(false);
@@ -39,9 +40,12 @@ export default function QuizListPage() {
 
   // Xác định chế độ hiển thị: edit cho admin, view cho user
 
-  const mode = useSelector(state => state.viewMode.mode);
-  const type = mode === "edit"  ? "edit" : "view";
+  const mode = useSelector((state) => state.viewMode.mode);
+  const type = mode === "edit" ? "edit" : "view";
   // --- HANDLERS ---
+  const handleCreateNewChapter = () => {
+    setShowCreateChapter(true);
+  };
   const handleCreateNewQuiz = () => setShowCreateQuiz(true);
 
   const handleOpenModal = (quiz) => {
@@ -58,7 +62,11 @@ export default function QuizListPage() {
     if (!selectedQuiz) return;
     setShowModal(false);
     navigate(`/quizzes/${selectedQuiz._id}`, {
-      state: { quiz: selectedQuiz, options: options, subjectId: subjectId || {} },
+      state: {
+        quiz: selectedQuiz,
+        options: options,
+        subjectId: subjectId || {},
+      },
     });
   };
 
@@ -72,8 +80,7 @@ export default function QuizListPage() {
     if (!quizToReview) return;
     setShowConfirm(false);
     navigate(`/quizzes/review/${quizToReview._id}`, {
-      state: { mode: "latest" , subjectId},
-
+      state: { mode: "latest", subjectId },
     });
   };
 
@@ -81,7 +88,7 @@ export default function QuizListPage() {
     if (!quizToReview) return;
     setShowConfirm(false);
     navigate(`/quizzes/review/${quizToReview._id}`, {
-      state: { mode: "full" , subjectId},
+      state: { mode: "full", subjectId },
     });
   };
 
@@ -142,9 +149,15 @@ export default function QuizListPage() {
       {type === "edit" && (
         <div className="flex flex-row justify-between">
           <p className="px-18 text-2xl text-gray-600">Danh sách bộ đề sẵn có</p>
-          <div>
+          <div className="flex flex-row">
             <div
-              className="mx-24 bg-[#31872D] px-6 py-4 text-white flex items-center justify-center rounded-2xl cursor-pointer select-none shadow-sm shadow-black hover:scale-105 transition-all duration-500"
+              className="mr-4 bg-[#31872D] px-6 py-4 text-white flex items-center justify-center rounded-2xl cursor-pointer select-none shadow-sm shadow-black hover:scale-105 transition-all duration-500"
+              onClick={handleCreateNewChapter}
+            >
+              Thêm chương
+            </div>
+            <div
+              className="mr-24 bg-[#31872D] px-6 py-4 text-white flex items-center justify-center rounded-2xl cursor-pointer select-none shadow-sm shadow-black hover:scale-105 transition-all duration-500"
               onClick={handleCreateNewQuiz}
             >
               Tạo đề
@@ -189,7 +202,7 @@ export default function QuizListPage() {
         quiz={selectedQuiz}
         onClose={handleCloseModal}
         onStart={handleStartQuiz}
-        subjectId = {subjectId} 
+        subjectId={subjectId}
       />
 
       <CreateQuizModal
@@ -318,24 +331,24 @@ function ChapterBox({ chapter, setSelectedQuiz, onReview, type }) {
 // ---------------- QUIZ BOX ----------------
 function QuizBox({ quiz, onOpenModal, onReview, type }) {
   const [bestScore, setBestScore] = useState(0);
-  const id = useSelector((state)=>state.user.account.id)
+  const id = useSelector((state) => state.user.account.id);
   const navigate = useNavigate();
-  useEffect(()=>{ // Cái này bị bug, chưa có lấy được
-    if(type=="edit"){
+  useEffect(() => {
+    // Cái này bị bug, chưa có lấy được
+    if (type == "edit") {
       return;
     }
-    const fetchData = async ()=>{
-      try{
+    const fetchData = async () => {
+      try {
         const res = await submissionService.getBest(quiz._id, id);
         console.log("Lay duoc: ", res.data, quiz._id, id);
-        (res.data&&setBestScore(res.data.score))
-      }catch(err){
-        console.log("Loi khong lay duoc: ",err, quiz._id, id);
+        res.data && setBestScore(res.data.score);
+      } catch (err) {
+        console.log("Loi khong lay duoc: ", err, quiz._id, id);
       }
-    }
+    };
     fetchData();
-  },[id]);
-
+  }, [id]);
 
   async function handleDeleteQuiz() {
     try {
@@ -356,20 +369,27 @@ function QuizBox({ quiz, onOpenModal, onReview, type }) {
   return (
     <div className="mt-4 rounded-[8px] border border-gray-300 w-[95%] pt-4 pb-2 px-8 mx-auto grid grid-cols-3 items-center hover:shadow-md transition-all">
       <div>
-
-        <p className="w-full text-[24px] text-gray-700 font-light">{quiz.name}</p>
+        <p className="w-full text-[24px] text-gray-700 font-light">
+          {quiz.name}
+        </p>
       </div>
-      {type!="edit"&&
-      <div className="relative w-full h-[2rem] bg-gray-200 rounded-4 overflow-hidden">
+      {type != "edit" && (
+        <div className="relative w-full h-[2rem] bg-gray-200 rounded-4 overflow-hidden">
+          <div
+            className="h-full bg-green-500 transition-all duration-500"
+            style={{ width: `${bestScore}%` }}
+          >
+            <p className="absolute w-full text-center text-gray-700 text-2xl">
+              {bestScore}/100
+            </p>
+          </div>
+        </div>
+      )}
       <div
-        className="h-full bg-green-500 transition-all duration-500"
-        style={{ width: `${bestScore}%` }}
+        className={`flex gap-3 justify-self-end ${
+          type == "edit" ? "col-span-2" : ""
+        }`}
       >
-        <p className="absolute w-full text-center text-gray-700 text-2xl">{bestScore}/100</p>
-      </div>
-    </div>
-      }
-      <div className={`flex gap-3 justify-self-end ${type=="edit"?"col-span-2":""}`}>
         {type === "view" && (
           <>
             <button
