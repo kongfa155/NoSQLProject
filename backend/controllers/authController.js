@@ -30,12 +30,10 @@ export const login = async (req, res) => {
     const user = await User.findOne({ $or: orConditions });
     if (!user) return res.status(400).json({ message: "Email không tồn tại" });
 
-    // ❗ Chặn chưa verify email
     if (!user.active) {
       return res.status(400).json({ message: "Tài khoản chưa xác thực email" });
     }
 
-    // ❗ Chặn tài khoản bị ban
     if (user.status === "banned") {
       return res.status(403).json({ message: "Tài khoản đã bị khóa" });
     }
@@ -140,12 +138,11 @@ export const register = async (req, res) => {
       });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = new User({
       email,
       username: email,
-      password: hashedPassword,
+      password: password,
       role: "User",
       active: false, // ❗ chưa verify
       status: "normal",
