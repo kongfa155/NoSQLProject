@@ -3,10 +3,10 @@ import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import User from "../models/User.js";
-import { sendVerificationEmail } from "../api/sendEmail.js";
+import sendVerificationEmail from "../api/sendEmail.js";
 
 // -------------------------
-// Xử lý đăng nhập
+// LOGIN
 // -------------------------
 export const login = async (req, res) => { 
   try {
@@ -30,9 +30,21 @@ export const login = async (req, res) => {
     const user = await User.findOne({ $or: orConditions });
     if (!user) return res.status(400).json({ message: "Email không tồn tại" });
 
+    // ❗ Chặn chưa verify email
+    if (!user.active) {
+      return res.status(400).json({ message: "Tài khoản chưa xác thực email" });
+    }
+
+    // ❗ Chặn tài khoản bị ban
+    if (user.status === "banned") {
+      return res.status(403).json({ message: "Tài khoản đã bị khóa" });
+    }
+
+    // Check password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ message: "Sai mật khẩu" });
 
+    // Generate tokens
     const accessToken = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
@@ -53,7 +65,6 @@ export const login = async (req, res) => {
       email: user.email,
       name: user.username,
       id: user._id,
-      active: user.active,
     });
   } catch (err) {
     console.error("Lỗi đăng nhập:", err);
@@ -61,6 +72,10 @@ export const login = async (req, res) => {
   }
 };
 
+
+// -------------------------
+// REFRESH TOKEN
+// -------------------------
 export const refresh = (req, res) => {
   const { refreshToken } = req.body;
   if (!refreshToken)
@@ -80,6 +95,10 @@ export const refresh = (req, res) => {
   });
 };
 
+
+// -------------------------
+// CHECK TOKEN
+// -------------------------
 export const checkToken = (req, res) => {
   res.status(200).json({
     message: "Token hợp lệ",
@@ -89,64 +108,60 @@ export const checkToken = (req, res) => {
 
 
 // -------------------------
-// Register send OTP
+// REGISTER + SEND OTP
 // -------------------------
 export const register = async (req, res) => {
   console.log("🚀 [REGISTER] Request body:", req.body);
   try {
     const { email, password } = req.body;
     if (!email || !password) {
-      console.log("⚠️ Thiếu email hoặc password");
       return res.status(400).json({ message: "Email và mật khẩu là bắt buộc" });
     }
 
-    // Sinh OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const otpExpiry = Date.now() + 10 * 60 * 1000;
-    console.log("✅ OTP sinh ra:", otp);
 
     const existingUser = await User.findOne({ email });
-    console.log("📦 existingUser:", existingUser ? "có" : "không");
 
     if (existingUser) {
       if (existingUser.active) {
-        console.log("⛔ User đã active");
         return res.status(400).json({ message: "Email đã tồn tại" });
-      } else {
-        console.log("📧 Gửi OTP cho user chưa active");
-        existingUser.otp = otp;
-        existingUser.otpExpires = otpExpiry;
-        await existingUser.save();
-        await sendVerificationEmail(email, otp);
-        console.log("✅ Đã gửi OTP lại cho user cũ");
-        return res.status(200).json({
-          message: "Email chưa xác thực. Mã OTP mới đã được gửi.",
-          email,
-        });
       }
+
+      // gửi lại OTP
+      existingUser.otp = otp;
+      existingUser.otpExpires = otpExpiry;
+      await existingUser.save();
+      await sendVerificationEmail(email, otp);
+
+      return res.status(200).json({
+        message: "Email chưa xác thực. Mã OTP mới đã được gửi.",
+        email,
+      });
     }
 
-    console.log("🆕 Tạo user mới...");
     const hashedPassword = await bcrypt.hash(password, 10);
+
     const newUser = new User({
       email,
       username: email,
-      password,
+      password: hashedPassword,
       role: "User",
-      active: false,
+      active: false, // ❗ chưa verify
+      status: "normal",
       otp,
       otpExpires: otpExpiry,
     });
 
     await newUser.save();
-    console.log("✅ User mới đã lưu vào DB, chuẩn bị gửi email...");
+
     await sendVerificationEmail(email, otp);
-    console.log("📨 Email gửi thành công!");
 
     res.status(200).json({
       message: "Đã gửi mã OTP xác thực tới email của bạn.",
       email,
     });
+
   } catch (error) {
     console.error("❌ [REGISTER] Lỗi:", error);
     res.status(500).json({ message: "Lỗi đăng ký", error });
@@ -154,9 +169,8 @@ export const register = async (req, res) => {
 };
 
 
-
 // -------------------------
-// Verify OTP
+// VERIFY OTP
 // -------------------------
 export const verifyOTP = async (req, res) => {
   try {
@@ -168,9 +182,6 @@ export const verifyOTP = async (req, res) => {
     if (user.active) return res.status(400).json({ message: "Tài khoản đã được kích hoạt" });
     if (user.otp !== otp) return res.status(400).json({ message: "Mã OTP không đúng" });
     if (Date.now() > user.otpExpires) return res.status(400).json({ message: "Mã OTP đã hết hạn" });
-
-      user.otp = null;
-      user.otpExpires = null;
 
     user.otp = null;
     user.otpExpires = null;
@@ -186,8 +197,9 @@ export const verifyOTP = async (req, res) => {
   }
 };
 
+
 // -------------------------
-// Forgot pasword OTP
+// FORGOT PASSWORD
 // -------------------------
 export const forgotPassword = async (req, res) => {
   try {
@@ -198,7 +210,7 @@ export const forgotPassword = async (req, res) => {
     if (!user) return res.status(400).json({ message: "Email không tồn tại" });
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const otpExpiry = Date.now() + 10 * 60 * 1000; // 10 phút
+    const otpExpiry = Date.now() + 10 * 60 * 1000;
 
     user.otp = otp;
     user.otpExpires = otpExpiry;
@@ -212,10 +224,12 @@ export const forgotPassword = async (req, res) => {
     res.status(500).json({ message: "Lỗi server" });
   }
 };
+
+
 // -------------------------
-// Verify forgot OTP
+// VERIFY FORGOT-PASSWORD OTP
 // -------------------------
-  export const verifyForgotOtp = async (req, res) => {
+export const verifyForgotOtp = async (req, res) => {
   try {
     const { email, otp } = req.body;
     const user = await User.findOne({ email });
@@ -230,8 +244,10 @@ export const forgotPassword = async (req, res) => {
     res.status(500).json({ message: "Lỗi server" });
   }
 };
+
+
 // -------------------------
-// Update OTP
+// RESET PASSWORD
 // -------------------------
 export const resetPassword = async (req, res) => {
   try {
@@ -241,7 +257,9 @@ export const resetPassword = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ message: "Email không tồn tại" });
 
+    // Password sẽ hash nhờ pre('save') hoặc hash thủ công cả 2 đều OK
     const hashedPassword = await bcrypt.hash(newPassword, 10);
+
     user.password = hashedPassword;
     user.otp = null;
     user.otpExpires = null;

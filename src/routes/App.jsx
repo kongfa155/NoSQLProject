@@ -21,15 +21,15 @@ import ContributedQuizPage from "../pages/ContributedQuizPage/ContributedQuizPag
 import AdminReviewContributed from "../pages/AdminReviewContributed/AdminReviewContributed";
 import RegisterPage from "../pages/LoginPage/RegisterPage";
 import ForgotPassPage from "../pages/LoginPage/ForgotPassPage";
-import LoadingSpinner from "../components/Effect/LoadingSpinner"; // ✅ Spinner component riêng
+import BannedPage from "../pages/LoginPage/BannedPage";
+import LoadingSpinner from "../components/Effect/LoadingSpinner"; 
 
 function App() {
   const [selected, setSelected] = useState("trangchu");
-  const [loading, setLoading] = useState(false); // ✅ thêm state cho spinner
+  const [loading, setLoading] = useState(false); 
   const location = useLocation();
   const navigate = useNavigate();
 
-  // ✅ Hiện spinner mỗi khi đổi route
   useEffect(() => {
     setLoading(true);
     const timer = setTimeout(() => setLoading(false), 400); // 0.4s
@@ -50,7 +50,6 @@ function App() {
 
   return (
     <div className="relative z-10 flex flex-col h-screen w-screen">
-      {/* ✅ Spinner toàn trang */}
       {loading && <LoadingSpinner />}
 
       {selected === "about" && <SmokeTrail />}
@@ -144,6 +143,7 @@ function App() {
             }
           />
           <Route path="/login-test" element={<LoginPage_ReduxTest />} />
+          <Route path="/banned" element={<BannedPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </div>
