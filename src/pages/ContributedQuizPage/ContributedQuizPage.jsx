@@ -263,18 +263,23 @@ export default function ContributedQuizPage() {
                     expandChapter ? "max-h-[200px]" : "max-h-0"
                   }`}
                 >
-                  {chapters.map((chapter) => (
-                    <div
-                      key={chapter._id}
-                      className="py-3 px-4 text-base bg-white m-1.5 rounded-lg cursor-pointer hover:bg-green-400 hover:text-white transition-all duration-200"
-                      onClick={() => {
-                        setSelectedChapter(chapter);
-                        setExpandChapter(false);
-                      }}
-                    >
-                      {chapter.name}
-                    </div>
-                  ))}
+                  {chapters.map((chapter) => {
+                    if (chapter._availability == false) {
+                      return <></>;
+                    } else
+                      return (
+                        <div
+                          key={chapter._id}
+                          className="py-3 px-4 text-base bg-white m-1.5 rounded-lg cursor-pointer hover:bg-green-400 hover:text-white transition-all duration-200"
+                          onClick={() => {
+                            setSelectedChapter(chapter);
+                            setExpandChapter(false);
+                          }}
+                        >
+                          {chapter.name}
+                        </div>
+                      );
+                  })}
                 </div>
               </div>
             )}
