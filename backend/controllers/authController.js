@@ -34,9 +34,12 @@ export const login = async (req, res) => {
       return res.status(400).json({ message: "Tài khoản chưa xác thực email" });
     }
 
-    if (user.status === "banned") {
-      return res.status(403).json({ message: "Tài khoản đã bị khóa" });
-    }
+        if (user.status === "banned") {
+      return res.status(403).json({
+          message: "Tài khoản đã bị khóa",
+          status: "banned"
+        });
+      }
 
     // Check password
     const isMatch = await bcrypt.compare(password, user.password);
