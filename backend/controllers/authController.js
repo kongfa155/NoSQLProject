@@ -149,7 +149,7 @@ export const register = async (req, res) => {
       username: email,
       password: password,
       role: "User",
-      active: false, // ❗ chưa verify
+      active: false, 
       status: "normal",
       otp,
       otpExpires: otpExpiry,
@@ -254,12 +254,31 @@ export const verifyForgotOtp = async (req, res) => {
 export const resetPassword = async (req, res) => {
   try {
     const { email, newPassword } = req.body;
-    if (!newPassword) return res.status(400).json({ message: "Mật khẩu mới không được để trống" });
+
+    if (!newPassword)
+      return res.status(400).json({
+        message: "Mật khẩu mới không được để trống"
+      });
 
     const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ message: "Email không tồn tại" });
+    if (!user)
+      return res.status(400).json({
+        message: "Email không tồn tại"
+      });
 
-    // Password sẽ hash nhờ pre('save') hoặc hash thủ công cả 2 đều OK
+    if (user.status === "banned") {
+      return res.status(403).json({
+        message: "Tài khoản đã bị khóa",
+        status: "banned"
+      });
+    }
+
+    if (!user.active) {
+      return res.status(400).json({
+        message: "Tài khoản chưa xác thực email"
+      });
+    }
+
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     user.password = hashedPassword;
@@ -267,9 +286,14 @@ export const resetPassword = async (req, res) => {
     user.otpExpires = null;
     await user.save();
 
-    res.status(200).json({ message: "Mật khẩu đã được cập nhật thành công." });
+    res.status(200).json({
+      message: "Mật khẩu đã được cập nhật thành công."
+    });
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Lỗi server" });
   }
 };
+
+

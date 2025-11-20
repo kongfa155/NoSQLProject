@@ -279,8 +279,9 @@ export default function UserTable({ users, setUsers }) {
               className="bg-white p-6 rounded-2xl w-[400px] shadow-lg"
             >
               <h3 className="text-xl font-semibold mb-4 text-center">
-                Cập nhật user
+                Cập nhật: <span className="text-[#31872D]">{editingUser.username}</span>
               </h3>
+
 
               <select
                 className="border px-3 py-2 w-full rounded-md mb-4"
