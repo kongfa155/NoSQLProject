@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useSelector } from "react-redux";
 import userService from "../../services/userService";
 
-// 🧩 Hàm chia trang
+// Pagination helper
 function Paginate(items, currentPage, itemsPerPage) {
   const totalPages = Math.ceil(items.length / itemsPerPage);
   const start = (currentPage - 1) * itemsPerPage;
@@ -18,6 +18,7 @@ export default function UserTable({ users, setUsers }) {
   const [editingUser, setEditingUser] = useState(null);
   const [deletingUser, setDeletingUser] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
+  const account = useSelector((state) => state.user.account);
 
   // NEW USER DEFAULT
   const [newUser, setNewUser] = useState({
@@ -26,12 +27,11 @@ export default function UserTable({ users, setUsers }) {
     password: "",
     confirmPassword: "",
     role: "User",
-    status: "normal", 
+    status: "normal",
   });
 
   function getItemsPerPage() {
     if (typeof window === "undefined") return 8;
-
     const height = window.innerHeight;
     const width = window.innerWidth;
 
@@ -53,8 +53,8 @@ export default function UserTable({ users, setUsers }) {
       setItemsPerPage(visibleRows);
     }
 
-    handleResize();
     window.addEventListener("resize", handleResize);
+    handleResize();
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
@@ -72,6 +72,11 @@ export default function UserTable({ users, setUsers }) {
 
   // Toggle Banned/Normal
   const handleDelete = async (id) => {
+    if (id === account?.id) {
+      alert("Bạn không thể vô hiệu hóa tài khoản đang đăng nhập!");
+      return;
+    }
+
     try {
       await userService.toggleStatus(id);
 
@@ -92,6 +97,11 @@ export default function UserTable({ users, setUsers }) {
 
   // Update user
   const handleUpdate = async () => {
+    if (editingUser._id === account?.id) {
+      alert("Không thể chỉnh sửa tài khoản đang đăng nhập.");
+      return;
+    }
+
     try {
       const payload = {
         username: editingUser.username,
@@ -116,7 +126,7 @@ export default function UserTable({ users, setUsers }) {
     }
   };
 
-  // Add user
+  // Add new user
   const handleAdd = async () => {
     const { username, email, password, confirmPassword, role } = newUser;
 
@@ -135,7 +145,7 @@ export default function UserTable({ users, setUsers }) {
         email,
         password,
         role,
-        status: "normal", 
+        status: "normal",
       });
 
       setUsers((prev) => [...prev, data]);
@@ -153,8 +163,7 @@ export default function UserTable({ users, setUsers }) {
       alert("Thêm user thành công!");
     } catch (err) {
       console.error(err);
-      if (err.response?.data?.message) alert(err.response.data.message);
-      else alert("Có lỗi xảy ra khi thêm user!");
+      alert(err.response?.data?.message || "Có lỗi xảy ra khi thêm user!");
     }
   };
 
@@ -177,7 +186,7 @@ export default function UserTable({ users, setUsers }) {
           />
           <button
             onClick={() => setShowAddModal(true)}
-            className="bg-[#31872D] text-white px-3 py-1 rounded-sm text-sm hover:bg-[#41563F] transition"
+            className="bg-[#31872D] text-white px-3 py-1 rounded-sm text-sm hover:bg-[#41563F]"
           >
             + Thêm user
           </button>
@@ -200,7 +209,6 @@ export default function UserTable({ users, setUsers }) {
           {slicedItems.map((u) => (
             <tr key={u._id} className="border-b hover:bg-gray-50">
               <td className="py-2">{u.username}</td>
-
               <td>
                 <span
                   className={`px-2 py-1 text-xs font-semibold rounded-full border ${
@@ -218,25 +226,35 @@ export default function UserTable({ users, setUsers }) {
 
               <td className="text-right">
                 <div className="flex justify-end items-center gap-2">
+                  {/* EDIT BUTTON */}
                   <button
-                    onClick={() => setEditingUser(u)}
-                    className="w-8 h-8 flex items-center justify-center rounded-lg border border-[#31872D] text-[#31872D] bg-white hover:bg-[#31872D]/10 transform hover:scale-110 transition-all duration-200"
+                    onClick={() => u._id !== account?.id && setEditingUser(u)}
+                    disabled={u._id === account?.id}
+                    className={`w-8 h-8 flex items-center justify-center rounded-lg border
+                      ${
+                        u._id === account?.id
+                          ? "opacity-40 cursor-not-allowed border-gray-400 text-gray-400"
+                          : "border-[#31872D] text-[#31872D] hover:bg-[#31872D]/10 hover:scale-110"
+                      }
+                      bg-white transform transition-all duration-200`}
                   >
                     <Pencil size={16} />
                   </button>
 
-                <button
-                  onClick={() => setDeletingUser(u)}
-                  disabled={u._id === account?.id} 
-                  className={`w-8 h-8 flex items-center justify-center rounded-lg border
-                    ${u._id === account?.id 
-                      ? "opacity-40 cursor-not-allowed border-gray-400 text-gray-400" 
-                      : "border-red-500 text-red-500 hover:bg-red-500/10 hover:scale-110"}
-                    bg-white transform transition-all duration-200`}
-                >
-                  <Trash2 size={16} />
-                </button>
-
+                  {/* DELETE BUTTON */}
+                  <button
+                    onClick={() => setDeletingUser(u)}
+                    disabled={u._id === account?.id}
+                    className={`w-8 h-8 flex items-center justify-center rounded-lg border
+                      ${
+                        u._id === account?.id
+                          ? "opacity-40 cursor-not-allowed border-gray-400 text-gray-400"
+                          : "border-red-500 text-red-500 hover:bg-red-500/10 hover:scale-110"
+                      }
+                      bg-white transform transition-all duration-200`}
+                  >
+                    <Trash2 size={16} />
+                  </button>
                 </div>
               </td>
             </tr>
@@ -249,19 +267,17 @@ export default function UserTable({ users, setUsers }) {
         <button
           onClick={() => setPage(Math.max(1, page - 1))}
           disabled={page === 1}
-          className="text-sm text-gray-500 hover:text-gray-800 transition disabled:opacity-50"
+          className="text-sm text-gray-500 disabled:opacity-50"
         >
           ← Previous
         </button>
-
         <span className="text-sm">
           Page {currentPage} / {totalPages}
         </span>
-
         <button
           onClick={() => setPage(Math.min(totalPages, page + 1))}
           disabled={page === totalPages}
-          className="text-sm text-gray-500 hover:text-gray-800 transition disabled:opacity-50"
+          className="text-sm text-gray-500 disabled:opacity-50"
         >
           Next →
         </button>
@@ -279,58 +295,53 @@ export default function UserTable({ users, setUsers }) {
           >
             <motion.div
               onClick={(e) => e.stopPropagation()}
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.9 }}
               className="bg-white p-6 rounded-2xl w-[400px] shadow-lg"
             >
               <h3 className="text-xl font-semibold mb-4 text-center">
-                Cập nhật: <span className="text-[#31872D]">{editingUser.username}</span>
+                Cập nhật:{" "}
+                <span className="text-[#31872D]">{editingUser.username}</span>
               </h3>
 
-
+              {/* STATUS */}
               <select
-                  className="border px-3 py-2 w-full rounded-md mb-4"
-                  value={editingUser.status}
-                  onChange={(e) =>
-                    setEditingUser({ ...editingUser, status: e.target.value })
-                  }
-                  disabled={editingUser._id === account?.id}   
-                >
-                  <option value="normal">Active</option>
+                className="border px-3 py-2 w-full rounded-md mb-4"
+                value={editingUser.status}
+                onChange={(e) =>
+                  setEditingUser({ ...editingUser, status: e.target.value })
+                }
+                disabled={editingUser._id === account?.id}
+              >
+                <option value="normal">Active</option>
+                <option value="banned">Banned</option>
+              </select>
 
-                  <option
-                    value="banned"
-                    disabled={editingUser._id === account?.id} 
-                  >
-                    Banned
-                  </option>
-                </select>
-
+              {/* ROLE */}
               <select
                 className="border px-3 py-2 w-full rounded-md mb-4"
                 value={editingUser.role}
+                disabled={editingUser._id === account?.id}
                 onChange={(e) =>
-                  setEditingUser({
-                    ...editingUser,
-                    role: e.target.value,
-                  })
+                  setEditingUser({ ...editingUser, role: e.target.value })
                 }
               >
                 <option value="User">User</option>
                 <option value="Admin">Admin</option>
               </select>
 
+              {/* BUTTONS */}
               <div className="flex justify-between">
                 <button
                   onClick={() => setEditingUser(null)}
-                  className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300"
+                  className="px-4 py-2 bg-gray-200 rounded-md"
                 >
                   Hủy
                 </button>
                 <button
                   onClick={handleUpdate}
-                  className="px-4 py-2 bg-[#31872D] text-white rounded-md hover:bg-green-700"
+                  className="px-4 py-2 bg-[#31872D] text-white rounded-md"
                 >
                   Lưu
                 </button>
@@ -352,9 +363,9 @@ export default function UserTable({ users, setUsers }) {
           >
             <motion.div
               onClick={(e) => e.stopPropagation()}
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.9 }}
               className="bg-white p-6 rounded-2xl w-[350px] shadow-lg text-center"
             >
               <h3 className="text-lg font-semibold mb-3">
@@ -369,14 +380,14 @@ export default function UserTable({ users, setUsers }) {
               <div className="flex justify-center gap-4">
                 <button
                   onClick={() => setDeletingUser(null)}
-                  className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300"
+                  className="px-4 py-2 bg-gray-200 rounded-md"
                 >
                   Hủy
                 </button>
 
                 <button
                   onClick={() => handleDelete(deletingUser._id)}
-                  className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                  className="px-4 py-2 bg-red-600 text-white rounded-md"
                 >
                   Xác nhận
                 </button>
@@ -398,13 +409,16 @@ export default function UserTable({ users, setUsers }) {
           >
             <motion.div
               onClick={(e) => e.stopPropagation()}
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.9 }}
               className="bg-white p-6 rounded-xl shadow-lg w-96"
             >
-              <h2 className="text-lg font-semibold mb-4">Thêm người dùng mới</h2>
+              <h2 className="text-lg font-semibold mb-4">
+                Thêm người dùng mới
+              </h2>
 
+              {/* FORM */}
               <div className="flex flex-col gap-3">
                 <input
                   type="text"
@@ -464,14 +478,14 @@ export default function UserTable({ users, setUsers }) {
               <div className="flex justify-end gap-2 mt-5">
                 <button
                   onClick={() => setShowAddModal(false)}
-                  className="px-3 py-1 text-sm border rounded-md hover:bg-gray-100"
+                  className="px-3 py-1 text-sm border rounded-md"
                 >
                   Hủy
                 </button>
 
                 <button
                   onClick={handleAdd}
-                  className="px-3 py-1 text-sm bg-[#31872D] text-white rounded-md hover:bg-[#41563F]"
+                  className="px-3 py-1 text-sm bg-[#31872D] text-white rounded-md"
                 >
                   Thêm
                 </button>

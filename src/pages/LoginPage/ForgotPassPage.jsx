@@ -17,11 +17,7 @@ export default function ForgotPassPage() {
   const [successMsg, setSuccessMsg] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [countdown, setCountdown] = useState(0);
-    useEffect(() => {
-    if (isAuthenticated && account?.status === "banned") {
-      navigate("/banned");
-    }
-  }, [isAuthenticated, account]);
+
   const handleSendOTP = async () => {
     if (isSending) return; // tránh spam
     try {
@@ -56,6 +52,9 @@ export default function ForgotPassPage() {
       setSuccessMsg(res.data.message);
       setStep(3);
     } catch (err) {
+       if (err.response?.data?.status === "banned") {
+      return navigate("/banned");
+    }
       setError(err.response?.data?.message || "OTP không hợp lệ");
     }
   };
