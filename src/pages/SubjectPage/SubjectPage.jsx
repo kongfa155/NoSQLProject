@@ -12,7 +12,7 @@ import subjectService from "../../services/subjectService";
 export default function SubjectPage() {
   const [showCreateSubjectModal, setShowCreateSubjectModal] = useState(false);
   const [subjects, setSubjects] = useState([]);
-  const type = useSelector(state => state.viewMode.mode);
+  const type = useSelector((state) => state.viewMode.mode);
   const navigate = useNavigate();
   const account = useSelector((state) => state.user.account); //
 
@@ -28,18 +28,19 @@ export default function SubjectPage() {
       });
   }, []);
   const reFetchSubjects = async () => {
-    try {
-      subjectService
-        .getAll()
-        .then((res) => {
-          setSubjects(res.data);
-        })
-        .catch((err) => {
-          console.log("Gap loi khi lay subject: ", err);
-        });
-    } catch (err) {
-      console.log("Gap loi khi lay subject: ", err);
-    }
+    // try {
+    //   subjectService
+    //     .getAll()
+    //     .then((res) => {
+    //       setSubjects(res.data);
+    //     })
+    //     .catch((err) => {
+    //       console.log("Gap loi khi lay subject: ", err);
+    //     });
+    // } catch (err) {
+    //   console.log("Gap loi khi lay subject: ", err);
+    // }
+    location.reload();
   };
 
   return (
@@ -66,15 +67,13 @@ export default function SubjectPage() {
                 Thêm môn học
               </div>
             )}
-            
           </div>
         </div>
 
-        
-            <div className="w-[90%] mx-auto my-12 grid grid-cols-3 gap-18">
+        <div className="w-[90%] mx-auto my-12 grid grid-cols-3 gap-18">
           {subjects.length > 0 &&
             subjects.map((subject, i) => {
-              if(!subject.availability){
+              if (!subject.availability) {
                 return;
               }
               return (
@@ -87,8 +86,21 @@ export default function SubjectPage() {
                 ></SubjectBox>
               );
             })}
+          {subjects.length > 0 &&
+            subjects.map((subject, i) => {
+              if (!subject.availability && account.role == "Admin") {
+                return (
+                  <SubjectBox
+                    key={`subject_${i}`}
+                    navigate={navigate}
+                    subject={subject}
+                    type={type}
+                    reFetchSubjects={reFetchSubjects}
+                  ></SubjectBox>
+                );
+              }
+            })}
         </div>
-        
       </div>
       {showCreateSubjectModal && (
         <CreateSubjectModal
@@ -143,20 +155,22 @@ function SubjectBox({ subject, navigate, type, reFetchSubjects }) {
             onClick={() => {
               setShowConfirm(true);
             }}
-            className=" transition-all duration-500 px-4 font-semibold w-full h-[2rem] bg-[#ff6b6b] hover:scale-105 rounded-xl flex justify-center items-center text-[#e7e7e7] cursor-pointer"
+            className={` transition-all duration-500 px-4 font-semibold w-full h-[2rem] ${
+              subject.availability ? "bg-[#ff6b6b]" : "bg-[#31872D]"
+            } hover:scale-105 rounded-xl flex justify-center items-center text-[#e7e7e7] cursor-pointer`}
           >
-            Xóa ✘
+            {subject.availability ? "Ẩn" : "Hiện"}
           </div>
 
           {showConfirm == 1 && (
             <ConfirmAlert
-              title="Xác nhận xóa môn học"
-              information="Bạn có chắc chắn muốn xóa môn học này không?"
-              isNegative={true}
+              title="Thay đổi trạng thái môn học"
+              information="Bạn có chắc chắn muốn thay đổi trạng thái môn học này không?"
+              isNegative={subject.availability}
               confirmButton={async () => {
                 try {
-                  await subjectService.updateAvailability(subject._id,{
-                    availability:false,
+                  await subjectService.updateAvailability(subject._id, {
+                    availability: !subject.availability,
                   });
                   reFetchSubjects();
                 } catch (err) {

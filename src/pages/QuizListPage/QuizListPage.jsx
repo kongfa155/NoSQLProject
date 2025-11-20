@@ -14,6 +14,7 @@ import subjectService from "../../services/subjectService";
 import chapterService from "../../services/chapterService";
 import quizService from "../../services/quizService";
 import submissionService from "../../services/submissionService";
+import CreateChapterModal from "../../components/CreateChapterModal/CreateChapterModal";
 
 export default function QuizListPage() {
   const { subjectId } = useParams();
@@ -210,6 +211,11 @@ export default function QuizListPage() {
         showCreateQuiz={showCreateQuiz}
         setShowCreateQuiz={setShowCreateQuiz}
       />
+      <CreateChapterModal
+        subjectId={subjectId}
+        showCreateChapter={showCreateChapter}
+        setShowCreateChapter={setShowCreateChapter}
+      ></CreateChapterModal>
 
       <ConfirmModal
         show={showConfirm}
