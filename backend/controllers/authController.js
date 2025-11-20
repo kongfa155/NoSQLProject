@@ -251,49 +251,43 @@ export const verifyForgotOtp = async (req, res) => {
 // -------------------------
 // RESET PASSWORD
 // -------------------------
+// FORGOT PASSWORD
 export const resetPassword = async (req, res) => {
   try {
-    const { email, newPassword } = req.body;
-
-    if (!newPassword)
-      return res.status(400).json({
-        message: "Mật khẩu mới không được để trống"
-      });
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ message: "Email là bắt buộc" });
 
     const user = await User.findOne({ email });
-    if (!user)
-      return res.status(400).json({
-        message: "Email không tồn tại"
-      });
+    if (!user) return res.status(400).json({ message: "Email không tồn tại" });
 
+    // Nếu user bị banned => trả về 403 với trường status để FE xử lý
     if (user.status === "banned") {
       return res.status(403).json({
         message: "Tài khoản đã bị khóa",
-        status: "banned"
+        status: "banned",
       });
     }
 
+    // Nếu chưa verify email (active false) => trả lỗi (không gửi OTP)
     if (!user.active) {
       return res.status(400).json({
-        message: "Tài khoản chưa xác thực email"
+        message: "Tài khoản chưa xác thực email",
       });
     }
 
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpiry = Date.now() + 10 * 60 * 1000;
 
-    user.password = hashedPassword;
-    user.otp = null;
-    user.otpExpires = null;
+    user.otp = otp;
+    user.otpExpires = otpExpiry;
     await user.save();
 
-    res.status(200).json({
-      message: "Mật khẩu đã được cập nhật thành công."
-    });
+    await sendVerificationEmail(email, otp);
 
+    res.status(200).json({ message: "Mã OTP đã được gửi đến email của bạn." });
   } catch (err) {
-    console.error(err);
+    console.error("❌ forgotPassword error:", err);
     res.status(500).json({ message: "Lỗi server" });
   }
 };
-
 

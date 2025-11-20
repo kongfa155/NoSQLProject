@@ -225,12 +225,18 @@ export default function UserTable({ users, setUsers }) {
                     <Pencil size={16} />
                   </button>
 
-                  <button
-                    onClick={() => setDeletingUser(u)}
-                    className="w-8 h-8 flex items-center justify-center rounded-lg border border-red-500 text-red-500 bg-white hover:bg-red-500/10 transform hover:scale-110 transition-all duration-200"
-                  >
-                    <Trash2 size={16} />
-                  </button>
+                <button
+                  onClick={() => setDeletingUser(u)}
+                  disabled={u._id === account?.id} 
+                  className={`w-8 h-8 flex items-center justify-center rounded-lg border
+                    ${u._id === account?.id 
+                      ? "opacity-40 cursor-not-allowed border-gray-400 text-gray-400" 
+                      : "border-red-500 text-red-500 hover:bg-red-500/10 hover:scale-110"}
+                    bg-white transform transition-all duration-200`}
+                >
+                  <Trash2 size={16} />
+                </button>
+
                 </div>
               </td>
             </tr>
@@ -284,18 +290,22 @@ export default function UserTable({ users, setUsers }) {
 
 
               <select
-                className="border px-3 py-2 w-full rounded-md mb-4"
-                value={editingUser.status}
-                onChange={(e) =>
-                  setEditingUser({
-                    ...editingUser,
-                    status: e.target.value,
-                  })
-                }
-              >
-                <option value="normal">Active</option>
-                <option value="banned">Banned</option>
-              </select>
+                  className="border px-3 py-2 w-full rounded-md mb-4"
+                  value={editingUser.status}
+                  onChange={(e) =>
+                    setEditingUser({ ...editingUser, status: e.target.value })
+                  }
+                  disabled={editingUser._id === account?.id}   
+                >
+                  <option value="normal">Active</option>
+
+                  <option
+                    value="banned"
+                    disabled={editingUser._id === account?.id} 
+                  >
+                    Banned
+                  </option>
+                </select>
 
               <select
                 className="border px-3 py-2 w-full rounded-md mb-4"
