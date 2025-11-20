@@ -235,17 +235,39 @@ export const verifyForgotOtp = async (req, res) => {
   try {
     const { email, otp } = req.body;
     const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ message: "Email không tồn tại" });
 
-    if (user.otp !== otp) return res.status(400).json({ message: "OTP không đúng" });
-    if (Date.now() > user.otpExpires) return res.status(400).json({ message: "OTP đã hết hạn" });
+    if (!user)
+      return res.status(400).json({ message: "Email không tồn tại" });
 
-    res.status(200).json({ message: "OTP hợp lệ, bạn có thể đặt lại mật khẩu" });
+    if (user.status === "banned") {
+      return res.status(403).json({
+        message: "Tài khoản đã bị khóa",
+        status: "banned"
+      });
+    }
+
+    if (!user.active) {
+      return res.status(400).json({
+        message: "Tài khoản chưa xác thực email"
+      });
+    }
+
+    if (user.otp !== otp)
+      return res.status(400).json({ message: "OTP không đúng" });
+
+    if (Date.now() > user.otpExpires)
+      return res.status(400).json({ message: "OTP đã hết hạn" });
+
+    return res.status(200).json({
+      message: "OTP hợp lệ, bạn có thể đặt lại mật khẩu"
+    });
+
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Lỗi server" });
+    return res.status(500).json({ message: "Lỗi server" });
   }
 };
+
 
 
 // -------------------------

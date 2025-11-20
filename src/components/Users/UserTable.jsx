@@ -35,10 +35,10 @@ export default function UserTable({ users, setUsers }) {
     const height = window.innerHeight;
     const width = window.innerWidth;
 
-    if (width < 640) return 4;
-    if (width < 1024) return 6;
-    if (height < 800) return 7;
-    return 9;
+    if (width < 640) return 7;
+    if (width < 1024) return 9;
+    if (height < 800) return 10;
+    return 15;
   }
 
   const [itemsPerPage, setItemsPerPage] = useState(getItemsPerPage());
@@ -263,25 +263,70 @@ export default function UserTable({ users, setUsers }) {
       </table>
 
       {/* PAGINATION */}
-      <div className="flex justify-between items-center mt-4">
-        <button
-          onClick={() => setPage(Math.max(1, page - 1))}
-          disabled={page === 1}
-          className="text-sm text-gray-500 disabled:opacity-50"
-        >
-          ← Previous
-        </button>
-        <span className="text-sm">
-          Page {currentPage} / {totalPages}
-        </span>
-        <button
-          onClick={() => setPage(Math.min(totalPages, page + 1))}
-          disabled={page === totalPages}
-          className="text-sm text-gray-500 disabled:opacity-50"
-        >
-          Next →
-        </button>
-      </div>
+<div className="flex justify-center items-center gap-3 mt-4 flex-wrap">
+
+  {/* First */}
+  <button
+    onClick={() => setPage(1)}
+    disabled={page === 1}
+    className="text-sm px-3 py-1 border rounded-md disabled:opacity-40"
+  >
+    « First
+  </button>
+
+  {/* Previous */}
+    <button
+      onClick={() => setPage((p) => Math.max(1, p - 1))}
+      disabled={page === 1}
+      className="text-sm px-3 py-1 border rounded-md disabled:opacity-40"
+    >
+      ← Prev
+    </button>
+
+    {/* Page Display */}
+    <span className="text-sm px-4 py-1 border rounded-md bg-gray-100">
+      Page {currentPage} / {totalPages}
+    </span>
+
+    {/* Next */}
+    <button
+      onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+      disabled={page === totalPages}
+      className="text-sm px-3 py-1 border rounded-md disabled:opacity-40"
+    >
+      Next →
+    </button>
+
+    {/* Last */}
+    <button
+      onClick={() => setPage(totalPages)}
+      disabled={page === totalPages}
+      className="text-sm px-3 py-1 border rounded-md disabled:opacity-40"
+    >
+      Last »
+    </button>
+
+    {/* Jump Input */}
+    <div className="flex items-center gap-2 ml-3">
+      <span className="text-sm">Jump to:</span>
+      <input
+        type="number"
+        min={1}
+        max={totalPages}
+        value={page}
+        onChange={(e) => {
+          let p = Number(e.target.value);
+          if (!p) return;
+          if (p > totalPages) p = totalPages;
+          if (p < 1) p = 1;
+          setPage(p);
+        }}
+        className="w-16 px-2 py-1 text-sm border rounded-md"
+      />
+    </div>
+
+  </div>
+
 
       {/* MODAL EDIT */}
       <AnimatePresence>
