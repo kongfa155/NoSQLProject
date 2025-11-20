@@ -184,7 +184,7 @@ export default function QuizListPage() {
       {chapters?.map((chapter, i) => {
         if (!chapter.availability && type == "view") {
           return null;
-        } else if (type == "edit" || chapter.availability) {
+        } else if (chapter.availability) {
           return (
             <ChapterBox
               key={`chapter_${i}` || chapter._id}
