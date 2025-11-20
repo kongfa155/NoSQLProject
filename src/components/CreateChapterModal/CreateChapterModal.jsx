@@ -2,6 +2,7 @@ import "./CreateChapterModal.css";
 import { useEffect, useState } from "react";
 import chapterService from "../../services/chapterService";
 export default function CreateChapterModal({
+  setShowConfirm,
   subjectId,
   showCreateChapter,
   setShowCreateChapter,
@@ -27,7 +28,10 @@ export default function CreateChapterModal({
       });
   }, []);
   const handleCreateChapter = () => {
-    if (chapterName == "" || desc == "" || selectedChapter == -1) {
+    if (
+      (selectedChapter == "new" && (chapterName == "" || desc == "")) ||
+      selectedChapter == -1
+    ) {
       return;
     }
     if (selectedChapter == "new") {
@@ -46,18 +50,17 @@ export default function CreateChapterModal({
           console.log("error: ", err);
         });
     } else {
-      try {
-        axios
-          .put(`/api/chapters/${selectedChapter}`, {
-            availability: true,
-          })
-          .then((res) => {
-            console.log("them lai thanh cong", res);
-          })
-          .catch((err) => console.log("that bai khi them lai ", err));
-      } catch (err) {
-        setShowConfirm(3);
-      }
+      console.log("case");
+      chapterService
+        .updateAvailability(selectedChapter, {
+          availability: true,
+        })
+        .then((res) => {
+          location.reload();
+        })
+        .catch((err) => {
+          location.reload();
+        });
     }
   };
   return (
@@ -89,24 +92,22 @@ export default function CreateChapterModal({
           </div>
           <div className={`${!expandChapter ? "hidden" : ""}`}>
             {chapters?.map((chapter, i) => {
-              if (chapter.availability) {
-                return <></>;
-              }
-              return (
-                <div
-                  onClick={() => {
-                    setSelectedChapter(chapter._id);
-                  }}
-                  key={`chapter_${i}`}
-                  className={`text-xl px-4 py-2 ${
-                    !(selectedChapter == chapter._id)
-                      ? "hover:bg-gray-200"
-                      : "bg-gray-200"
-                  } hover:cursor-pointer`}
-                >
-                  {chapter.name}
-                </div>
-              );
+              if (!chapter.availability)
+                return (
+                  <div
+                    onClick={() => {
+                      setSelectedChapter(chapter._id);
+                    }}
+                    key={`chapter_${i}`}
+                    className={`text-xl px-4 py-2 ${
+                      !(selectedChapter == chapter._id)
+                        ? "hover:bg-gray-200"
+                        : "bg-gray-200"
+                    } hover:cursor-pointer`}
+                  >
+                    {chapter.name}
+                  </div>
+                );
             })}
           </div>
         </div>

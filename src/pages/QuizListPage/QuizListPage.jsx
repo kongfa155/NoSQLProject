@@ -212,6 +212,7 @@ export default function QuizListPage() {
         setShowCreateQuiz={setShowCreateQuiz}
       />
       <CreateChapterModal
+        setShowConfirm={setShowConfirm}
         subjectId={subjectId}
         showCreateChapter={showCreateChapter}
         setShowCreateChapter={setShowCreateChapter}
@@ -240,18 +241,16 @@ function ChapterBox({ chapter, setSelectedQuiz, onReview, type }) {
     setSelectedQuiz(quiz);
   };
   async function handleDeleteChapter() {
-    try {
-      axios
-        .put(`/api/chapters/${chapter._id}`, {
-          availability: !chapter.availability,
-        })
-        .then((res) => {
-          setShowConfirm(2);
-        })
-        .catch((err) => setShowConfirm(3));
-    } catch (err) {
-      setShowConfirm(3);
-    }
+    chapterService
+      .updateAvailability(chapter._id, {
+        availability: !chapter.availability,
+      })
+      .then((res) => {
+        setShowConfirm(2);
+      })
+      .catch((err) => {
+        setShowConfirm(3);
+      });
   }
   return (
     <div className="relative p mt-8 mx-auto w-[90%] pb-16 transition-all duration-500 shadow-black shadow-sm rounded-[8px]">
