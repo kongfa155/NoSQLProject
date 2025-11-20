@@ -67,14 +67,17 @@ export default function EditQuizPage() {
         name: quiz.name,
         timeLimit: quiz.timeLimit,
         chapterId: quiz.chapterId,
-        questions: questions.map((q) => ({
-          _id: q._id || null,
-          question: q.question,
-          options: q.options,
-          answer: q.answer,
-          explain: q.explain,
-          image: q.image || "",
-        })),
+        questions: questions.map((q) => {
+          const obj = {
+            question: q.question,
+            options: q.options,
+            answer: q.answer,
+            explain: q.explain,
+            image: q.image,
+          };
+          if (q._id) obj._id = q._id;
+          return obj;
+        }),
       });
       navigate(`/subject/edit/${quiz.subjectId}`);
     } catch (error) {
