@@ -211,6 +211,22 @@ export const forgotPassword = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ message: "Email không tồn tại" });
 
+    //  Không gửi OTP cho tài khoản bị khóa
+    if (user.status === "banned") {
+      return res.status(403).json({
+        message: "Tài khoản đã bị khóa",
+        status: "banned"
+      });
+    }
+
+    //  Không gửi OTP cho tài khoản chưa active
+    if (!user.active) {
+      return res.status(400).json({
+        message: "Tài khoản chưa xác thực email"
+      });
+    }
+
+    // Tạo OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const otpExpiry = Date.now() + 10 * 60 * 1000;
 
@@ -220,12 +236,14 @@ export const forgotPassword = async (req, res) => {
 
     await sendVerificationEmail(email, otp);
 
-    res.status(200).json({ message: "Mã OTP đã được gửi đến email của bạn." });
+    return res.status(200).json({ message: "Mã OTP đã được gửi đến email." });
+
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Lỗi server" });
+    return res.status(500).json({ message: "Lỗi server" });
   }
 };
+
 
 
 // -------------------------
@@ -277,9 +295,9 @@ export const resetPassword = async (req, res) => {
   try {
     const { email, newPassword } = req.body;
 
-    if (!newPassword) {
+    if (!email || !newPassword) {
       return res.status(400).json({
-        message: "Mật khẩu mới không được để trống"
+        message: "Email và mật khẩu mới là bắt buộc"
       });
     }
 
@@ -304,15 +322,18 @@ export const resetPassword = async (req, res) => {
       });
     }
 
-     if (!user.otp || user.otpExpires < Date.now()) {
+    if (!user.otp || user.otpExpires < Date.now()) {
       return res.status(400).json({ message: "OTP không hợp lệ hoặc đã hết hạn" });
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     user.password = hashedPassword;
-    user.otp = null;        
-    user.otpExpires = null; 
+
+    // Xóa OTP
+    user.otp = null;
+    user.otpExpires = null;
+
     await user.save();
 
     return res.status(200).json({
@@ -324,4 +345,3 @@ export const resetPassword = async (req, res) => {
     return res.status(500).json({ message: "Lỗi server" });
   }
 };
-
