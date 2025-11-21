@@ -40,6 +40,9 @@ export default function ForgotPassPage() {
         });
       }, 1000);
     } catch (err) {
+      if (err.response?.data?.status === "banned") {
+      return navigate("/banned");
+    }
       setError(err.response?.data?.message || "Gửi OTP thất bại");
       setIsSending(false);
     }
