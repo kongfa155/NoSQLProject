@@ -211,7 +211,7 @@ export const forgotPassword = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ message: "Email không tồn tại" });
 
-    //  Không gửi OTP cho tài khoản bị khóa
+    //Chặn gửi OTP cho tài khoản bị khóa
     if (user.status === "banned") {
       return res.status(403).json({
         message: "Tài khoản đã bị khóa",
@@ -219,7 +219,7 @@ export const forgotPassword = async (req, res) => {
       });
     }
 
-    //  Không gửi OTP cho tài khoản chưa active
+    //Chặn gửi OTP cho tài khoản chưa kích hoạt email
     if (!user.active) {
       return res.status(400).json({
         message: "Tài khoản chưa xác thực email"
@@ -243,6 +243,7 @@ export const forgotPassword = async (req, res) => {
     return res.status(500).json({ message: "Lỗi server" });
   }
 };
+
 
 
 
@@ -323,14 +324,14 @@ export const resetPassword = async (req, res) => {
     }
 
     if (!user.otp || user.otpExpires < Date.now()) {
-      return res.status(400).json({ message: "OTP không hợp lệ hoặc đã hết hạn" });
+      return res.status(400).json({
+        message: "OTP không hợp lệ hoặc đã hết hạn"
+      });
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     user.password = hashedPassword;
-
-    // Xóa OTP
     user.otp = null;
     user.otpExpires = null;
 
@@ -345,3 +346,4 @@ export const resetPassword = async (req, res) => {
     return res.status(500).json({ message: "Lỗi server" });
   }
 };
+
