@@ -6,6 +6,7 @@ import nProgress from "nprogress";
 const api = axios.create({
   baseURL:
     import.meta.env.VITE_API_BASE_URL || "https://nosqlproject-fp2f.onrender.com/api",
+      validateStatus: () => true 
 });
 nProgress.configure({
   showSpinner: false,
