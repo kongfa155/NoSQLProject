@@ -20,7 +20,7 @@ const INITIAL_STATE = {
 const userReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case FETCH_USER_LOGIN_SUCCESS:
-      //  const userData = action.payload.user || {};// thaygpt/gimi chỉ hoặc hại t
+      //  const userData = action.payload.user || {};
       return {
         ...state,
         account: {

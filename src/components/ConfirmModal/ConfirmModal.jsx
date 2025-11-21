@@ -1,5 +1,6 @@
 import { Modal, Button } from "react-bootstrap";
 
+//Các tham số đầu vào cần truyền để sử dụng modal mẫu
 export default function ConfirmModal({
   show,
   onClose,
@@ -11,7 +12,8 @@ export default function ConfirmModal({
   onNo,
 }) {
   return (
-    <Modal show={show} onHide={onClose} centered backdrop="static">
+    //Gán các hàm cho modal bootstrap
+    <Modal show={show} onHide={onClose} centered backdrop="static"> 
       <Modal.Header closeButton>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>

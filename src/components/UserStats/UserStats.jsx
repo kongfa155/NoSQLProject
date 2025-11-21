@@ -8,11 +8,26 @@ import {
   Tooltip,
   ResponsiveContainer,
   Line,
-} from "recharts";
+} from "recharts"; 
+/*Thư viện hỗ trợ vẽ biểu đồ
+BarChart, Bar, Line là các loại biểu đồ.
+
+XAxis, YAxis là trục X và trục Y.
+
+Legend là chú thích màu cho biểu đồ.
+
+Tooltip là thông tin hiển thị khi di chuột lên biểu đồ.
+
+ResponsiveContainer giúp biểu đồ tự co giãn theo kích thước khung
+*/
 import { useState, useEffect, useMemo } from "react";
 import submissionService from "../../services/submissionService";
 
+//Tùy chỉnh thông tin hiển thị khi hover chuột vào 
 const CustomTooltip = ({ active, payload, label }) => {
+    //Active là có đang hover không
+    //Payload là thông tin cần hiển thị
+    //Label tên cột đang hover vào
   if (active && payload && payload.length) {
     return (
       <div className="bg-white rounded-lg border border-gray-300 p-2 text-sm shadow-md">
@@ -29,17 +44,18 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null;
 };
 
-const UserStats = ({ userId, chapters }) => {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [activeTooltip, setActiveTooltip] = useState(false);
-
+const UserStats = ({ userId, chapters }) => { //Thông tin người dùng và các chương
+  const [data, setData] = useState([]); //Lưu điểm trung bình từng chương
+  const [loading, setLoading] = useState(true); //Trạng thái có đang laod không 
+  const [activeTooltip, setActiveTooltip] = useState(false); //Trạng thái của hộp thông tin
+    //Lấy dữ liệu mỗi khi đổi chapter
   useEffect(() => {
     if (!userId || !chapters?.length) return;
 
     const fetchData = async () => {
       setLoading(true);
       try {
+        //Lấy điểm cao nhất từng bài trong mỗi chương
         const chapterDataPromises = chapters.map(async (chapter) => {
           const quizPromises = chapter.quizzes.map(async (quiz) => {
             const res = await submissionService.getBest(quiz._id, userId);
@@ -47,19 +63,20 @@ const UserStats = ({ userId, chapters }) => {
           });
 
           const scores = await Promise.all(quizPromises);
+          //Kiểm tra giá trị điểm
           const validScores = scores.filter((s) => s !== null);
           const avg =
             validScores.length > 0
               ? validScores.reduce((a, b) => a + b, 0) / validScores.length
-              : 0;
+              : 0; //Tính điểm trung bình
 
           return {
             name: chapter.name,
             avg: parseFloat(avg.toFixed(1)),
-            target: 85,
+            target: 90,
           };
         });
-
+        
         const resolvedData = await Promise.all(chapterDataPromises);
         setData(resolvedData);
       } catch (err) {
@@ -71,16 +88,16 @@ const UserStats = ({ userId, chapters }) => {
 
     fetchData();
   }, [userId, chapters]);
-
+  //Hàm tính điểm trung bình toàn bộ môn
   const overallAvg = useMemo(() => {
     if (!data.length) return 0;
     const sum = data.reduce((acc, d) => acc + d.avg, 0);
     return (sum / data.length).toFixed(1);
   }, [data]);
-
+  //Gợi ý ôn tập dựa trên điểm 
   const recommendation = useMemo(() => {
     if (!data.length) {
-      return "Vui lòng hoàn thành ít nhất một bài kiểm tra để nhận đề xuất học tập chi tiết.";
+      return "Bạn chưa làm bài nào cả";
     }
 
     const weakChapters = data.filter((d) => d.avg < 40).map((d) => d.name);
@@ -92,24 +109,24 @@ const UserStats = ({ userId, chapters }) => {
     let message = "";
     if (overallAvg >= 90) {
       message +=
-        "🔥 Rất xuất sắc! Bạn đang làm rất tốt, hãy duy trì phong độ nhé.";
-    } else if (overallAvg >= 75) {
-      message += "⚡ Khá tốt rồi! Phong độ tổng thể của bạn rất ổn định.";
-    } else if (overallAvg >= 60) {
+        "Bạn đã đạt được chỉ tiêu để được điểm A rồi. Cũng kinh đấy";
+    } else if (overallAvg >= 70) {
+      message += "Đạt điểm khá rồi kìa, cố lên bạn ơi!!";
+    } else if (overallAvg >= 40) {
       message +=
-        "💪 Cần cố gắng hơn một chút! Hãy tập trung vào những chương chưa đạt yêu cầu.";
+        "Đã đủ điểm qua môn, nhưng đừng dừng lại ở đó";
     } else {
       message +=
-        "📚 Bạn cần ôn tập lại các chương cơ bản. Đã đến lúc dành thời gian nghiêm túc cho việc học.";
+        "Chưa đủ điểm qua môn đâu bạn ơi, dành thời gian ôn tập thêm nhé ^^";
     }
 
     if (weakChapters.length > 0) {
-      message += `\n\n⚠️ Chương cần TẬP TRUNG CAO ĐỘ (${
+      message += `\n\n!!!Chương cần ưu tiên học (${
         weakChapters.length
       } chương): ${weakChapters.join(", ")}.`;
     }
     if (middleChapters.length > 0) {
-      message += `\n\n⭐ Chương nên ÔN TẬP THÊM (${
+      message += `\n\n =(^-^)= Chương bạn nên ôn tập thêm (${
         middleChapters.length
       } chương): ${middleChapters.join(", ")}.`;
     }
@@ -118,14 +135,14 @@ const UserStats = ({ userId, chapters }) => {
       middleChapters.length === 0 &&
       strongChapters.length > 0
     ) {
-      message += `\n\n✅ Tất cả các chương đều đạt kết quả TỐT (trên 70%). Tiếp tục phát huy!`;
+      message += `\n\n Tất cả các chương đều trên điểm Khá (70%). Còn cao hơn được nữa không!`;
     } else if (
       strongChapters.length > 0 &&
       (weakChapters.length > 0 || middleChapters.length > 0)
     ) {
-      message += `\n\n✅ Bạn đã làm TỐT (trên 70%) ở các chương: ${strongChapters.join(
+      message += `\n\n✅ Bạn đạt điểm khá (trên 70%) ở các chương: ${strongChapters.join(
         ", "
-      )}. Tập trung thêm ở các chương còn yếu.`;
+      )}. Cố gắng ở các chương còn lại nào`;
     }
 
     return message;

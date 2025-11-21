@@ -1,20 +1,31 @@
+// ===============================================
+// File: backend/src/controllers/contributeController.js
+// Mục đích: Xử lý toàn bộ logic liên quan đến ĐỀ ĐÓNG GÓP (Contributed Quiz)
+// Bao gồm: duyệt đề, từ chối đề, upload CSV, phân trang, thống kê
+// ===============================================
 // backend/src/controllers/contributeController.js
-import Quiz from "../models/quiz.js";
-import QuestionText from "../models/questionText.js";
-import QuestionImage from "../models/questionImage.js";
-import ContributedQuiz from "../models/contributedQuiz.js";
+import Quiz from "../models/quiz.js"; // Model quiz chính thức
+import QuestionText from "../models/questionText.js"; // Model câu hỏi dạng chữ
+import ContributedQuiz from "../models/contributedQuiz.js"; // Model đề đóng góp
 import Subject from "../models/subject.js";
 import Chapter from "../models/chapter.js";
-import fs from "fs";
-import csv from "csv-parser";
+import fs from "fs"; // Dùng đọc & xoá file CSV
+import csv from "csv-parser"; // Thư viện parse file CSV
 
+// ==============================================================
+// 1) Duyệt đề đóng góp → chuyển thành quiz chính thức
+// ==============================================================
 export const approveContribution = async (req, res) => {
   try {
+    //Lấy id của đề đóng góp từ req truyền cho
     const { id } = req.params;
     const contrib = await ContributedQuiz.findById(id);
+
+    //Nếu không tìm thấy được contributed quiz thì báo lỗi
     if (!contrib)
       return res.status(404).json({ message: "Không tìm thấy đóng góp" });
 
+    //Kiểm tra tính hợp lệ của môn học
     let subject = null;
     if (contrib.subjectId) {
       subject = await Subject.findById(contrib.subjectId);
@@ -22,6 +33,7 @@ export const approveContribution = async (req, res) => {
         return res.status(400).json({ message: "Môn học không hợp lệ" });
     }
 
+    //Kiểm tra tính hợp lệ của chương
     let chapter = null;
     if (contrib.chapterId) {
       chapter = await Chapter.findById(contrib.chapterId);
@@ -29,18 +41,19 @@ export const approveContribution = async (req, res) => {
         return res.status(400).json({ message: "Chương không hợp lệ" });
     }
 
+    //Tạo quiz mới từ dữ liệu của đề đóng góp
     const quizData = {
       name: contrib.name,
       subjectId: contrib.subjectId || null,
       chapterId: contrib.chapterId || null,
       questionNum: contrib.questions.length,
       timeLimit: contrib.timeLimit || 0,
-      availability: true,
-      note: contrib.adminNote || "",
+      availability: true, //Bật trạng thái khả dụng của đề
+      note: contrib.adminNote || "", //Nhận ghi chú từ admin nếu có
     };
 
-    const quiz = await Quiz.create(quizData);
-
+    const quiz = await Quiz.create(quizData); //Tạo quiz trong db
+    // ================== LƯU CÂU HỎI DẠNG TEXT ==================
     const questionsText = contrib.questions
       .filter((q) => !q.image)
       .map((q) => ({
@@ -51,25 +64,12 @@ export const approveContribution = async (req, res) => {
         explain: q.explain || "",
       }));
     if (questionsText.length > 0) await QuestionText.insertMany(questionsText);
-
-    const questionsImage = contrib.questions
-      .filter((q) => q.image)
-      .map((q) => ({
-        quizId: quiz._id,
-        question: q.question,
-        image: q.image,
-        options: q.options,
-        answer: q.answer,
-        explain: q.explain || "",
-      }));
-    if (questionsImage.length > 0)
-      await QuestionImage.insertMany(questionsImage);
-
+    //Cập nhật trạng thái của đề đóng góp
     contrib.status = "approved";
     contrib.approvedAt = new Date();
     contrib.approvedBy = req.user?._id || null;
     await contrib.save();
-
+    //Gửi phản hồi cập nhật thành công
     res.json({
       message: "✅ Đã duyệt và tạo quiz thành công!",
       quizId: quiz._id,
@@ -80,40 +80,49 @@ export const approveContribution = async (req, res) => {
   }
 };
 
+// ==============================================================
+// 2) Lấy toàn bộ danh sách đề đóng góp (không phân trang)
+// ==============================================================
 export const getAllContributedQuizzes = async (req, res) => {
   try {
     const quizzes = await ContributedQuiz.find()
       .populate("contributorId", "username email")
       .populate("subjectId", "name")
       .populate("chapterId", "name")
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 }); // Mới nhất lên đầu
     res.json(quizzes);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Lỗi khi lấy danh sách đề đóng góp" });
   }
 };
-
+// ==============================================================
+// 3) Upload CSV → tạo đề đóng góp
+// ==============================================================
 export const handleCSVUpload = async (req, res) => {
   try {
+    // Kiểm tra đầu vào có file csv chưa
     if (!req.file)
       return res.status(400).json({ message: "Chưa tải lên file CSV nào!" });
 
+    //Nhận đường dẫn file csv   
     const filePath = req.file.path;
+    //Mảng lưu dữ liệu csv
     const results = [];
-
+    //Hàm hỗ trợ đọc csv dưới dạng luồng stream
     fs.createReadStream(filePath)
       .pipe(csv())
-      .on("data", (row) => results.push(row))
+      .on("data", (row) => results.push(row)) //Mỗi push là một dòng dữ liệu được thêm vào mảng
       .on("end", async () => {
         try {
+            //Convert dòng dữ liệu thành dạng của câu hỏi
           const questions = results.map((r) => ({
             question: r.question,
             options: [r.option1, r.option2, r.option3, r.option4],
             answer: r.answer,
             explain: r.explain || "",
           }));
-
+          //Lấy subject và chapter nếu có tồn tại
           const subjectId =
             req.body.subjectId && req.body.subjectId !== ""
               ? req.body.subjectId
@@ -122,27 +131,28 @@ export const handleCSVUpload = async (req, res) => {
             req.body.chapterId && req.body.chapterId !== ""
               ? req.body.chapterId
               : null;
-
+          //Nếu không có biết là môn nào lưu gợi ý môn từ người dùng 
           const adminNote =
             (!subjectId || subjectId === "") && req.body.suggestedNote
               ? `\n${req.body.suggestedNote}`
               : "";
-
+          
+        //Xử lý giới hạn số lượng đóng góp
           const oneWeekAgo = new Date();
           oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-
+          //Đếm số đóng góp trong thời gian 1 tuần qua
           const recentCount = await ContributedQuiz.countDocuments({
             contributorId: req.user.id,
             createdAt: { $gte: oneWeekAgo },
           });
-
+          //Nếu hơn 10 đề thì không cho đóng góp
           if (recentCount >= 10) {
             return res.status(429).json({
               message:
                 "🚫 Bạn đã đạt giới hạn 10 đề đóng góp trong 7 ngày gần nhất. Hãy thử lại sau!",
             });
           }
-
+          //Tạo đề đóng góp từ dữ liệu
           await ContributedQuiz.create({
             contributorId: req.user.id,
             name: req.body.name || "Đề đóng góp từ CSV",
@@ -153,28 +163,30 @@ export const handleCSVUpload = async (req, res) => {
             questions,
             adminNote,
           });
-
+          //Xóa file csv sau khi đọc xong
           fs.unlinkSync(filePath);
           res.json({ message: "✅ Tải lên và lưu đề đóng góp thành công!" });
         } catch (err) {
-          console.error("Lỗi khi lưu đề:", err);
           res.status(500).json({ message: "Lỗi khi lưu đề đóng góp!" });
         }
       });
   } catch (err) {
-    console.error("Lỗi CSV Upload:", err);
     res.status(500).json({ message: err.message });
   }
 };
-
+// ==============================================================
+// 4) Từ chối đề đóng góp
+// ==============================================================
 export const rejectContribution = async (req, res) => {
   try {
+    //Lấy id của đề
     const { id } = req.params;
     const contrib = await ContributedQuiz.findById(id);
+    //Tìm trong db
     if (!contrib) {
       return res.status(404).json({ message: "Không tìm thấy đóng góp" });
     }
-
+    //Cập nhật trạng thái
     contrib.status = "rejected";
     contrib.rejectedAt = new Date();
     contrib.rejectedBy = req.user?._id || null;
@@ -182,14 +194,16 @@ export const rejectContribution = async (req, res) => {
 
     res.json({ message: `❌ Đã từ chối đề "${contrib.name}".` });
   } catch (err) {
-    console.error("Lỗi khi từ chối đề:", err);
     res.status(500).json({ message: "Lỗi khi từ chối đề đóng góp!" });
   }
 };
-
+// ==============================================================
+// 5) Lấy chi tiết một đề đóng góp
+// ==============================================================
 export const getDetailContributedQuiz = async (req, res) => {
   try {
     const { id } = req.params;
+    //Join với dữ liệu người dùng, chương, môn học để hiển thị ra
     const contrib = await ContributedQuiz.findById(id)
       .populate("contributorId", "username email")
       .populate("subjectId", "name")
@@ -201,21 +215,24 @@ export const getDetailContributedQuiz = async (req, res) => {
 
     res.json(contrib);
   } catch (err) {
-    console.error("❌ Lỗi khi lấy đề đóng góp:", err);
     res.status(500).json({ message: "Lỗi khi lấy đề đóng góp." });
   }
 };
-
+// ==============================================================
+// 6) Lấy danh sách đề đóng góp (có phân trang + sắp xếp trạng thái)
+// ==============================================================
 export const getContributedQuizzesPaginated = async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 5;
-    const skip = (page - 1) * limit;
+    //Lấy dưới dạng query trên thanh tìm kiếm (Dạng ?page=1&limit=5)
+    const page = parseInt(req.query.page) || 1; //Trang hiện tại
+    const limit = parseInt(req.query.limit) || 5; //Số đề mỗi trang
+    const skip = (page - 1) * limit; //Bỏ qua bao nhiêu document đầu tiên
 
-    const total = await ContributedQuiz.countDocuments();
-
+    const total = await ContributedQuiz.countDocuments(); //Đếm tổng số document hiện có
+    //Xử lý hàm kết tập
     const quizzes = await ContributedQuiz.aggregate([
       {
+        //Thêm trường để xếp hạng contributed quiz (Trọng số càng cao, càng chìm xuống sâu)
         $addFields: {
           statusOrder: {
             $switch: {
@@ -229,11 +246,11 @@ export const getContributedQuizzesPaginated = async (req, res) => {
           },
         },
       },
-      { $sort: { statusOrder: 1, createdAt: -1 } },
+      { $sort: { statusOrder: 1, createdAt: -1 } } ,//Sắp xếp theo thứ tự theo trọng số rồi tới thời gian tạo
       { $skip: skip },
       { $limit: limit },
     ]);
-
+    //Join dữ liệu như bình thường để lấy người đóng góp
     await ContributedQuiz.populate(quizzes, [
       { path: "contributorId", select: "username email" },
       { path: "subjectId", select: "name" },
@@ -247,13 +264,15 @@ export const getContributedQuizzesPaginated = async (req, res) => {
       currentPage: page,
     });
   } catch (err) {
-    console.error("❌ Lỗi khi phân trang đề đóng góp:", err);
     res
       .status(500)
       .json({ message: "Lỗi khi lấy danh sách đóng góp có phân trang." });
   }
 };
 
+// ==============================================================
+// 7) Lấy thống kê số lượng đề đã đóng góp trong 7 ngày
+// ==============================================================
 export const getContributionStats = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -271,7 +290,7 @@ export const getContributionStats = async (req, res) => {
       remaining: Math.max(0, 10 - totalWeek),
     });
   } catch (err) {
-    console.error("❌ Lỗi khi lấy thống kê đóng góp:", err);
+
     res.status(500).json({ message: "Lỗi khi lấy thống kê đóng góp!" });
   }
 };

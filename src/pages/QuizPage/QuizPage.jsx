@@ -1,19 +1,20 @@
-import { useState, useEffect } from "react";
-import { useParams, useLocation, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import quizService from "../../services/quizService";
-import submissionService from "../../services/submissionService";
-import QuestionDrawer from "../../components/QuestionDrawer/QuestionDrawer";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import { Button, Container } from "react-bootstrap"; // ✅ React-Bootstrap
+import { useState, useEffect } from "react"; // React hook: state và side-effects
+import { useParams, useLocation, useNavigate } from "react-router-dom"; // Router hook
+import { useSelector } from "react-redux"; // Lấy dữ liệu từ Redux
+import quizService from "../../services/quizService"; // API lấy quiz
+import submissionService from "../../services/submissionService"; // API nộp bài
+import QuestionDrawer from "../../components/QuestionDrawer/QuestionDrawer"; // Drawer bên phải show câu hỏi
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa"; // Icon điều hướng
+import { Button, Container } from "react-bootstrap"; // React-Bootstrap
 
 export default function QuizPage() {
-  const { quizId } = useParams();
-  const location = useLocation();
-  const navigate = useNavigate();
-  const account = useSelector((state) => state.user.account);
+  const { quizId } = useParams(); // Lấy quizId từ URL
+  const location = useLocation(); // Lấy state truyền từ trang trước
+  const navigate = useNavigate(); // Điều hướng
+  const account = useSelector((state) => state.user.account); // Lấy user hiện tại
   const userId = account?.id;
 
+  // Nếu chưa đăng nhập
   if (!userId)
     return (
       <div className="text-center text-red-500 mt-10">
@@ -21,45 +22,48 @@ export default function QuizPage() {
       </div>
     );
 
+  // Quiz info từ location state hoặc default
   const quizInfo = location.state?.quiz || {
     name: "Kiểm tra nhanh Giới thiệu ngôn ngữ lập trình",
-    timeLimit: 5,
+    timeLimit: 5, // phút
   };
   const subjectId = location.state.subjectId;
   const options = location.state?.options || {
-    shuffleQuestions: true,
-    showAnswers: true,
-    shuffleOptions: false,
-    rotationalPractice: true,
-    timeLimit: true,
-    scoreMode: false,
+    shuffleQuestions: true, // Trộn câu hỏi
+    showAnswers: true, // Hiển thị đáp án ngay
+    shuffleOptions: false, // Trộn đáp án
+    rotationalPractice: true, // Cho phép luyện lại câu sai
+    timeLimit: true, // Giới hạn thời gian
+    scoreMode: false, // Có lưu điểm không
   };
 
-  const [questions, setQuestions] = useState([]);
-  const [answers, setAnswers] = useState({});
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [flagged, setFlagged] = useState([]);
-  const [submitted, setSubmitted] = useState(false);
+  // State chính
+  const [questions, setQuestions] = useState([]); // Danh sách câu hỏi
+  const [answers, setAnswers] = useState({}); // Lưu đáp án user
+  const [currentIndex, setCurrentIndex] = useState(0); // Câu hiện tại
+  const [flagged, setFlagged] = useState([]); // Câu đánh dấu
+  const [submitted, setSubmitted] = useState(false); // Bài đã nộp chưa
   const [remainingTime, setRemainingTime] = useState(
-    options.timeLimit ? quizInfo.timeLimit * 60 : null
+    options.timeLimit ? quizInfo.timeLimit * 60 : null // thời gian còn lại tính bằng giây
   );
-  const [startTime, setStartTime] = useState(Date.now());
+  const [startTime, setStartTime] = useState(Date.now()); // Thời gian bắt đầu quiz
 
+  // Fetch câu hỏi khi load trang
   useEffect(() => {
     if (!quizId) return;
     const fetchQuestions = async () => {
       try {
-        const res = await quizService.getById(quizId);
+        const res = await quizService.getById(quizId); // Lấy quiz từ server
         let fetched = res.data.questions || [];
         if (options.shuffleQuestions)
-          fetched = fetched.sort(() => Math.random() - 0.5);
+          fetched = fetched.sort(() => Math.random() - 0.5); // Trộn câu hỏi
         if (options.shuffleOptions)
           fetched = fetched.map((q) => ({
             ...q,
-            options: [...q.options].sort(() => Math.random() - 0.5),
+            options: [...q.options].sort(() => Math.random() - 0.5), // Trộn đáp án
           }));
         setQuestions(fetched);
-        setStartTime(Date.now());
+        setStartTime(Date.now()); // Lưu thời gian bắt đầu
       } catch {
         console.log("Không lấy được dữ liệu");
       }
@@ -67,22 +71,25 @@ export default function QuizPage() {
     fetchQuestions();
   }, [quizId]);
 
+  // Countdown nếu có giới hạn thời gian
   useEffect(() => {
     if (!options.timeLimit || submitted) return;
     if (remainingTime <= 0) {
-      handleSubmit();
+      handleSubmit(); // Auto submit khi hết giờ
       alert("⏰ Hết giờ làm bài!");
       return;
     }
-    const timer = setInterval(() => setRemainingTime((prev) => prev - 1), 1000);
+    const timer = setInterval(() => setRemainingTime((prev) => prev - 1), 1000); // Giảm 1 giây
     return () => clearInterval(timer);
   }, [submitted, remainingTime]);
 
+  // Chọn đáp án
   const handleAnswerSelect = (questionId, option) => {
     if (submitted || (options.showAnswers && answers[questionId])) return;
     setAnswers((prev) => ({ ...prev, [questionId]: option }));
   };
 
+  // Đánh dấu / bỏ đánh dấu câu hỏi
   const handleToggleFlag = (questionId) => {
     setFlagged((prev) =>
       prev.includes(questionId)
@@ -91,6 +98,7 @@ export default function QuizPage() {
     );
   };
 
+  // Submit bài
   const handleSubmit = async () => {
     let correct = 0;
     questions.forEach((q) => {
@@ -99,7 +107,7 @@ export default function QuizPage() {
     setSubmitted(true);
     const score = Math.round((correct / questions.length) * 100);
     const totalQuestions = questions.length;
-    const timeTaken = Math.floor((Date.now() - startTime) / 1000);
+    const timeTaken = Math.floor((Date.now() - startTime) / 1000); // tính giây
 
     if (options.scoreMode) {
       try {
@@ -137,11 +145,12 @@ export default function QuizPage() {
     }
   };
 
+  // Luyện lại câu sai (rotational practice)
   const handleRetry = () => {
     const incorrect = questions.filter((q) => answers[q._id] !== q.answer);
     if (incorrect.length === 0) {
       alert("🎉 Bạn đã làm đúng tất cả câu hỏi!");
-      navigate(-1);
+      navigate(-1); // quay lại trang trước
     }
     setQuestions(incorrect);
     setSubmitted(false);
@@ -152,16 +161,18 @@ export default function QuizPage() {
     setStartTime(Date.now());
   };
 
+  // Nếu câu hỏi chưa load
   if (questions.length === 0)
     return (
       <div className="text-center mt-10 text-gray-600">Đang tải câu hỏi...</div>
     );
 
-  const q = questions[currentIndex];
+  const q = questions[currentIndex]; // Câu hiện tại
   const answeredQuestions = Object.keys(answers)
     .filter((key) => answers[key])
-    .map((key) => questions.findIndex((qq) => qq._id === key) + 1);
+    .map((key) => questions.findIndex((qq) => qq._id === key) + 1); // Số thứ tự câu đã trả lời
 
+  // Format thời gian từ giây sang MM:SS
   const formatTime = (secs) => {
     if (!secs && secs !== 0) return "--:--";
     const m = Math.floor(secs / 60);
@@ -189,7 +200,7 @@ export default function QuizPage() {
         <div className="flex justify-between items-center mb-5 px-2 w-full">
           <Button
             variant="success"
-            disabled={currentIndex === 0}
+            disabled={currentIndex === 0} // disable nếu câu đầu
             className="flex items-center gap-2 bg-green-700 hover:bg-green-800 disabled:bg-gray-400"
             onClick={() => setCurrentIndex((prev) => Math.max(prev - 1, 0))}
           >
@@ -199,7 +210,7 @@ export default function QuizPage() {
           <div className="flex items-center gap-3">
             <Button
               variant="success"
-              disabled={currentIndex === questions.length - 1}
+              disabled={currentIndex === questions.length - 1} // disable nếu câu cuối
               className="flex items-center gap-2 bg-green-700 hover:bg-green-800 disabled:bg-gray-400"
               onClick={() =>
                 setCurrentIndex((prev) =>
@@ -235,6 +246,7 @@ export default function QuizPage() {
           </p>
         </div>
 
+        {/* Nếu câu có hình */}
         {q.image && (
           <div className="flex justify-center my-3">
             <img
@@ -258,6 +270,7 @@ export default function QuizPage() {
               "flex items-center gap-3 p-4 rounded-xl cursor-pointer transition";
             let style = "bg-gray-100 hover:bg-gray-300";
 
+            // Highlight đáp án đúng/sai nếu showAnswers
             if (options.showAnswers && hasAnswered) {
               if (opt === q.answer)
                 style = "bg-green-100 border border-green-600";
@@ -284,6 +297,7 @@ export default function QuizPage() {
           })}
         </div>
 
+        {/* --- Show đáp án nếu đã submit hoặc showAnswers */}
         {(submitted || (options.showAnswers && answers[q._id])) && (
           <div className="mt-8 p-4 bg-gray-100 rounded-xl">
             <p className="text-green-700 font-semibold">
@@ -294,7 +308,7 @@ export default function QuizPage() {
         )}
       </div>
 
-      {/* --- DRAWER --- */}
+      {/* --- DRAWER BÊN DƯỚI--- */}
       <QuestionDrawer
         totalQuestions={questions.length}
         answered={answeredQuestions}

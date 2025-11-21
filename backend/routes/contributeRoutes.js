@@ -12,7 +12,7 @@ import {
 } from "../controllers/contributeController.js";
 
 const router = express.Router();
-
+//upload.single("file") là hàm được cung cấp sẵn bởi multer để xử lý upload đơn file
 router.post("/uploadCSV", verifyToken, upload.single("file"), handleCSVUpload);
 router.put("/approve/:id", verifyAdmin, approveContribution);
 router.get("/", verifyAdmin, getAllContributedQuizzes);

@@ -1,66 +1,63 @@
-import { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
-import { MdExpandMore as ExpandButton } from "react-icons/md";
-import ContributedQuizList from "../../components/ContributedQuizList/ContributedQuizList";
-import contributedService from "../../services/contributedService";
-import subjectService from "../../services/subjectService";
-import chapterService from "../../services/chapterService";
+import { useEffect, useRef, useState } from "react"; // React hook quản lý state, side-effect và ref
+import { useSelector } from "react-redux"; // Lấy dữ liệu từ Redux store
+import { MdExpandMore as ExpandButton } from "react-icons/md"; // Icon mũi tên dropdown
+import ContributedQuizList from "../../components/ContributedQuizList/ContributedQuizList"; // Component danh sách đề
+import contributedService from "../../services/contributedService"; // API liên quan đóng góp đề
+import subjectService from "../../services/subjectService"; // API môn học
+import chapterService from "../../services/chapterService"; // API chương học
 
 export default function ContributedQuizPage() {
-  const { account, isAuthenticated } = useSelector((state) => state.user);
-  const mode = useSelector((state) => state.viewMode.mode);
+  const { account, isAuthenticated } = useSelector((state) => state.user); // Lấy thông tin user hiện tại
+  const mode = useSelector((state) => state.viewMode.mode); // Lấy chế độ hiển thị (view/edit)
 
-  const [subjects, setSubjects] = useState([]);
-  const [chapters, setChapters] = useState([]);
+  // State quản lý data
+  const [subjects, setSubjects] = useState([]); // Danh sách môn học
+  const [chapters, setChapters] = useState([]); // Danh sách chương học
+  const [selectedSubject, setSelectedSubject] = useState(null); // Môn học đang chọn
+  const [selectedChapter, setSelectedChapter] = useState(null); // Chương đang chọn
+  const [expandSubject, setExpandSubject] = useState(false); // Dropdown môn học mở/đóng
+  const [expandChapter, setExpandChapter] = useState(false); // Dropdown chương mở/đóng
+  const [selectedFile, setSelectedFile] = useState(null); // File CSV được chọn
+  const [uploadStatus, setUploadStatus] = useState(""); // Trạng thái upload CSV
+  const [suggestedNote, setSuggestedNote] = useState(""); // Ghi chú gợi ý môn/chương
+  const [quizName, setQuizName] = useState(""); // Tên bộ đề
+  const [contributionStats, setContributionStats] = useState(null); // Thống kê đóng góp
 
-  const [selectedSubject, setSelectedSubject] = useState(null);
-  const [selectedChapter, setSelectedChapter] = useState(null);
+  const subjectRef = useRef(null); // Ref dropdown môn học
+  const chapterRef = useRef(null); // Ref dropdown chương
 
-  const [expandSubject, setExpandSubject] = useState(false);
-  const [expandChapter, setExpandChapter] = useState(false);
-
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [uploadStatus, setUploadStatus] = useState("");
-
-  const [suggestedNote, setSuggestedNote] = useState("");
-  const [quizName, setQuizName] = useState("");
-  const [contributionStats, setContributionStats] = useState(null);
-
-  const subjectRef = useRef(null);
-  const chapterRef = useRef(null);
-
-  // Fetch contribution stats
+  // Lấy thống kê đóng góp
   useEffect(() => {
-    if (!isAuthenticated || !account?.accessToken) return;
+    if (!isAuthenticated || !account?.accessToken) return; // Nếu chưa đăng nhập thì bỏ qua
     contributedService
-      .getStats()
-      .then((res) => setContributionStats(res.data))
-      .catch((err) => console.error("Lỗi khi lấy thống kê:", err));
+      .getStats() // Gọi API lấy stats
+      .then((res) => setContributionStats(res.data)) // Lưu vào state
+      .catch((err) => console.error("Lỗi khi lấy thống kê:", err)); // Log lỗi
   }, [isAuthenticated, account?.accessToken]);
 
-  // Close dropdowns when clicking outside
+  // Đóng dropdown khi click ra ngoài
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (subjectRef.current && !subjectRef.current.contains(event.target)) {
-        setExpandSubject(false);
+        setExpandSubject(false); // Đóng môn học
       }
       if (chapterRef.current && !chapterRef.current.contains(event.target)) {
-        setExpandChapter(false);
+        setExpandChapter(false); // Đóng chương
       }
     };
     document.addEventListener("click", handleClickOutside);
-    return () => document.removeEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside); // Cleanup
   }, []);
 
-  // Fetch subjects
+  // Lấy danh sách môn học
   useEffect(() => {
     subjectService
       .getAll()
-      .then((res) => setSubjects(res.data || []))
+      .then((res) => setSubjects(res.data || [])) // Lưu vào state
       .catch((err) => console.error("Lỗi khi lấy danh sách môn học:", err));
   }, []);
 
-  // Fetch chapters for selected subject
+  // Lấy danh sách chương khi chọn môn
   useEffect(() => {
     if (selectedSubject && selectedSubject._id) {
       chapterService
@@ -68,22 +65,21 @@ export default function ContributedQuizPage() {
         .then((res) => setChapters(res.data || []))
         .catch((err) => console.error("Lỗi khi lấy chương:", err));
     } else {
-      setChapters([]);
+      setChapters([]); // Nếu không chọn môn thì xóa danh sách chương
     }
   }, [selectedSubject]);
 
-  // Upload CSV
+  // Hàm upload CSV
   const handleFileUpload = async () => {
+    // Kiểm tra điều kiện trước khi upload
     if (!selectedFile || !selectedSubject) {
       setUploadStatus("⚠️ Vui lòng chọn môn học (hoặc 'Khác') và file CSV!");
       return;
     }
-
     if (selectedSubject._id !== null && !selectedChapter) {
       setUploadStatus("⚠️ Vui lòng chọn chương cho môn đã chọn!");
       return;
     }
-
     if (!account || !account.accessToken) {
       setUploadStatus("⚠️ Bạn cần đăng nhập trước khi tải lên!");
       return;
@@ -92,7 +88,6 @@ export default function ContributedQuizPage() {
       setUploadStatus("⚠️ Vui lòng nhập tên bộ đề trước khi tải lên!");
       return;
     }
-
     if (contributionStats && contributionStats.remaining === 0) {
       setUploadStatus(
         "🚫 Bạn đã đạt giới hạn đóng góp đề trong 7 ngày gần nhất!"
@@ -100,6 +95,7 @@ export default function ContributedQuizPage() {
       return;
     }
 
+    // Tạo FormData để gửi file
     const formData = new FormData();
     formData.append("file", selectedFile);
     formData.append("name", quizName);
@@ -109,16 +105,16 @@ export default function ContributedQuizPage() {
 
     try {
       setUploadStatus("⏳ Đang tải lên...");
-      await contributedService.uploadCSV(formData);
+      await contributedService.uploadCSV(formData); // Gọi API upload
       setUploadStatus("✅ Tải lên thành công!");
 
-      // refresh stats
+      // Cập nhật lại stats sau upload
       contributedService
         .getStats()
         .then((res) => setContributionStats(res.data))
         .catch(() => {});
 
-      // reset
+      // Reset các trường
       setSelectedFile(null);
       setSelectedSubject(null);
       setSelectedChapter(null);
@@ -135,6 +131,7 @@ export default function ContributedQuizPage() {
     }
   };
 
+  // Hàm đổi màu status
   const getStatusColorClass = () => {
     if (uploadStatus.includes("✅")) return "text-green-700";
     if (
@@ -149,7 +146,7 @@ export default function ContributedQuizPage() {
 
   return (
     <div className="w-[95%] mx-auto py-4 sm:py-6 flex flex-col gap-8">
-      {/* Intro */}
+      {/* Phần giới thiệu */}
       <div className="bg-white rounded-xl shadow-lg shadow-gray-200 p-8 text-center">
         <h1 className="text-4xl font-extrabold text-green-700">
           Đóng Góp Đề Trắc Nghiệm
@@ -161,13 +158,14 @@ export default function ContributedQuizPage() {
         </p>
       </div>
 
-      {/* Content */}
+      {/* Nội dung chính */}
       <div className="bg-white rounded-xl shadow-lg shadow-gray-200 p-8 min-h-[400px]">
+        {/* Nếu là Admin và chế độ edit thì show danh sách đề */}
         {account.role === "Admin" && mode === "edit" ? (
           <ContributedQuizList />
         ) : (
           <div className="flex flex-col gap-4">
-            {/* Subject dropdown */}
+            {/* Dropdown môn học */}
             <div ref={subjectRef}>
               <div className="flex items-center gap-4 flex-col sm:flex-row">
                 <p className="w-full sm:w-1/4 font-semibold text-lg text-green-700">
@@ -197,32 +195,31 @@ export default function ContributedQuizPage() {
                 </div>
               </div>
 
+              {/* Danh sách dropdown môn học */}
               <div
                 className={`overflow-y-auto bg-gray-100 rounded-lg transition-[max-height] duration-300 ease-in-out shadow-md ${
                   expandSubject ? "max-h-[200px]" : "max-h-0"
                 }`}
               >
                 {subjects.map((subject) => {
-                  if (subject.availability == false) {
-                    return <></>;
-                  } else {
-                    return (
-                      <div
-                        key={subject._id}
-                        className="py-3 px-4 text-base bg-white m-1.5 rounded-lg cursor-pointer hover:bg-green-400 hover:text-white transition-all duration-200"
-                        onClick={() => {
-                          setSelectedSubject(subject);
-                          setExpandSubject(false);
-                          setSelectedChapter(null);
-                          setSuggestedNote("");
-                        }}
-                      >
-                        {subject.name}
-                      </div>
-                    );
-                  }
+                  if (subject.availability == false) return <></>; // Không hiện môn unavailable
+                  return (
+                    <div
+                      key={subject._id}
+                      className="py-3 px-4 text-base bg-white m-1.5 rounded-lg cursor-pointer hover:bg-green-400 hover:text-white transition-all duration-200"
+                      onClick={() => {
+                        setSelectedSubject(subject); // Chọn môn
+                        setExpandSubject(false); // đóng dropdown
+                        setSelectedChapter(null); // reset chương
+                        setSuggestedNote("");
+                      }}
+                    >
+                      {subject.name}
+                    </div>
+                  );
                 })}
 
+                {/* Option "Khác" */}
                 <div
                   key="other-subject"
                   className="py-3 px-4 text-base bg-white m-1.5 rounded-lg cursor-pointer hover:bg-green-400 hover:text-white transition-all duration-200"
@@ -238,8 +235,7 @@ export default function ContributedQuizPage() {
                 </div>
               </div>
             </div>
-
-            {/* Chapter dropdown */}
+            {/* Dropdown chương */}
             {selectedSubject && selectedSubject._id !== null && chapters && (
               <div className="mt-3" ref={chapterRef}>
                 <div className="flex items-center gap-4 flex-col sm:flex-row">
@@ -264,33 +260,31 @@ export default function ContributedQuizPage() {
                   </div>
                 </div>
 
+                {/* Danh sách dropdown chương */}
                 <div
                   className={`overflow-y-auto bg-gray-100 rounded-lg transition-[max-height] duration-300 ease-in-out shadow-md ${
                     expandChapter ? "max-h-[200px]" : "max-h-0"
                   }`}
                 >
                   {chapters.map((chapter) => {
-                    if (chapter._availability == false) {
-                      return <></>;
-                    } else
-                      return (
-                        <div
-                          key={chapter._id}
-                          className="py-3 px-4 text-base bg-white m-1.5 rounded-lg cursor-pointer hover:bg-green-400 hover:text-white transition-all duration-200"
-                          onClick={() => {
-                            setSelectedChapter(chapter);
-                            setExpandChapter(false);
-                          }}
-                        >
-                          {chapter.name}
-                        </div>
-                      );
+                    if (chapter._availability == false) return <></>;
+                    return (
+                      <div
+                        key={chapter._id}
+                        className="py-3 px-4 text-base bg-white m-1.5 rounded-lg cursor-pointer hover:bg-green-400 hover:text-white transition-all duration-200"
+                        onClick={() => {
+                          setSelectedChapter(chapter);
+                          setExpandChapter(false);
+                        }}
+                      >
+                        {chapter.name}
+                      </div>
+                    );
                   })}
                 </div>
               </div>
             )}
-
-            {/* Quiz name input */}
+            {/* Input tên bộ đề */}
             <div className="mt-3 mb-3 flex flex-col gap-2">
               <p className="font-semibold text-lg text-green-700">Tên bộ đề:</p>
               <input
@@ -301,8 +295,7 @@ export default function ContributedQuizPage() {
                 className="w-full py-2 px-3 border border-gray-300 rounded-lg text-base outline-none focus:border-green-700 focus:shadow-[0_0_4px_rgba(34,197,94,0.3)]"
               />
             </div>
-
-            {/* If "Khác" selected show suggestion textarea */}
+            {/* Nếu chọn "Khác" thì show gợi ý */}
             {selectedSubject && selectedSubject._id === null && (
               <div className="mt-3 flex flex-col gap-2">
                 <p className="text-green-700 font-semibold">
@@ -322,8 +315,7 @@ export default function ContributedQuizPage() {
                 </p>
               </div>
             )}
-
-            {/* Upload box */}
+            {/* Box upload CSV */}
             <div className="mt-6 bg-gray-50 border-2 border-dashed border-green-400 rounded-xl p-8 text-center text-gray-700 text-lg">
               <p className="mb-4">
                 {selectedSubject && selectedChapter
@@ -333,6 +325,7 @@ export default function ContributedQuizPage() {
                   : "Vui lòng chọn môn học (hoặc 'Khác') và file CSV để bắt đầu đóng góp đề."}
               </p>
 
+              {/* Thống kê đóng góp */}
               {contributionStats && isAuthenticated && (
                 <div className="mb-3 bg-blue-50 p-3.5 rounded-lg border-l-4 border-blue-500 text-base leading-relaxed">
                   <p>
@@ -356,6 +349,7 @@ export default function ContributedQuizPage() {
                 </div>
               )}
 
+              {/* Input file */}
               <div className="flex flex-col items-center gap-3 mt-4">
                 <input
                   id="fileInput"
@@ -371,13 +365,14 @@ export default function ContributedQuizPage() {
                 )}
                 <button
                   className="bg-green-700 text-white border-none rounded-lg py-3 px-5 text-base font-semibold cursor-pointer transition-colors duration-200 hover:bg-green-800 disabled:opacity-50 disabled:cursor-not-allowed"
-                  onClick={handleFileUpload}
-                  disabled={contributionStats?.remaining === 0}
+                  onClick={handleFileUpload} // Gọi hàm upload
+                  disabled={contributionStats?.remaining === 0} // Disable nếu đạt giới hạn
                 >
                   Tải Lên CSV
                 </button>
               </div>
 
+              {/* Status upload */}
               {uploadStatus && (
                 <p
                   className={`mt-4 font-semibold text-center ${getStatusColorClass()}`}
@@ -386,8 +381,7 @@ export default function ContributedQuizPage() {
                 </p>
               )}
             </div>
-
-            {/* Guide */}
+            {/* Guide / hướng dẫn chuyển CSV */}
             <div className="bg-white rounded-xl shadow-lg shadow-gray-200 p-8 leading-relaxed text-gray-700 mt-6">
               <h2 className="text-3xl font-bold text-green-700 mb-4 text-center">
                 📘 Hướng Dẫn Chuyển Đổi File Sang CSV
@@ -446,6 +440,7 @@ Thủ đô của Việt Nam là gì?,Hồ Chí Minh,Hà Nội,Đà Nẵng,Hải 
                 cần thiết trong các ô dữ liệu.
               </p>
             </div>
+            ;
           </div>
         )}
       </div>
