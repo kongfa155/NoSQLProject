@@ -329,10 +329,9 @@ export const resetPassword = async (req, res) => {
       });
     }
 
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    
 
-    user.password = hashedPassword;
-    user.otp = null;
+    user.password = newPassword;    
     user.otpExpires = null;
 
     await user.save();
