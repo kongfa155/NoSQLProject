@@ -28,87 +28,49 @@ import Submission from "../models/submission.js";
 // ========================================================================
 export const addSubmission = async (req, res) => {
   try {
-    //Nhận dữ liệu bài làm
-    const { userId, quizId, answers, score, totalQuestions, timeSpent } =
+    const { userId, quizId, answers, totalQuestions, score, timeSpent } =
       req.body;
+    const scoreNum = typeof score === "number" ? score : 0;
 
-    // Kiểm tra dữ liệu bắt buộc
-    if (!userId || !quizId || !answers || !totalQuestions) {
-      return res.status(400).json({ message: "Thiếu dữ liệu bắt buộc." });
-    }
+    // tìm submission đã tồn tại theo userId + quizId
+    let submission = await Submission.findOne({ userId, quizId });
 
-    // Chuẩn hoá và validate score nếu có
-    let scoreNum;
-    if (typeof score !== "undefined" && score !== null) {
-      scoreNum = Number(score);
-      if (Number.isNaN(scoreNum) || scoreNum < 0) {
-        // Trường hợp score không hợp lệ → không chấp nhận
-        return res.status(400).json({ message: "Score không hợp lệ." });
-      }
-    }
+    if (submission) {
+      // cập nhật bài cũ (bestScore chỉ tăng lên chứ không giảm)
+      submission.answers = answers;
+      submission.totalQuestions = totalQuestions;
+      submission.score = scoreNum; // điểm của lần thi này (latest score)
+      submission.timeSpent = timeSpent;
+      submission.bestScore = Math.max(submission.bestScore, scoreNum); // giữ điểm cao nhất
 
-    // Filter xác định submission của user trong quiz này
-    const filter = {
-      userId: new mongoose.Types.ObjectId(userId),
-      quizId: new mongoose.Types.ObjectId(quizId),
-    };
-
-    // Kiểm tra user đã có submission chưa
-    const existing = await Submission.findOne(filter);
-
-    if (existing) {
-      // Nếu User đã từng làm quiz → cập nhật bài nộp
-
-      const update = {
-        $set: {
-          answers,
-          totalQuestions,
-          timeSpent,
-          ...(typeof scoreNum !== "undefined" ? { score: scoreNum } : {}),
-        },
-      };
-
-      // Sử dụng $max để đảm bảo bestScore chỉ tăng
-      //Phải viết hàm set riêng thay vì set trong lúc so sánh max vì hàm sẽ chạy set trước khi chạy max
-      if (typeof scoreNum !== "undefined") {
-        update.$set.score = scoreNum; // score hiện tại
-        update.$max = { bestScore: scoreNum }; // chỉ cập nhật nếu score cao hơn
-      }
-//Cập nhật lên db
-      const updatedSubmission = await Submission.findOneAndUpdate(
-        filter,
-        update,
-        { new: true }
-      );
-
+      await submission.save();
       return res.status(200).json({
-        message: "Đã cập nhật bài nộp!",
-        submission: updatedSubmission,
-      });
-    } else {
-      //Chưa có submission → tạo mới
-
-      const newSub = new Submission({
-        userId,
-        quizId,
-        answers,
-        score: typeof scoreNum !== "undefined" ? scoreNum : 0,
-        bestScore: typeof scoreNum !== "undefined" ? scoreNum : 0,
-        totalQuestions,
-        timeSpent,
-      });
-
-      await newSub.save();
-
-      return res.status(201).json({
-        message: "Đã lưu bài nộp thành công!",
-        submission: newSub,
+        message: "Cập nhật bài thi thành công",
+        submission,
       });
     }
+
+    // nếu chưa có submission → tạo mới
+    submission = new Submission({
+      userId,
+      quizId,
+      answers,
+      totalQuestions,
+      score: scoreNum,
+      bestScore: scoreNum, // lần đầu → best = score
+      timeSpent,
+    });
+
+    await submission.save();
+    return res.status(201).json({
+      message: "Tạo mới bài thi thành công",
+      submission,
+    });
   } catch (error) {
-    return res.status(500).json({ message: "Không thể lưu bài nộp." });
+    return res.status(500).json({ message: error.message });
   }
 };
+
 
 // ========================================================================
 // 2) Lấy bài làm gần nhất của user cho 1 quiz
@@ -134,6 +96,7 @@ export const getLatestSubmission = async (req, res) => {
       quizId: new mongoose.Types.ObjectId(quizId),
       userId: new mongoose.Types.ObjectId(userId),
     })
+      .sort({ updatedAt: -1 })
       .lean();
 
     if (!latest) return res.status(200).json(null);
@@ -207,6 +170,7 @@ export const getBestSubmission = async (req, res) => {
       quizId: new mongoose.Types.ObjectId(quizId),
       userId: new mongoose.Types.ObjectId(userId),
     })
+      .sort({ bestScore: -1 })
       .lean();
 
     res.status(200).json(bestSubmission || null);

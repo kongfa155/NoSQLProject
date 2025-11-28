@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema(
     role: { type: String, enum: ["User", "Admin"], default: "User" },
     //verifyEmail
     active: { type: Boolean, default: true },
-      status: {
+    status: {
       type: String,
       enum: ["normal", "banned"],
       default: "normal",
