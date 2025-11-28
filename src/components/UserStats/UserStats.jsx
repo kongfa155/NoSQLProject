@@ -59,7 +59,7 @@ const UserStats = ({ userId, chapters }) => { //Thông tin người dùng và c�
         const chapterDataPromises = chapters.map(async (chapter) => {
           const quizPromises = chapter.quizzes.map(async (quiz) => {
             const res = await submissionService.getBest(quiz._id, userId);
-            return res.data?.score ?? null;
+            return res.data?.bestScore ?? null;
           });
 
           const scores = await Promise.all(quizPromises);
