@@ -201,23 +201,25 @@ export default function ContributedQuizPage() {
                   expandSubject ? "max-h-[200px]" : "max-h-0"
                 }`}
               >
-                {subjects.map((subject) => {
-                  if (subject.availability == false) return <></>; // Không hiện môn unavailable
-                  return (
-                    <div
-                      key={subject._id}
-                      className="py-3 px-4 text-base bg-white m-1.5 rounded-lg cursor-pointer hover:bg-green-400 hover:text-white transition-all duration-200"
-                      onClick={() => {
-                        setSelectedSubject(subject); // Chọn môn
-                        setExpandSubject(false); // đóng dropdown
-                        setSelectedChapter(null); // reset chương
-                        setSuggestedNote("");
-                      }}
-                    >
-                      {subject.name}
-                    </div>
-                  );
-                })}
+                {subjects
+                  .filter((sub) => sub.availability !== false)
+                  .map((subject) => {
+                    if (subject.availability == false) return <></>; // Không hiện môn unavailable
+                    return (
+                      <div
+                        key={subject._id}
+                        className="py-3 px-4 text-base bg-white m-1.5 rounded-lg cursor-pointer hover:bg-green-400 hover:text-white transition-all duration-200"
+                        onClick={() => {
+                          setSelectedSubject(subject); // Chọn môn
+                          setExpandSubject(false); // đóng dropdown
+                          setSelectedChapter(null); // reset chương
+                          setSuggestedNote("");
+                        }}
+                      >
+                        {subject.name}
+                      </div>
+                    );
+                  })}
 
                 {/* Option "Khác" */}
                 <div
@@ -266,21 +268,23 @@ export default function ContributedQuizPage() {
                     expandChapter ? "max-h-[200px]" : "max-h-0"
                   }`}
                 >
-                  {chapters.map((chapter) => {
-                    if (chapter._availability == false) return <></>;
-                    return (
-                      <div
-                        key={chapter._id}
-                        className="py-3 px-4 text-base bg-white m-1.5 rounded-lg cursor-pointer hover:bg-green-400 hover:text-white transition-all duration-200"
-                        onClick={() => {
-                          setSelectedChapter(chapter);
-                          setExpandChapter(false);
-                        }}
-                      >
-                        {chapter.name}
-                      </div>
-                    );
-                  })}
+                  {chapters
+                    .filter((ch) => ch.availability !== false)
+                    .map((chapter) => {
+                      if (chapter._availability == false) return <></>;
+                      return (
+                        <div
+                          key={chapter._id}
+                          className="py-3 px-4 text-base bg-white m-1.5 rounded-lg cursor-pointer hover:bg-green-400 hover:text-white transition-all duration-200"
+                          onClick={() => {
+                            setSelectedChapter(chapter);
+                            setExpandChapter(false);
+                          }}
+                        >
+                          {chapter.name}
+                        </div>
+                      );
+                    })}
                 </div>
               </div>
             )}
