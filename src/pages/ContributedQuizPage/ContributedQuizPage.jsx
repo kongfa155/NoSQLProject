@@ -429,12 +429,12 @@ export default function ContributedQuizPage() {
                   📄 Ví dụ mẫu file CSV chuẩn:
                 </p>
                 <pre className="bg-gray-100 rounded-lg p-4 font-mono text-sm leading-relaxed text-gray-800 whitespace-pre-wrap overflow-x-auto">
-                  {`question,option1,option2,option3,option4,answer,explain
-Thủ đô của Việt Nam là gì?,Hồ Chí Minh,Hà Nội,Đà Nẵng,Hải Phòng,Hà Nội,Hà Nội là thủ đô của Việt Nam.`}
+                  {`question,options,answer,explain
+Thủ đô của Việt Nam là gì?,Hồ Chí Minh;Hà Nội;Đà Nẵng;Hải Phòng,Hà Nội,Hà Nội là thủ đô của Việt Nam.`}
                 </pre>
                 <p className="mt-1.5 text-sm text-gray-600 italic">
                   👉 Mỗi dòng là một câu hỏi, các cột được phân tách bằng dấu
-                  phẩy (,).
+                  phẩy (,). Các lựa chọn được ngăn cách nhau bằng dấu ;
                 </p>
               </div>
 

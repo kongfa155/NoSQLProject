@@ -105,7 +105,7 @@ export const handleCSVUpload = async (req, res) => {
     if (!req.file)
       return res.status(400).json({ message: "Chưa tải lên file CSV nào!" });
 
-    //Nhận đường dẫn file csv   
+    //Nhận đường dẫn file csv
     const filePath = req.file.path;
     //Mảng lưu dữ liệu csv
     const results = [];
@@ -115,13 +115,24 @@ export const handleCSVUpload = async (req, res) => {
       .on("data", (row) => results.push(row)) //Mỗi push là một dòng dữ liệu được thêm vào mảng
       .on("end", async () => {
         try {
-            //Convert dòng dữ liệu thành dạng của câu hỏi
-          const questions = results.map((r) => ({
-            question: r.question,
-            options: [r.option1, r.option2, r.option3, r.option4],
-            answer: r.answer,
-            explain: r.explain || "",
-          }));
+          //Convert dòng dữ liệu thành dạng của câu hỏi
+          const questions = results.map((r) => {
+            // Chia options bằng dấu ; và loại bỏ khoảng trắng thừa
+            const options = r.options
+              ? r.options
+                  .split(";")
+                  .map((o) => o.trim())
+                  .filter((o) => o !== "")
+              : [];
+
+            return {
+              question: r.question,
+              options,
+              answer: r.answer,
+              explain: r.explain || "",
+            };
+          });
+
           //Lấy subject và chapter nếu có tồn tại
           const subjectId =
             req.body.subjectId && req.body.subjectId !== ""
@@ -131,13 +142,13 @@ export const handleCSVUpload = async (req, res) => {
             req.body.chapterId && req.body.chapterId !== ""
               ? req.body.chapterId
               : null;
-          //Nếu không có biết là môn nào lưu gợi ý môn từ người dùng 
+          //Nếu không có biết là môn nào lưu gợi ý môn từ người dùng
           const adminNote =
             (!subjectId || subjectId === "") && req.body.suggestedNote
               ? `\n${req.body.suggestedNote}`
               : "";
-          
-        //Xử lý giới hạn số lượng đóng góp
+
+          //Xử lý giới hạn số lượng đóng góp
           const oneWeekAgo = new Date();
           oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
           //Đếm số đóng góp trong thời gian 1 tuần qua
@@ -246,7 +257,7 @@ export const getContributedQuizzesPaginated = async (req, res) => {
           },
         },
       },
-      { $sort: { statusOrder: 1, createdAt: -1 } } ,//Sắp xếp theo thứ tự theo trọng số rồi tới thời gian tạo
+      { $sort: { statusOrder: 1, createdAt: -1 } }, //Sắp xếp theo thứ tự theo trọng số rồi tới thời gian tạo
       { $skip: skip },
       { $limit: limit },
     ]);
@@ -290,7 +301,6 @@ export const getContributionStats = async (req, res) => {
       remaining: Math.max(0, 10 - totalWeek),
     });
   } catch (err) {
-
     res.status(500).json({ message: "Lỗi khi lấy thống kê đóng góp!" });
   }
 };
