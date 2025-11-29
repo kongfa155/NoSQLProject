@@ -101,69 +101,74 @@ export const getAllContributedQuizzes = async (req, res) => {
 // ==============================================================
 export const handleCSVUpload = async (req, res) => {
   try {
-    // Kiểm tra đầu vào có file csv chưa
     if (!req.file)
       return res.status(400).json({ message: "Chưa tải lên file CSV nào!" });
 
-    //Nhận đường dẫn file csv
     const filePath = req.file.path;
-    //Mảng lưu dữ liệu csv
     const results = [];
-    //Hàm hỗ trợ đọc csv dưới dạng luồng stream
+
     fs.createReadStream(filePath)
-      .pipe(csv())
-      .on("data", (row) => results.push(row)) //Mỗi push là một dòng dữ liệu được thêm vào mảng
+      .pipe(
+        csv({
+          separator: ",",
+          quote: '"', // hỗ trợ chuỗi có dấu ""
+          escape: '"', // escape ký tự "
+          mapHeaders: ({ header }) => header.replace(/^\ufeff/, ""), // fix BOM
+          trim: true,
+        })
+      )
+      .on("data", (row) => results.push(row))
       .on("end", async () => {
         try {
-          //Convert dòng dữ liệu thành dạng của câu hỏi
-          const questions = results.map((r) => {
-            // Chia options bằng dấu ; và loại bỏ khoảng trắng thừa
-            const options = r.options
-              ? r.options
-                  .split(";")
-                  .map((o) => o.trim())
-                  .filter((o) => o !== "")
-              : [];
+          const questions = results
+            .map((r, index) => {
+              if (!r.question || !r.options || !r.answer) {
+                console.log("❌ Lỗi dòng:", index + 1, r);
+                return null;
+              }
 
-            return {
-              question: r.question,
-              options,
-              answer: r.answer,
-              explain: r.explain || "",
-            };
-          });
+              // options nằm trong ngoặc kép nhưng phân tách bởi dấu ;
+              const options = String(r.options)
+                .replace(/^"|"$/g, "") // bỏ dấu ngoặc kép đầu/ cuối
+                .split(";")
+                .map((o) => o.trim())
+                .filter((o) => o);
 
-          //Lấy subject và chapter nếu có tồn tại
-          const subjectId =
-            req.body.subjectId && req.body.subjectId !== ""
-              ? req.body.subjectId
-              : null;
-          const chapterId =
-            req.body.chapterId && req.body.chapterId !== ""
-              ? req.body.chapterId
-              : null;
-          //Nếu không có biết là môn nào lưu gợi ý môn từ người dùng
+              return {
+                question: String(r.question).replace(/^"|"$/g, ""),
+                options,
+                answer: String(r.answer).replace(/^"|"$/g, ""),
+                explain: r.explain
+                  ? String(r.explain).replace(/^"|"$/g, "")
+                  : "",
+              };
+            })
+            .filter((q) => q !== null);
+
+          // Lấy subject/chapter
+          const subjectId = req.body.subjectId || null;
+          const chapterId = req.body.chapterId || null;
+
           const adminNote =
             (!subjectId || subjectId === "") && req.body.suggestedNote
               ? `\n${req.body.suggestedNote}`
               : "";
 
-          //Xử lý giới hạn số lượng đóng góp
           const oneWeekAgo = new Date();
           oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-          //Đếm số đóng góp trong thời gian 1 tuần qua
+
           const recentCount = await ContributedQuiz.countDocuments({
             contributorId: req.user.id,
             createdAt: { $gte: oneWeekAgo },
           });
-          //Nếu hơn 10 đề thì không cho đóng góp
+
           if (recentCount >= 10) {
             return res.status(429).json({
               message:
                 "🚫 Bạn đã đạt giới hạn 10 đề đóng góp trong 7 ngày gần nhất. Hãy thử lại sau!",
             });
           }
-          //Tạo đề đóng góp từ dữ liệu
+
           await ContributedQuiz.create({
             contributorId: req.user.id,
             name: req.body.name || "Đề đóng góp từ CSV",
@@ -174,10 +179,11 @@ export const handleCSVUpload = async (req, res) => {
             questions,
             adminNote,
           });
-          //Xóa file csv sau khi đọc xong
+
           fs.unlinkSync(filePath);
-          res.json({ message: "✅ Tải lên và lưu đề đóng góp thành công!" });
+          res.json({ message: "✅ Upload CSV thành công!" });
         } catch (err) {
+          console.error("CSV save error:", err);
           res.status(500).json({ message: "Lỗi khi lưu đề đóng góp!" });
         }
       });
@@ -185,6 +191,7 @@ export const handleCSVUpload = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
 // ==============================================================
 // 4) Từ chối đề đóng góp
 // ==============================================================
