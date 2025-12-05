@@ -358,9 +358,12 @@ function QuizBox({ quiz, onOpenModal, onReview, type }) {
   async function handleDeleteQuiz() {
     try {
       axios
-        .put(`/api/quizzes/${quiz._id}/availability`, {
-          availability: !quiz.availability,
-        })
+        .put(
+          `https://nosqlproject-fp2f.onrender.com/api/quizzes/${quiz._id}/availability`,
+          {
+            availability: !quiz.availability,
+          }
+        )
         .then((res) => {
           setShowConfirm(2);
         })

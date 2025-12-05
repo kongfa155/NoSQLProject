@@ -54,8 +54,14 @@ export default function CreateQuizModal({
         ref?.getQuestionData()
       );
 
+      // Tìm xem chapter đã tồn tại chưa
+      let foundChapter = chapters.find((ch) => ch.name === chapterName);
       let chapterId = null;
-      if (!selectedChapter) {
+
+      if (foundChapter) {
+        chapterId = foundChapter._id;
+      } else {
+        // Nếu chưa có, tạo mới
         const chapterRes = await chapterService.create({
           name: chapterName,
           subjectId: subjectId,
@@ -64,9 +70,9 @@ export default function CreateQuizModal({
           availability: true,
         });
         chapterId = chapterRes.data._id;
-      } else {
-        const foundChapter = chapters.find((ch) => ch.name === chapterName);
-        chapterId = foundChapter?._id;
+
+        // Cập nhật danh sách chapters để dropdown reflect chương mới
+        setChapters((prev) => [...prev, chapterRes.data]);
       }
 
       if (!chapterId) {
@@ -74,7 +80,7 @@ export default function CreateQuizModal({
         return;
       }
 
-      const quizRes = await quizService.createQuiz({
+      const quizRes = await quizService.create({
         name: quizName,
         subjectId: subjectId,
         chapterId: chapterId,
@@ -103,10 +109,11 @@ export default function CreateQuizModal({
           }
         })
       );
+
       setShowAlert(true);
-      console.log("Tao de thanh cong");
+      console.log("Tạo đề thành công");
     } catch (err) {
-      console.error("Loi tao de ", err);
+      console.error("Lỗi tạo đề ", err);
     }
   }
 
@@ -132,7 +139,7 @@ export default function CreateQuizModal({
             value={quizName}
             onChange={(e) =>
               setQuizName((prev) => {
-                return prev;
+                return e.target.value;
               })
             }
           ></input>
@@ -145,7 +152,7 @@ export default function CreateQuizModal({
             value={timeLimit}
             onChange={(e) =>
               setTimeLimit((prev) => {
-                return prev;
+                return e.target.value;
               })
             }
           ></input>
@@ -160,7 +167,7 @@ export default function CreateQuizModal({
               value={chapterName}
               onChange={(e) =>
                 setChapterName((prev) => {
-                  return prev;
+                  return e.target.value;
                 })
               }
             ></input>
@@ -191,7 +198,7 @@ export default function CreateQuizModal({
               value={chapterDesc}
               onChange={(e) =>
                 setChapterDesc((prev) => {
-                  return prev;
+                  return e.target.value;
                 })
               }
             ></input>
@@ -204,7 +211,7 @@ export default function CreateQuizModal({
         >
           {chapters?.map((chapter, i) => {
             if (chapter.availability == false) {
-              return <></>;
+              return null;
             }
             return (
               <div
@@ -340,7 +347,7 @@ const NewQuestion = forwardRef((props, ref) => {
         <input
           onChange={(e) =>
             setQuestion((prev) => {
-              return prev;
+              return e.target.value;
             })
           }
           type="text"
@@ -409,7 +416,7 @@ const NewQuestion = forwardRef((props, ref) => {
         <input
           onChange={(e) =>
             setExplain((prev) => {
-              return prev;
+              return e.target.value;
             })
           }
           type="text"
