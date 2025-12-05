@@ -101,40 +101,41 @@ export const getAllContributedQuizzes = async (req, res) => {
 // ==============================================================
 export const handleCSVUpload = async (req, res) => {
   try {
+    //Kiểm tra xem có file đầu vào không
     if (!req.file)
       return res.status(400).json({ message: "Chưa tải lên file CSV nào!" });
-
+    //Biến lưu đường dẫn và mảng lưu dữ liệu
     const filePath = req.file.path;
     const results = [];
-
+    //Đọc đầu vào bằng thư viện CSV-Parser
     fs.createReadStream(filePath)
       .pipe(
         csv({
-          separator: ",",
-          quote: '"', // hỗ trợ chuỗi có dấu ""
+          separator: ",", //Phân tách cột bằng dấu phẩy
+          quote: '"', // hỗ trợ chuỗi nằm trong ""
           escape: '"', // escape ký tự "
-          mapHeaders: ({ header }) => header.replace(/^\ufeff/, ""), // fix BOM
-          trim: true,
+          mapHeaders: ({ header }) => header.replace(/^\ufeff/, ""), // Tránh lỗi ký tự lạ
+          trim: true, //Tự động cắt khoảng cắt
         })
       )
-      .on("data", (row) => results.push(row))
-      .on("end", async () => {
+      .on("data", (row) => results.push(row)) //Đưa các dòng dữ liệu vào mảng kết quả
+      .on("end", async () => { //Sau khi đọc xong đem qua xử lý
         try {
           const questions = results
             .map((r, index) => {
+                //Xử lý từng dòng để tạo nên cấu trúc câu hỏi đúng
               if (!r.question || !r.options || !r.answer) {
                 console.log("❌ Lỗi dòng:", index + 1, r);
                 return null;
               }
-
-              // options nằm trong ngoặc kép nhưng phân tách bởi dấu ;
               const options = String(r.options)
-                .replace(/^"|"$/g, "") // bỏ dấu ngoặc kép đầu/ cuối
-                .split(";")
+                .replace(/^"|"$/g, "") // bỏ dấu ngoặc kép 
+                .split(";") //Các option ngăn cách bởi dấu ;
                 .map((o) => o.trim())
                 .filter((o) => o);
 
               return {
+                //Tạo mẫu câu hỏi chuẩn
                 question: String(r.question).replace(/^"|"$/g, ""),
                 options,
                 answer: String(r.answer).replace(/^"|"$/g, ""),
@@ -154,21 +155,22 @@ export const handleCSVUpload = async (req, res) => {
               ? `\n${req.body.suggestedNote}`
               : "";
 
+        //Tạo mốc thời gian là 7 ngày
           const oneWeekAgo = new Date();
           oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-
+            //Đếm số đề đã đóng góp trong 7 ngày
           const recentCount = await ContributedQuiz.countDocuments({
             contributorId: req.user.id,
             createdAt: { $gte: oneWeekAgo },
           });
-
+          //Thông báo nếu vượt giới hạn và chặn 
           if (recentCount >= 10) {
             return res.status(429).json({
               message:
                 "🚫 Bạn đã đạt giới hạn 10 đề đóng góp trong 7 ngày gần nhất. Hãy thử lại sau!",
             });
           }
-
+          //Lưu đề đóng góp vào database
           await ContributedQuiz.create({
             contributorId: req.user.id,
             name: req.body.name || "Đề đóng góp từ CSV",

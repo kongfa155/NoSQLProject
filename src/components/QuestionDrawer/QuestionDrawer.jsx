@@ -38,26 +38,34 @@ export default function QuestionDrawer({
       {/* Nội dung drawer */}
       <div className="flex justify-between items-start h-full p-5 lg:p-8 max-[600px]:flex-col max-[600px]:items-center max-[600px]:p-4">
         {/* Panel trái – danh sách câu hỏi */}
-        <div className="flex-1 overflow-y-auto pr-5 max-[600px]:w-full max-[600px]:pr-0 max-[600px]:mb-4">
-          <div className="grid grid-cols-10 gap-3 justify-items-center w-full max-w-2xl mx-auto max-[800px]:grid-cols-8 max-[600px]:grid-cols-7 max-[400px]:grid-cols-6 max-[600px]:gap-2">
-            {Array.from({ length: totalQuestions }).map((_, i) => {
-              const num = i + 1;
-              const isAnswered = answered.includes(num); // Kiểm tra câu đã trả lời
-              const isFlagged = flagged.includes(num); // Kiểm tra câu đã đánh dấu
-              const isCurrent = currentQuestion === num; // Câu hiện tại
+        <div className="flex-1 pr-5 max-[600px]:w-full max-[600px]:pr-0 max-[600px]:mb-4">
+          <div
+            className="h-full max-h-[18vh] overflow-y-auto 
+                  max-[600px]:max-h-[25vh] pr-1"
+          >
+            <div
+              className="grid grid-cols-10 gap-3 justify-items-center w-full 
+      max-w-2xl mx-auto max-[800px]:grid-cols-8 max-[600px]:grid-cols-7 
+      max-[400px]:grid-cols-6 max-[600px]:gap-2"
+            >
+              {Array.from({ length: totalQuestions }).map((_, i) => {
+                const num = i + 1;
+                const isAnswered = answered.includes(num); // Kiểm tra câu đã trả lời
+                const isFlagged = flagged.includes(num); // Kiểm tra câu đã đánh dấu
+                const isCurrent = currentQuestion === num; // Câu hiện tại
 
-              return (
-                <div key={num} className="relative">
-                  {/* Flag hiển thị nếu câu được đánh dấu */}
-                  {isFlagged && (
-                    <Flag
-                      size={12}
-                      className="absolute top-[-7px] right-[-7px] text-yellow-700"
-                    />
-                  )}
-                  <button
-                    onClick={() => onSelectQuestion(num)} // Chọn câu
-                    className={`w-9 h-9 text-sm font-medium flex items-center justify-center rounded-md border-[1.5px] transition-all
+                return (
+                  <div key={num} className="relative">
+                    {/* Flag hiển thị nếu câu được đánh dấu */}
+                    {isFlagged && (
+                      <Flag
+                        size={12}
+                        className="absolute top-[-7px] right-[-7px] text-yellow-700"
+                      />
+                    )}
+                    <button
+                      onClick={() => onSelectQuestion(num)} // Chọn câu
+                      className={`w-9 h-9 text-sm font-medium flex items-center justify-center rounded-md border-[1.5px] transition-all
                       max-[600px]:w-8 max-[600px]:h-8
                       ${
                         isFlagged
@@ -71,12 +79,13 @@ export default function QuestionDrawer({
                           ? "outline outline-2 outline-[#3D763A] border-[#3D763A] text-[#3D763A]"
                           : "hover:bg-green-50"
                       }`}
-                  >
-                    {num} {/* Hiển thị số câu */}
-                  </button>
-                </div>
-              );
-            })}
+                    >
+                      {num} {/* Hiển thị số câu */}
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
 
@@ -100,7 +109,8 @@ export default function QuestionDrawer({
             >
               Nộp bài
             </button>
-          ) : ( //Nếu ôn tập xoay vòng
+          ) : (
+            //Nếu ôn tập xoay vòng
             <button
               onClick={() => navigate(-1)} // Dừng ôn tập quay lại
               className="w-full text-lg font-semibold text-white bg-[#3D763A] hover:bg-[#2F5D2E] transition-all rounded-xl py-2.5 max-[600px]:text-sm max-[600px]:py-2"
