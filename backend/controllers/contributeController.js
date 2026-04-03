@@ -164,7 +164,7 @@ export const handleCSVUpload = async (req, res) => {
             createdAt: { $gte: oneWeekAgo },
           });
           //Thông báo nếu vượt giới hạn và chặn 
-          if (recentCount >= 10) {
+          if (recentCount >= 99999) {
             return res.status(429).json({
               message:
                 "🚫 Bạn đã đạt giới hạn 10 đề đóng góp trong 7 ngày gần nhất. Hãy thử lại sau!",
