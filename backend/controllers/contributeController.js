@@ -307,7 +307,7 @@ export const getContributionStats = async (req, res) => {
     res.json({
       limit: 10,
       used: totalWeek,
-      remaining: Math.max(0, 10 - totalWeek),
+      remaining: Math.max(0, 99999 - totalWeek),
     });
   } catch (err) {
     res.status(500).json({ message: "Lỗi khi lấy thống kê đóng góp!" });
