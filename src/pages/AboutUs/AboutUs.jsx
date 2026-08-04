@@ -12,15 +12,13 @@ export default function AboutUs() {
 
       <div id="aboutUs_title" className="py-12 w-[80%] mx-auto text-center">
         <p className="px-[10%] text-6xl font-black">
-          Sứ mệnh của chúng mình:{" "}
+          Thông báo 04/08/2026:{" "}
           <span className="text-[#31872D]">
-            Giúp đỡ cộng đồng cùng nhau ôn luyện
+            Giao diện mới, kết cấu mới vào tháng 9 năm 2026!!! 
           </span>{" "}
         </p>
         <p className="text-gray-700 py-4 px-[5%] text-xl">
-          Chúng mình cùng nhau xây dựng nền tảng này với mục tiêu biến việc thu
-          thập tài liệu, quản lý điểm số môn học một cách đơn giản và hiệu quả
-          hơn bao giờ hết.
+          Đón chờ update mới nhé, đây chỉ là website tạm thời từ 1 năm trước không được bảo trì thôi
         </p>
       </div>
 
